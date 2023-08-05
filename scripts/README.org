@@ -1,0 +1,12 @@
+#+title: Scripts
+
+Scripts, often bound to some shortcuts.
+
+* ~scan-qr-on-screen.sh~
+
+Let the user select a region and then scan the QR code (if any) in it.
+
+** Dependencies
+
+- ~xfce4-screenshooter~
+- ~qtqr~
