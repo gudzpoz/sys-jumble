@@ -11,6 +11,7 @@ All kinds of textual configuration files that can potentially get shared among m
   - ~xclip~ :: For sharing clipboard with X system.
   - ~fcitx5~ :: If you are not using ~fcitx~, remove any thing in the file related to [[https://github.com/cute-jumper/fcitx.el][~fcitx.el~]].
   - [[https://github.com/kanglmf/emacs-chinese-word-segmentation][~emacs-chinese-word-segmentation~]] :: How we navigate between Chinese words.
+  - [[https://ledger-cli.org/docs.html][ledger]] :: If you ever use Ledger for accounting.
 - Font Dependencies:
   - [[https://aur.archlinux.org/packages/ttf-all-the-icons][~ttf-all-the-icons~]] :: The icons needed by Spacemacs to display file type icons.
     (Otherwise you will need to run ~M-x all-the-icons-install-fonts~ yourself.)

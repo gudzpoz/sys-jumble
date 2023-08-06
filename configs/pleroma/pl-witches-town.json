@@ -1,0 +1,298 @@
+{
+  "_pleroma_theme_version": 2,
+  "theme": {
+    "themeEngineVersion": 3,
+    "shadows": {
+      "panel": [
+        {
+          "x": 1,
+          "y": 1,
+          "blur": 4,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 0.6
+        }
+      ],
+      "topBar": [
+        {
+          "x": 0,
+          "y": 0,
+          "blur": 4,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 0.6
+        }
+      ],
+      "popup": [
+        {
+          "x": 2,
+          "y": 2,
+          "blur": 3,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 0.5
+        }
+      ],
+      "avatar": [
+        {
+          "x": 0,
+          "y": 1,
+          "blur": 8,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 0.7
+        }
+      ],
+      "avatarStatus": [],
+      "panelHeader": [],
+      "button": [],
+      "buttonHover": [
+        {
+          "color": "#27222f",
+          "x": 0,
+          "y": 0,
+          "blur": 0,
+          "spread": "2000",
+          "inset": true,
+          "alpha": 1
+        }
+      ],
+      "buttonPressed": [],
+      "input": [
+        {
+          "x": 0,
+          "y": 1,
+          "blur": 0,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 0.2,
+          "inset": true
+        },
+        {
+          "x": 0,
+          "y": -1,
+          "blur": 0,
+          "spread": 0,
+          "color": "#FFFFFF",
+          "alpha": 0.2,
+          "inset": true
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "blur": 2,
+          "inset": true,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 1
+        }
+      ]
+    },
+    "colors": {
+      "underlay": "#000000",
+      "bg": "#383144",
+      "fg": "#4c425c",
+      "cRed": "#ff89a3",
+      "cOrange": "#ffc849",
+      "cGreen": "#50e770",
+      "cBlue": "#88ccfc",
+      "accent": "#3f374d",
+      "link": "#b7a2cc",
+      "text": "#e6e6fa",
+      "chatBg": "#383144",
+      "chatMessageIncomingBg": "#383144",
+      "chatMessageOutgoingBg": "#453c53",
+      "chatMessageOutgoingBorder": "#494059",
+      "chatMessageOutgoingLink": "#b7a2cc",
+      "chatMessageOutgoingText": "#e6e6fa",
+      "border": "#514762",
+      "chatMessageIncomingBorder": "#564b68",
+      "chatMessageIncomingLink": "#b7a2cc",
+      "chatMessageIncomingText": "#e6e6fa",
+      "badgeNotification": "#ff89a3",
+      "badgeNotificationText": "#000000",
+      "alertNeutral": "#e6e6fa",
+      "alertNeutralText": "#06061a",
+      "alertPopupNeutral": "#e6e6fa",
+      "alertPopupNeutralText": "#06061a",
+      "alertWarning": "#ffc849",
+      "alertWarningText": "#06061a",
+      "alertPopupWarning": "#ffc849",
+      "alertPopupWarningText": "#06061a",
+      "alertError": "#ff89a3",
+      "alertErrorText": "#ffffff",
+      "alertPopupError": "#ff89a3",
+      "alertPopupErrorText": "#000000",
+      "panel": "#4c425c",
+      "panelText": "#e6e6fa",
+      "alertNeutralPanelText": "#06061a",
+      "alertWarningPanelText": "#06061a",
+      "alertErrorPanelText": "#06061a",
+      "fgText": "#e6e6fa",
+      "topBar": "#4c425c",
+      "topBarText": "#e6e6fa",
+      "input": "#4c425c",
+      "inputTopbarText": "#e6e6fa",
+      "inputPanelText": "#e6e6fa",
+      "inputText": "#e6e6fa",
+      "btn": "#584d6b",
+      "btnText": "#e6e6fa",
+      "btnTopBarText": "#e6e6fa",
+      "btnDisabled": "#40384e",
+      "btnDisabledTopBarText": "#6a6479",
+      "btnPanelText": "#e6e6fa",
+      "btnDisabledPanelText": "#6a6479",
+      "btnDisabledText": "#6a6479",
+      "btnToggled": "#8b7da2",
+      "btnToggledTopBarText": "#06061a",
+      "btnToggledPanelText": "#06061a",
+      "btnToggledText": "#06061a",
+      "btnPressed": "#584d6b",
+      "btnPressedTopBarText": "#e6e6fa",
+      "btnPressedTopBar": "#584d6b",
+      "btnPressedPanelText": "#e6e6fa",
+      "btnPressedPanel": "#584d6b",
+      "btnPressedText": "#e6e6fa",
+      "tabActiveText": "#e6e6fa",
+      "tabText": "#e6e6fa",
+      "tab": "#584d6b",
+      "fgLink": "#ffffff",
+      "topBarLink": "#ffffff",
+      "panelLink": "#ffffff",
+      "panelFaint": "#e6e6fa",
+      "icon": "#8f8c9f",
+      "poll": "#4c425c",
+      "pollText": "#e6e6fa",
+      "postGreentext": "#50e770",
+      "postLink": "#b7a2cc",
+      "lightText": "#ffffff",
+      "popover": "#383144",
+      "selectedMenuPopover": "#453c53",
+      "highlight": "#453c53",
+      "highlightText": "#e6e6fa",
+      "selectedMenu": "#453c53",
+      "selectedMenuText": "#e6e6fa",
+      "selectedMenuPopoverIcon": "#9691a7",
+      "highlightLink": "#b7a2cc",
+      "selectedMenuLink": "#b7a2cc",
+      "selectedMenuPopoverLink": "#b7a2cc",
+      "selectedMenuPopoverText": "#e6e6fa",
+      "faintLink": "#b7a2cc",
+      "highlightFaintLink": "#b7a2cc",
+      "selectedMenuFaintLink": "#b7a2cc",
+      "selectedMenuPopoverFaintLink": "#b7a2cc",
+      "faint": "#e6e6fa",
+      "highlightFaintText": "#e6e6fa",
+      "selectedMenuFaintText": "#e6e6fa",
+      "selectedMenuPopoverFaintText": "#e6e6fa",
+      "highlightLightText": "#ffffff",
+      "selectedMenuLightText": "#ffffff",
+      "selectedMenuPopoverLightText": "#ffffff",
+      "selectedMenuIcon": "#9691a7",
+      "selectedPost": "#453c53",
+      "selectedPostText": "#e6e6fa",
+      "selectedPostIcon": "#9691a7",
+      "selectedPostLink": "#b7a2cc",
+      "selectedPostFaintLink": "#b7a2cc",
+      "highlightPostLink": "#b7a2cc",
+      "selectedPostPostLink": "#b7a2cc",
+      "selectedPostLightText": "#ffffff",
+      "selectedPostFaintText": "#e6e6fa",
+      "popoverText": "#e6e6fa",
+      "popoverIcon": "#8f8c9f",
+      "popoverLink": "#b7a2cc",
+      "postFaintLink": "#b7a2cc",
+      "popoverPostFaintLink": "#b7a2cc",
+      "popoverFaintLink": "#b7a2cc",
+      "popoverFaintText": "#e6e6fa",
+      "popoverPostLink": "#b7a2cc",
+      "popoverLightText": "#ffffff",
+      "highlightIcon": "#9691a7",
+      "highlightPostFaintLink": "#b7a2cc",
+      "profileTint": "#383144",
+      "profileBg": "#1d1b28",
+      "wallpaper": "#342d3f"
+    },
+    "opacity": {
+      "underlay": 0.15,
+      "bg": 1,
+      "border": 1,
+      "alert": 0.5,
+      "alertPopup": 0.95,
+      "panel": 1,
+      "input": 0.5,
+      "btn": 1,
+      "faint": 0.5,
+      "popover": 1,
+      "profileTint": 0.5
+    },
+    "radii": {
+      "btn": 4,
+      "input": 4,
+      "checkbox": 2,
+      "panel": "7",
+      "avatar": "4",
+      "avatarAlt": "4",
+      "tooltip": 2,
+      "attachment": "4",
+      "chatMessage": "7"
+    },
+    "fonts": {
+      "interface": {
+        "family": "sans-serif"
+      },
+      "input": {
+        "family": "inherit"
+      },
+      "post": {
+        "family": "inherit"
+      },
+      "postCode": {
+        "family": "monospace"
+      }
+    },
+    "customCss": "@font-face {\n  font-family: 'witchesAwesome';\n  src:  url('/static/themes/witches/witchesAwesome.eot');\n  src:  url('/static/themes/witches/witchesAwesome.eot') format('embedded-opentype'),\n    url('/static/themes/witches/witchesAwesome.ttf') format('truetype'),\n    url('/static/themes/witches/witchesAwesome.woff') format('woff'),\n    url('/static/themes/witches/witchesAwesome.svg') format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n\n@font-face {\n  font-family: 'FontAwesomeSolid';\n  font-style: normal;\n  font-weight: 900;\n  font-display: block;\n  src: url(\"https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.2/webfonts/fa-solid-900.eot\");\n  src: url(\"https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.2/webfonts/fa-solid-900.eot?#iefix\") format(\"embedded-opentype\"), url(\"https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.2/webfonts/fa-solid-900.woff2\") format(\"woff2\"), url(\"https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.2/webfonts/fa-solid-900.woff\") format(\"woff\"), url(\"https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.2/webfonts/fa-solid-900.ttf\") format(\"truetype\"), url(\"https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.2/webfonts/fa-solid-900.svg#fontawesome\") format(\"svg\"); }\n\n.NavPanel a[href=\"/main/friends\"]::before {\n    content: \"\\f015\";\n    font-family: witchesAwesome;\n    position: absolute;\n    color: var(--icon,#666);\n    font-size: large;\n    width: 1em;\n    text-align: center;\n}\n\n.NavPanel a[href=\"/main/friends\"] svg {\n    opacity: 0;\n}\n\n.NavPanel a[href$=\"/interactions\"]::before {\n    content: \"\\f0f3\";\n    font-family: witchesAwesome;\n    position: absolute;\n    color: var(--icon,#666);\n    font-size: large;\n    width: 1em;\n    text-align: center;\n}\n\n.NavPanel a[href$=\"/interactions\"] svg {\n    opacity: 0;\n}\n\n.NavPanel a[href$=\"/chats\"]::before {\n    content: \"\\f086\";\n    font-family: FontAwesomeSolid;\n    position: absolute;\n    color: var(--icon,#666);\n    font-size: large;\n    width: 1em;\n    text-align: center;\n}\n\n.NavPanel a[href$=\"/chats\"] svg {\n    opacity: 0;\n}\n\n.NavPanel a[href=\"/about\"]::before {\n    content: \"\\f0eb\";\n    font-family: FontAwesomeSolid;\n    position: absolute;\n    color: var(--icon,#666);\n    font-size: large;\n    width: 1em;\n    text-align: center;\n}\n\n.NavPanel a[href=\"/about\"] svg {\n    opacity: 0;\n}\n\n.ReplyButton button::before {\n    content: \"\\f112\";\n    font-family: witchesAwesome;\n    position: absolute;\n    color: var(--icon,#666);\n    font-size: larger;\n    width: 1em;\n    text-align: center;\n}\n\n.ReplyButton button:hover::before, .ReplyButton button.-active::before {\n    color: var(--cBlue,#0095ff);\n}\n\n.ReplyButton button svg {\n    opacity: 0;\n}\n\n.RetweetButton button::before {\n    content: \"\\f079\";\n    font-family: witchesAwesome;\n    position: absolute;\n    color: var(--icon,#666);\n    font-size: larger;\n    width: 1em;\n    text-align: center;\n}\n\n.RetweetButton button:hover::before, .RetweetButton button.-repeated::before {\n    color: var(--cGreen,#0fa00f);\n}\n\n.RetweetButton button svg {\n    opacity: 0;\n}\n\n.FavoriteButton button::before {\n    content: \"\\f005\";\n    font-family: witchesAwesome;\n    position: absolute;\n    color: var(--icon,#666);\n    font-size: larger;\n    width: 1em;\n    text-align: center;\n}\n\n.FavoriteButton button:hover::before, .FavoriteButton button.-favorited::before {\n    color: var(--cOrange,orange);\n}\n\n.FavoriteButton button svg {\n    opacity: 0;\n}\n\nspan.ReactButton:before {\n    content: \"\\f118\";\n    font-family: FontAwesomeSolid;\n    position: absolute;\n    color: var(--icon,#666);\n    font-size: larger;\n    width: 1em;\n    text-align: center;\n}\n\nspan.ReactButton:hover::before {\n    color: var(--text,#b9b9ba);\n}\n\nspan.ReactButton svg {\n    opacity: 0;\n}\n\n.TimelineMenu a[href=\"/main/all\"]:before {\n    content: \"\\f0ac\";\n    font-family: witchesAwesome;\n    position: absolute;\n    color: var(--icon,#666);\n    font-size: large;\n    width: 1.4em;\n    text-align: center;\n}\n\n.TimelineMenu a[href=\"/main/all\"] svg {\n    opacity: 0;\n}\n\n.ScopeSelector button:last-child::before {\n    content: \"\\f0ac\";\n    font-family: witchesAwesome;\n    position: absolute;\n    color: var(--icon,#666);\n    font-size: larger;\n    width: 1.4em;\n    text-align: center;\n}\n\n.ScopeSelector button.selected:last-child::before {\n    color: var(--lightText,#b9b9ba);\n}\n\n.ScopeSelector button:last-child svg {\n    opacity: 0;\n}"
+  },
+  "source": {
+    "themeEngineVersion": 3,
+    "fonts": {},
+    "shadows": {
+      "buttonHover": [
+        {
+          "x": 0,
+          "y": 0,
+          "blur": 0,
+          "spread": "2000",
+          "inset": true,
+          "color": "#27222f",
+          "alpha": 1
+        }
+      ],
+      "button": [],
+      "buttonPressed": []
+    },
+    "opacity": {},
+    "colors": {
+      "bg": "#383144",
+      "fg": "#4c425c",
+      "text": "#e6e6fa",
+      "link": "#b7a2cc",
+      "accent": "#3f374d",
+      "cBlue": "#88ccfc",
+      "cRed": "#ff89a3",
+      "cGreen": "#50e770",
+      "cOrange": "#ffc849",
+      "poll": "#4c425c",
+      "fgLink": "#ffffff",
+      "btn": "#584d6b"
+    },
+    "radii": {
+      "btn": 4,
+      "input": 4,
+      "panel": "7",
+      "avatar": "4",
+      "avatarAlt": "4",
+      "attachment": "4"
+    }
+  }
+}

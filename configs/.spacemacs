@@ -32,9 +32,9 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
-     (auto-completion :disabled-for org)
+   '((auto-completion :disabled-for org)
      better-defaults
+     d
      debug
      emacs-lisp
      emoji
