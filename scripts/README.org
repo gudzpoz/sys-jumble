@@ -4,9 +4,17 @@ Scripts, often bound to some shortcuts.
 
 * ~scan-qr-on-screen.sh~
 
-Let the user select a region and then scan the QR code (if any) in it.
+Lets the user select a region and then scans the QR code (if any) in it.
 
 ** Dependencies
 
 - ~xfce4-screenshooter~
 - ~qtqr~
+
+* ~bing-wallpaper.sh~
+
+Downloads today's Bing Wallpaper and sets it as the wallpaper.
+It downloads to ~$HOME/.cache~ or ~$XDG_CACHE_HOME~ by default
+and cleans the directory up when there are too many downloaded images.
+
+Currently only XFCE is supported.
