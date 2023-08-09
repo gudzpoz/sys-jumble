@@ -862,6 +862,27 @@ dump."
 
   )
 
+(defun ledger-monthly-report()
+  "Report monthly expenses"
+
+  (interactive)
+  (ledger-report "reg-M" ())
+  (run-with-idle-timer 0.1 () (lambda () (goto-char (point-max))))
+
+  )
+
+(defun mine/ledger-config()
+  "Ledger-mode config"
+
+  (setq ledger-reports '(("bal" "%(binary) -f %(ledger-file) bal")
+                         ("reg" "%(binary) -f %(ledger-file) reg")
+                         ("reg-M" "%(binary) -f %(ledger-file) reg -M")
+                         ("account" "%(binary) -f %(ledger-file) reg %(account)")))
+  (spacemacs/declare-prefix-for-mode 'ledger-mode "M" "monthly-report")
+  (spacemacs/set-leader-keys-for-major-mode 'ledger-mode "M" 'ledger-monthly-report)
+
+  )
+
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
@@ -880,6 +901,7 @@ before packages are loaded."
   (mine/wc-config)
   (mine/company-config)
   (mine/emacs-everywhere-config)
+  (mine/ledger-config)
 
 )
 
