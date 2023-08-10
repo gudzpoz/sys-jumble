@@ -647,6 +647,9 @@ dump."
                              ,`(,org-later-file-path :level . 1)
                              ,`(,org-watchdog-file-path :level . 1)))
 
+  ;; More blank lines
+  (setq org-blank-before-new-entry '((heading . t) (plain-list-item . t)))
+
   ;; Insert a zero-width-space
   (with-eval-after-load "org"
     (define-key org-mode-map (kbd "C-|") (lambda () (interactive) (insert-char #x200b))))
