@@ -1,0 +1,12 @@
+[submodule "pkgbuilds/emacs-chinese-word-segmentation-git"]
+	path = pkgbuilds/emacs-chinese-word-segmentation-git
+	url = ssh://aur@aur.archlinux.org/emacs-chinese-word-segmentation-git.git
+	branch = master
+[submodule "pkgbuilds/profile-sync-daemon-thunderbird"]
+	path = pkgbuilds/profile-sync-daemon-thunderbird
+	url = ssh://aur@aur.archlinux.org/profile-sync-daemon-thunderbird.git
+	branch = master
+[submodule "pkgbuilds/profile-sync-daemon-zotero"]
+	path = pkgbuilds/profile-sync-daemon-zotero
+	url = ssh://aur@aur.archlinux.org/profile-sync-daemon-zotero.git
+	branch = master

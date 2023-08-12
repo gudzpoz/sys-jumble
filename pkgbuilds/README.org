@@ -1,0 +1,11 @@
+#+title: My AUR Packages
+
+This directory lists AUR packages maintained by me.
+You are not actually expected to use these packages from this repository.
+(Well, possibly you can't even clone these sub-modules, whose clone endpoints require SSH authentication.)
+
+Use them from the AUR if you want.
+
+- ~emacs-chinese-word-segmentation-git~: Build script for [[https://github.com/kanglmf/emacs-chinese-word-segmentation/][emacs-chinese-word-segmentation]] that also pre-configures the library.
+- ~profile-sync-daemon-thunderbird~: Adds Thunderbird support for ~profile-sync-daemon~.
+- ~profile-sync-daemon-zotero~: Adds Zotero support for ~profile-sync-daemon~.
