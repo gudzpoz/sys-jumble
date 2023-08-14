@@ -40,7 +40,10 @@ This function should only modify configuration layer settings."
      emoji
      eww
      finance
-     git
+     (git :variables
+          git-enable-magit-delta-plugin t
+          git-enable-magit-todos-plugin t
+          git-magit-status-fullscreen t)
      go
      helm
      html
@@ -886,6 +889,16 @@ dump."
 
   )
 
+(defun mine/git-config()
+  "Git/Magit config"
+
+  (setq magit-repository-directories
+        '(("~/.emacs.d"  . 0)
+          ("~/Workspaces/" . 2)))
+
+  )
+
+
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
@@ -905,6 +918,7 @@ before packages are loaded."
   (mine/company-config)
   (mine/emacs-everywhere-config)
   (mine/ledger-config)
+  (mine/git-config)
 
 )
 

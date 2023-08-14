@@ -8,10 +8,11 @@ All kinds of textual configuration files that can potentially get shared among m
 
 - Using [[https://develop.spacemacs.org/][Spacemacs]]
 - Dependencies
-  - ~xclip~ :: For sharing clipboard with X system.
-  - ~fcitx5~ :: If you are not using ~fcitx~, remove any thing in the file related to [[https://github.com/cute-jumper/fcitx.el][~fcitx.el~]].
   - [[https://github.com/kanglmf/emacs-chinese-word-segmentation][~emacs-chinese-word-segmentation~]] :: How we navigate between Chinese words.
-  - [[https://ledger-cli.org/docs.html][ledger]] :: If you ever use Ledger for accounting.
+  - ~fcitx5~ :: If you are not using ~fcitx~, remove any thing in the file related to [[https://github.com/cute-jumper/fcitx.el][~fcitx.el~]].
+  - [[https://dandavison.github.io/delta/installation.html][~git-delta~]] :: Magit add-on (~magit-delta~).
+  - [[https://ledger-cli.org/docs.html][~ledger~]] :: If you ever use Ledger for accounting.
+  - ~xclip~ :: For sharing clipboard with X system.
 - Font Dependencies:
   - [[https://aur.archlinux.org/packages/ttf-all-the-icons][~ttf-all-the-icons~]] :: The icons needed by Spacemacs to display file type icons.
     (Otherwise you will need to run ~M-x all-the-icons-install-fonts~ yourself.)
@@ -31,6 +32,7 @@ All kinds of textual configuration files that can potentially get shared among m
   whitelist ~mirrors.tuna.tsinghua.edu.cn~ (maybe with ~no_proxy~ (not tested yet)).
 - Set up [[https://github.com/tecosaur/emacs-everywhere][~emacs-everywhere~]].
 - Set up a shortcut to capture new org-mode to-do items (~emacsclient -c -e '(org-capture)'~).
+- Put your projects under ~~/Workspaces~ (or else change the paths listed in ~mine/git-config~ in the ~.spacemacs~ config).
 
 ** Usage
 
