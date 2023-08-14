@@ -66,6 +66,7 @@ source "$ZNAP_INSTALL_DIR/znap/znap.zsh"
 # Enable zsh-autocomplete
 zstyle ':autocomplete:*complete*:*' insert-unambiguous yes
 zstyle ':autocomplete:*' default-context history-incremental-search-backward
+zstyle ':autocomplete:history-incremental-search-backward:*' list-lines 3
 znap source marlonrichert/zsh-autocomplete
 
 # User configuration
