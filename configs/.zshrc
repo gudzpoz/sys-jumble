@@ -90,6 +90,7 @@ if has_bin emacsclient; then
     alias vim="$EDITOR"
     alias emacs='emacsclient -c'
     alias e='emacs'
+    alias g='vim --eval "(magit-status)"'
     sue() {
         em "/sudo::$1"
     }
