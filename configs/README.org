@@ -46,3 +46,17 @@ All kinds of textual configuration files that can potentially get shared among m
 *** Org mode broken?
 
 See https://github.com/syl20bnr/spacemacs/issues/15896.
+
+* Zsh
+
+** Prerequisites
+
+- ~oh-my-zsh~: In ~$HOME/.oh-my-zsh~.
+- ~fasd~.
+- ~zsh-syntax-highlighting~.
+
+** Usage
+
+#+begin_src shell
+  ln -s absolute_path_to_this_file ~/.zshrc
+#+end_src
