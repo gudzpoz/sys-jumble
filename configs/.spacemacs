@@ -66,6 +66,7 @@ This function should only modify configuration layer settings."
              python-backend 'lsp
              python-lsp-server 'pylsp)
      rust
+     semantic
      (shell :variables
             shell-default-shell 'eshell
             shell-default-height 30
@@ -883,6 +884,7 @@ dump."
   (setq ledger-reports '(("bal" "%(binary) -f %(ledger-file) bal")
                          ("reg" "%(binary) -f %(ledger-file) reg")
                          ("reg-M" "%(binary) -f %(ledger-file) reg -M")
+                         ("tag" "%(binary) -f %(ledger-file) bal tag %(tagname)")
                          ("account" "%(binary) -f %(ledger-file) reg %(account)")))
   (spacemacs/declare-prefix-for-mode 'ledger-mode "M" "monthly-report")
   (spacemacs/set-leader-keys-for-major-mode 'ledger-mode "M" 'ledger-monthly-report)
