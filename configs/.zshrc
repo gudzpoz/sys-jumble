@@ -114,10 +114,6 @@ setopt HIST_REDUCE_BLANKS
 setopt HIST_SAVE_NO_DUPS
 unsetopt INC_APPEND_HISTORY
 
-autoload -Uz history-beginning-search-menu
-zle -N history-beginning-search-menu
-bindkey '^R^R' history-beginning-search-menu
-
 ## Enable extended globbing
 setopt extendedglob
 
