@@ -628,6 +628,10 @@ dump."
    org-wild-notifier-alert-time '(1 5 10 30 60)
    org-wild-notifier-alert-times-property "reminder")
 
+  ;; Pomodoro
+  (setq org-pomodoro-clock-break t
+        org-pomodoro-manual-break t)
+
   ;; Org-mode
   ;; https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
   (setq org-inbox-file-path    "~/Documents/Nutstore/Org-Mode/GTD/inbox.org")
