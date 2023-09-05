@@ -93,7 +93,7 @@ if has_bin emacsclient; then
     alias e='emacs'
     alias g='vim --eval "(magit-status)"'
     sue() {
-        em "/sudo::$1"
+        emacsclient -nw "/sudo::$1"
     }
 elif has_bin vim; then
     export EDITOR='vim'

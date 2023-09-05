@@ -655,6 +655,10 @@ dump."
                              ,`(,org-later-file-path :level . 1)
                              ,`(,org-watchdog-file-path :level . 1)))
 
+  ;; Wrap lines: We don't use org tables that often.
+  (setq org-startup-truncated nil)
+
+
   ;; More blank lines
   (setq org-blank-before-new-entry '((heading . t) (plain-list-item . t)))
 
