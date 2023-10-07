@@ -297,8 +297,8 @@ It should only modify the values of Spacemacs settings."
    ;; Default font or prioritized list of fonts. The `:size' can be specified as
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
-   dotspacemacs-default-font '("Sarasa Mono SC"
-                               :size 10.0
+   dotspacemacs-default-font '("Sarasa Term SC Nerd"
+                               :size 12.0
                                :weight normal
                                :width normal)
 
@@ -824,19 +824,19 @@ dump."
   (setq ibuffer-expert t)
   (setq ibuffer-show-empty-filter-groups nil)
 
-  (super-save-mode +1)
   (setq super-save-auto-save-when-idle t)
+  (setq super-save-idle-duration 30)
+  (super-save-mode +1)
 
   )
 
 (defun mine/font-config ()
   "Chinese font config"
 
-  (set-fontset-font "fontset-default" 'unicode "-*-Noto Color Emoji-*-*-*-*-10-*-*-*-*-*-*-*" nil 'prepend)
-  (set-fontset-font "fontset-default"
-                    (cons (decode-char 'ucs #x4e00)
-                          (decode-char 'ucs #x9fff))
-                    "-*-Sarasa Gothic CL-*-*-*-*-14-*-*-*-*-*-*-*")
+  (spacemacs|do-after-display-system-init
+   (set-face-attribute 'default nil :family "Sarasa Term SC Nerd")
+   (set-fontset-font "fontset-default" 'han (font-spec :family "Sarasa Term SC Nerd"))
+   (set-fontset-font "fontset-default" 'cjk-misc (font-spec :family "Sarasa Term SC Nerd")))
 
   )
 
@@ -1035,5 +1035,5 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(markdown-code-face ((t (:family "Sarasa Mono SC" :inherit fixed-pitch)))))
+ '(markdown-code-face ((t (:family "Sarasa Term SC Nerd" :inherit fixed-pitch)))))
 )
