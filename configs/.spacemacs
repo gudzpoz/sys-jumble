@@ -36,6 +36,7 @@ This function should only modify configuration layer settings."
      better-defaults
      d
      debug
+     dtrt-indent
      emacs-lisp
      emoji
      eww
@@ -68,7 +69,8 @@ This function should only modify configuration layer settings."
      rust
      semantic
      (shell :variables
-            shell-default-shell 'eshell
+            shell-default-shell 'ansi-term
+            shell-default-term-shell "/bin/zsh"
             shell-default-height 30
             shell-default-position 'bottom)
      spell-checking
@@ -100,6 +102,7 @@ This function should only modify configuration layer settings."
                                       evil-snipe
                                       fcitx
                                       jedi
+                                      shx-for-emacs
                                       super-save
                                       wc-mode
                                       xclip
@@ -949,12 +952,16 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(auth-source-save-behavior nil)
  '(connection-local-criteria-alist
-   '(((:application tramp :protocol "flatpak")
+   '(((:application eshell)
+      eshell-connection-default-profile)
+     ((:application tramp :protocol "flatpak")
       tramp-container-connection-local-default-flatpak-profile)
      ((:application tramp)
       tramp-connection-local-default-system-profile tramp-connection-local-default-shell-profile)))
  '(connection-local-profile-alist
-   '((tramp-container-connection-local-default-flatpak-profile
+   '((eshell-connection-default-profile
+      (eshell-path-env-list))
+     (tramp-container-connection-local-default-flatpak-profile
       (tramp-remote-path "/app/bin" tramp-default-remote-path "/bin" "/usr/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin" "/opt/bin" "/opt/sbin" "/opt/local/bin"))
      (tramp-connection-local-darwin-ps-profile
       (tramp-process-attributes-ps-args "-acxww" "-o" "pid,uid,user,gid,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state=abcde" "-o" "ppid,pgid,sess,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etime,pcpu,pmem,args")

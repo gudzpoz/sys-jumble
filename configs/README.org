@@ -53,7 +53,7 @@ See https://github.com/syl20bnr/spacemacs/issues/15896.
 ** Prerequisites
 
 - ~oh-my-zsh~: In ~$HOME/.oh-my-zsh~.
-- ~fasd~.
+- ~zoxide~.
 - ~zsh-syntax-highlighting~.
 
 ** Usage

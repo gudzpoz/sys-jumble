@@ -39,6 +39,11 @@ zstyle ':omz:update' frequency 15
 ## No auto-title in Emacs shell
 if [ "$INSIDE_EMACS" != '' ]; then
     DISABLE_AUTO_TITLE='true'
+
+    # Tracks current directory for helm, etc.
+    chpwd() { print -P "\033AnSiTc %d" }
+    print -P "\033AnSiTu %n"
+    print -P "\033AnSiTc %d"
 fi
 
 ## Theme
@@ -50,7 +55,7 @@ ZSH_THEME='robbyrussell'
 # DISABLE_UNTRACKED_FILES_DIRTY='true'
 
 ## Plugins
-plugins=(git fasd)
+plugins=(git)
 
 # Enable oh-my-zsh
 source "$ZSH/oh-my-zsh.sh"
@@ -64,10 +69,11 @@ fi
 source "$ZNAP_INSTALL_DIR/znap/znap.zsh"
 
 # Enable zsh-autocomplete
-zstyle ':autocomplete:*complete*:*' insert-unambiguous yes
-zstyle ':autocomplete:*' default-context history-incremental-search-backward
-zstyle ':autocomplete:history-incremental-search-backward:*' list-lines 3
 znap source marlonrichert/zsh-autocomplete
+
+# Zoxide
+export _ZO_ECHO=1
+eval "$(zoxide init zsh --cmd=j )"
 
 # User configuration
 
