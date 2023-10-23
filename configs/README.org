@@ -8,16 +8,18 @@ All kinds of textual configuration files that can potentially get shared among m
 
 - Using [[https://develop.spacemacs.org/][Spacemacs]]
 - Dependencies
+  - [[https://ollama.ai/][~ollama~]] :: For ~ellama~.
   - [[https://github.com/kanglmf/emacs-chinese-word-segmentation][~emacs-chinese-word-segmentation~]] :: How we navigate between Chinese words.
   - ~fcitx5~ :: If you are not using ~fcitx~, remove any thing in the file related to [[https://github.com/cute-jumper/fcitx.el][~fcitx.el~]].
   - [[https://dandavison.github.io/delta/installation.html][~git-delta~]] :: Magit add-on (~magit-delta~).
   - [[https://ledger-cli.org/docs.html][~ledger~]] :: If you ever use Ledger for accounting.
+  - ~ripgrep~ :: For [[https://github.com/dajva/rg.el][~rg.el~]] usages.
   - ~xclip~ :: For sharing clipboard with X system.
   - ~xdotool~, ~xprop~, ~xwininfo~ :: For the ~emacs-everywhere~ mode.
 - Font Dependencies:
   - [[https://aur.archlinux.org/packages/ttf-all-the-icons][~ttf-all-the-icons~]] :: The icons needed by Spacemacs to display file type icons.
     (Otherwise you will need to run ~M-x all-the-icons-install-fonts~ yourself.)
-  - [[https://github.com/be5invis/Sarasa-Gothic][~Sarasa Gothic~]] :: Mono-space fonts for CJK characters.
+  - [[https://github.com/laishulu/Sarasa-Term-SC-Nerd][~Sarasa Term SC Nerd~]] :: Mono-space fonts for CJK characters.
   - [[https://github.com/googlefonts/noto-emoji][~Noto Color Emoji~]] :: Emoji display.
 
 ** Recommendations

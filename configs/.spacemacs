@@ -97,12 +97,13 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages '(all-the-icons
                                       dockerfile-mode
                                       docker-compose-mode
+                                      ellama
                                       emacs-everywhere
                                       evil-easymotion
                                       evil-snipe
                                       fcitx
                                       jedi
-                                      shx-for-emacs
+                                      rg
                                       super-save
                                       wc-mode
                                       xclip
@@ -598,9 +599,10 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
   (setq configuration-layer-elpa-archives
     '(("melpa-cn"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-      ("nongnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/") ; org-contrib causes problems
-      ("org-cn"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
       ("gnu-cn"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+      ("nongnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+      ;; org-contrib causes problems
+      ;; ("org-cn"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
       ))
 
   ;; Evil collection
@@ -710,6 +712,7 @@ dump."
   ;; Spaces over tabs
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 2)
+  (setq dtrt-indent-global-mode t)
 
   ;; Display glyphless chars
   (update-glyphless-char-display 'glyphless-char-display-control
@@ -913,6 +916,30 @@ dump."
 
   )
 
+(defun mine/extra-emacs-config()
+  "Extra emacs config"
+
+  ;; We use a emacs daemon so probably there won't be any editing conflicts.
+  (setq create-lockfiles nil)
+
+  ;; Yeah
+  (setq pixel-scroll-precision-mode t)
+
+  )
+
+(defun mine/llama-config()
+  "Llama bindings"
+
+  (setq ellama-model "zephyr")
+  ;; Ellama key bindings
+  (spacemacs/declare-prefix "oo" "ollama-bindings")
+  (spacemacs/set-leader-keys "ooa" 'ellama-ask)
+  (spacemacs/set-leader-keys "ood" 'ellama-define-word)
+  (spacemacs/set-leader-keys "ooo" 'ellama-ask-about)
+  (spacemacs/set-leader-keys "oos" 'ellama-summarize)
+
+  )
+
 
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
@@ -921,19 +948,24 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
-  (mine/whitespace-config)
-  (mine/org-config)
-  (mine/evil-config)
-  (mine/fcitx-config)
+  ;; Not putting the line at the top seems to cause errors:
+  ;;   Selecting deleted buffer
   (mine/motion-config)
-  (mine/ibuffer-config)
-  (mine/font-config)
-  (mine/tramp-config)
-  (mine/wc-config)
+
   (mine/company-config)
   (mine/emacs-everywhere-config)
-  (mine/ledger-config)
+  (mine/evil-config)
+  (mine/extra-emacs-config)
+  (mine/fcitx-config)
+  (mine/font-config)
   (mine/git-config)
+  (mine/ibuffer-config)
+  (mine/ledger-config)
+  (mine/llama-config)
+  (mine/org-config)
+  (mine/tramp-config)
+  (mine/wc-config)
+  (mine/whitespace-config)
 
 )
 
