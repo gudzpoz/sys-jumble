@@ -139,3 +139,9 @@ alias rm='echo "This is not the command you are looking for."; false'
 if [ -f '/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' ]; then
     source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
+
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    if [ -z "$STY" ]; then
+        screen -RR
+    fi
+fi
