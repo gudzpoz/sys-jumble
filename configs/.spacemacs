@@ -103,6 +103,7 @@ This function should only modify configuration layer settings."
                                       evil-snipe
                                       fcitx
                                       jedi
+                                      mlscroll
                                       rg
                                       super-save
                                       wc-mode
@@ -779,9 +780,23 @@ dump."
   (xterm-mouse-mode -1)
   (xclip-mode 1)
 
+)
+
+(defun mine/mode-line-config ()
+  "Mode-line & scroll-bar configuration"
+
   ;; Diminish minor modes
   (spacemacs|diminish hybrid-mode " Ⓔ" " E")
   (spacemacs|diminish evil-snipe-local-mode " ⓢ" " s")
+  (spacemacs|diminish super-save-mode " ss" " ss")
+
+  ;; Turn off things in mode-line
+  (spaceline-toggle-buffer-size-off)
+  (spaceline-toggle-buffer-position-off)
+  (spaceline-toggle-purpose-off)
+  (spaceline-toggle-hud-off)
+  (setq mlscroll-right-align nil)
+  (scroll-bar-mode 1)
 
   )
 
@@ -880,8 +895,8 @@ dump."
 (defun mine/emacs-everywhere-config()
   "Emacs Everywhere"
 
-  (spacemacs/declare-prefix-for-minor-mode 'emacs-everywhere-mode "o" "custom")
-  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "oo" #'emacs-everywhere-finish-or-ctrl-c-ctrl-c)
+  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "," #'emacs-everywhere-finish)
+  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "." #'emacs-everywhere-abort)
 
   )
 
@@ -962,6 +977,7 @@ before packages are loaded."
   (mine/ibuffer-config)
   (mine/ledger-config)
   (mine/llama-config)
+  (mine/mode-line-config)
   (mine/org-config)
   (mine/tramp-config)
   (mine/wc-config)

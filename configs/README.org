@@ -16,6 +16,7 @@ All kinds of textual configuration files that can potentially get shared among m
   - ~ripgrep~ :: For [[https://github.com/dajva/rg.el][~rg.el~]] usages.
   - ~xclip~ :: For sharing clipboard with X system.
   - ~xdotool~, ~xprop~, ~xwininfo~ :: For the ~emacs-everywhere~ mode.
+  - ~xsel~ :: For ~xclipboard~.
 - Font Dependencies:
   - [[https://aur.archlinux.org/packages/ttf-all-the-icons][~ttf-all-the-icons~]] :: The icons needed by Spacemacs to display file type icons.
     (Otherwise you will need to run ~M-x all-the-icons-install-fonts~ yourself.)
