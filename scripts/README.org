@@ -18,3 +18,16 @@ It downloads to ~$HOME/.cache~ or ~$XDG_CACHE_HOME~ by default
 and cleans the directory up when there are too many downloaded images.
 
 Currently only XFCE is supported.
+
+* ~map-wacom-input.py~
+
+Maps Wacom pen movements with the stylus button down (mostly likely mapped to a mouse middle button)
+to mouse scrolling events.
+Probably only useful for devices without a dedicated scrolling button or panel.
+
+** Dependencies
+
+- ~python-pynput~
+- ~python-libevdev~
+- ~python-xlib~
+- ~libwacom-list-local-devices~
