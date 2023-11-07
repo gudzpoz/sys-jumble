@@ -740,7 +740,6 @@ dump."
   ;; Undo
   (setq evil-undo-system 'undo-tree)
   (setq undo-tree-auto-save-history nil)
-  (define-key evil-normal-state-map (kbd "C-r") 'isearch-backward)
   (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo)
 
   ;; Stop macro binding
@@ -779,6 +778,11 @@ dump."
   ;; No mouse in console, so as to enable using mouse to select-&-copy things.
   (xterm-mouse-mode -1)
   (xclip-mode 1)
+
+  ;; Replace Ctrl+S with helm-swoop
+  (global-set-key (kbd "C-s") 'helm-swoop)
+  (global-set-key (kbd "C-r") 'helm-swoop-back-to-last-point)
+  (define-key evil-normal-state-map (kbd "C-r") 'helm-swoop-back-to-last-point)
 
 )
 
@@ -834,6 +838,9 @@ dump."
   (define-key evil-motion-state-map (kbd "b") 'cns-backward-word)
   (define-key evil-visual-state-map (kbd "b") 'cns-backward-word)
   (define-key evil-operator-state-map (kbd "b") 'cns-backward-word)
+
+  (setq helm-ag-base-command "rg --no-heading --line-number --color never")
+  (setq helm-ag-success-exit-status '(0 2))
 
   )
 
