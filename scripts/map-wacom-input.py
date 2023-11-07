@@ -161,7 +161,7 @@ class WacomScroller:
                     np.float64
                 ) / self.config.scale
                 if np.abs(self.offset).max() > self.config.scroll_threshold:
-                    offset = self.offset
+                    offset = self.offset**3
                     self.mouse.scroll(-offset[0], offset[1])
                     self.offset = np.zeros(2)
                 self.last = self.pos.copy()
