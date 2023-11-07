@@ -55,6 +55,7 @@ See https://github.com/syl20bnr/spacemacs/issues/15896.
 
 ** Prerequisites
 
+- ~fzf~: For fuzzy matching.
 - ~oh-my-zsh~: In ~$HOME/.oh-my-zsh~.
 - ~screen~: Used when connecting with SSH.
 - ~zoxide~.

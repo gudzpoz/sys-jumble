@@ -55,7 +55,7 @@ ZSH_THEME='robbyrussell'
 # DISABLE_UNTRACKED_FILES_DIRTY='true'
 
 ## Plugins
-plugins=(git)
+plugins=(fzf git)
 
 # Enable oh-my-zsh
 source "$ZSH/oh-my-zsh.sh"
@@ -69,7 +69,28 @@ fi
 source "$ZNAP_INSTALL_DIR/znap/znap.zsh"
 
 # Enable zsh-autocomplete
+zstyle ':autocomplete:*complete*:*' insert-unambiguous yes
+zstyle ':autocomplete:*history*:*' insert-unambiguous yes
+zstyle ':autocomplete:menu-search:*' insert-unambiguous yes
 znap source marlonrichert/zsh-autocomplete
+## I have no idea why zsh-autocomplete messes up almost all forward/backward-char keys.
+### Ctrl+A, Ctrl+E
+bindkey -M menuselect '^A' .beginning-of-line
+bindkey -M menuselect '^E' .end-of-line
+### Ctrl+B, Ctrl+F
+bindkey -M menuselect '^B' .backward-char
+bindkey -M menuselect '^F' .forward-char
+### Left/right arrow keys
+bindkey -M menuselect '^[OD' .backward-char
+bindkey -M menuselect '^[OC' .forward-char
+### Alt+B, Alt+F
+bindkey -M menuselect '^[b' .backward-word
+bindkey -M menuselect '^[f' .forward-word
+### Ctrl+Left/right arrow keys
+bindkey -M menuselect '^[[1;5D' .backward-word
+bindkey -M menuselect '^[[1;5C' .forward-word
+## Insert unambiguous prefix only
+builtin zstyle ':completion:*' matcher-list '' 'm:{[:lower:]-}={[:upper:]_}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 # Zoxide
 export _ZO_ECHO=1
