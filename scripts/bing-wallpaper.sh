@@ -6,7 +6,7 @@ get_url() {
     NUMBER=1
     LOCATION="en-US"
     ROOT="https://www.bing.com"
-    API="${ROOT}/HPImageArchive.aspx?format=js&idx=${INDEX}&n=${NUMBER}&mkt=${LOCATION}"
+    API="${ROOT}/HPImageArchive.aspx?format=js&idx=${INDEX}&n=${NUMBER}&mkt=${LOCATION}&uhd=1&uhdwidth=4096&uhdheight=4096"
 
     JSON=$(curl "$API" | tr -d '[:space:]')
     PATH=$(echo "$JSON" | sed -e 's/^.\+"url":"//' -e 's/".\+$//')
