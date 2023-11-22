@@ -41,7 +41,7 @@ All kinds of textual configuration files that can potentially get shared among m
 ** Usage
 
 #+begin_src shell
-  ln -s absolute_path_to_this_file ~/.spacemacs
+  ln -s absolute_path_to_this_dir/.spacemacs ~/.spacemacs
   git clone git_url_of_spacemacs
 #+end_src
 
@@ -64,5 +64,31 @@ See https://github.com/syl20bnr/spacemacs/issues/15896.
 ** Usage
 
 #+begin_src shell
-  ln -s absolute_path_to_this_file ~/.zshrc
+  ln -s absolute_path_to_this_dir/.zshrc ~/.zshrc
+#+end_src
+
+* i3 + Picom (under Xfce)
+
+An opinionated i3 configuration.
+(It does not configure any panels since personally I use ~xfce4-panel~.
+
+** Prerequisites
+
+- ~i3~
+- ~picom~
+
+** Usage
+
+#+begin_src shell
+  ln -s absolute_path_to_this_dir/i3_config ~/.config/i3/config
+  ln -s absolute_path_to_this_dir/picom.conf ~/.config/picom.conf
+#+end_src
+
+** Xfce configuration
+
+#+begin_src shell
+  xfconf-query -c xfce4-session -p /sessions/Failsafe/Client0_Command -t string -sa "xfsettingsd"
+  xfconf-query -c xfce4-session -p /sessions/Failsafe/Client1_Command -t string -sa "i3"
+  # The fifth command is xfdesktop which we are not going to use.
+  xfconf-query -c xfce4-session -p /sessions/Failsafe/Count -t int -s 4
 #+end_src
