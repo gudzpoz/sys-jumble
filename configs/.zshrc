@@ -72,7 +72,13 @@ source "$ZNAP_INSTALL_DIR/znap/znap.zsh"
 zstyle ':autocomplete:*complete*:*' insert-unambiguous yes
 zstyle ':autocomplete:*history*:*' insert-unambiguous yes
 zstyle ':autocomplete:menu-search:*' insert-unambiguous yes
-znap source marlonrichert/zsh-autocomplete
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    if [ -z "$STY" ]; then
+        screen -RR
+    fi
+else
+    znap source marlonrichert/zsh-autocomplete
+fi
 ## I have no idea why zsh-autocomplete messes up almost all forward/backward-char keys.
 ### Ctrl+A, Ctrl+E
 bindkey -M menuselect '^A' .beginning-of-line
@@ -159,10 +165,4 @@ alias rm='echo "This is not the command you are looking for."; false'
 # Syntax highlighting
 if [ -f '/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' ]; then
     source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
-
-if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-    if [ -z "$STY" ]; then
-        screen -RR
-    fi
 fi
