@@ -74,8 +74,9 @@ An opinionated i3 configuration.
 
 ** Prerequisites
 
-- ~i3~
-- ~picom~
+- ~i3~: The window manager.
+- ~picom~: Compositor.
+- ~nitrogen~: Wallpaper.
 
 ** Usage
 
@@ -84,11 +85,41 @@ An opinionated i3 configuration.
   ln -s absolute_path_to_this_dir/picom.conf ~/.config/picom.conf
 #+end_src
 
-** Xfce configuration
+** Extra configuration
+
+*** Launch i3 from Xfce
 
 #+begin_src shell
   xfconf-query -c xfce4-session -p /sessions/Failsafe/Client0_Command -t string -sa "xfsettingsd"
   xfconf-query -c xfce4-session -p /sessions/Failsafe/Client1_Command -t string -sa "i3"
   # The fifth command is xfdesktop which we are not going to use.
   xfconf-query -c xfce4-session -p /sessions/Failsafe/Count -t int -s 4
+#+end_src
+
+** Remove gtk window border
+
+Getting a pixel-perfect scroll-bar is a luxury these days...
+(See also [[https://artemis.sh/2023/10/12/scrollbars.html][Scrollbars are becoming a problem]] ([[https://news.ycombinator.com/item?id=37864867][HN discussion]]).)
+And by "pixel-perfect" I mean that, for a window adjacent to screen edges,
+their scroll-bars should lie exactly next to the screen edge,
+with no annoying extra pixels demanding your exquisite cursor positioning.
+
+Anyway, to do so, you will need to remove all the borders that add to the offset of the scrollbars.
+See [[https://askubuntu.com/questions/61280/how-to-remove-the-resize-grip-in-gtk3-windows][How to remove the resize grip in gtk3 windows?]] and [[https://www.reddit.com/r/awesomewm/comments/u3237d/how_can_i_get_rid_of_these_borders_on_gkt_apps/][How can I get rid of these borders on gkt apps?]] for extra instructions on gtk2.
+
+For gtk3, add the following CSS to your ~$HOME/.config/gtk-3.0/gtk.css~ file:
+
+#+begin_src css
+  .window-frame {
+    box-shadow: 0 0 0 0;
+    margin: 0;
+  }
+  window decoration {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+  ,* {
+    -GtkWindow-resize-grip-default: false;
+  }
 #+end_src
