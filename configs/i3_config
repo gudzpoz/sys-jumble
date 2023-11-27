@@ -35,6 +35,12 @@ bindsym --release --border button2 kill
 bindsym --release --border button4 move scratchpad
 bindsym --release --border button5 scratchpad show
 
+# Window back and forth
+bindsym $mod+Tab [con_mark=_last_window] focus
+bindsym $mod+z [con_mark=_recent_window_0] focus
+bindsym $mod+x [con_mark=_recent_window_1] focus
+bindsym $mod+c [con_mark=_recent_window_2] focus
+
 # change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down
@@ -97,6 +103,9 @@ set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
+
+# Workspace back and forth
+workspace_auto_back_and_forth yes
 
 # switch to workspace
 bindsym $mod+1 workspace number $ws1

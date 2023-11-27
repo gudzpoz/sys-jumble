@@ -31,3 +31,17 @@ Probably only useful for devices without a dedicated scrolling button or panel.
 - ~python-libevdev~
 - ~python-xlib~
 - ~libwacom-list-local-devices~
+
+* ~i3_window_back_and_forth.py~
+
+Marks the most recently switched-to windows so that one can switch back to them
+quickly with self-defined ~i3~ shortcuts.
+
+** Dependencies
+
+- [[https://i3wm.org/][~i3wm~]] (and ~i3-msg~)
+- ~xorg-xprop~
+
+** Usage
+
+See [[file:../configs/i3_config][i3_config]] (search for ~con_mark~).
