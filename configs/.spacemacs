@@ -47,6 +47,7 @@ This function should only modify configuration layer settings."
           git-magit-status-fullscreen t)
      go
      helm
+     helpful
      html
      ibuffer
      java
@@ -107,9 +108,11 @@ This function should only modify configuration layer settings."
                                       jedi
                                       mlscroll
                                       rg
+                                      scratch
                                       super-save
                                       wc-mode
                                       xclip
+                                      zoxide
                                      )
 
    ;; A list of packages that cannot be updated.
@@ -268,7 +271,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-new-empty-buffer-major-mode 'text-mode
 
    ;; Default major mode of the scratch buffer (default `text-mode')
-   dotspacemacs-scratch-mode 'lisp-interaction-mode
+   dotspacemacs-scratch-mode 'org-mode
 
    ;; If non-nil, *scratch* buffer will be persistent. Things you write down in
    ;; *scratch* buffer will be saved and restored automatically.
@@ -276,7 +279,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, `kill-buffer' on *scratch* buffer
    ;; will bury it instead of killing.
-   dotspacemacs-scratch-buffer-unkillable nil
+   dotspacemacs-scratch-buffer-unkillable t
 
    ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
    ;; (default nil)
@@ -846,6 +849,15 @@ dump."
 
   )
 
+(defun lisp-scratch-buffer ()
+  "Scratch buffer in lisp mode"
+
+  (interactive)
+
+  (scratch 'lisp-interaction-mode)
+
+  )
+
 (defun mine/ibuffer-config ()
   "IBuffer config"
 
@@ -857,6 +869,12 @@ dump."
   (setq super-save-auto-save-when-idle t)
   (setq super-save-idle-duration 30)
   (super-save-mode +1)
+
+  ;; Original lisp-interaction-mode scratch buffer
+  (spacemacs/set-leader-keys "bS" 'lisp-scratch-buffer)
+
+  ;; Open files with zoxide
+  (spacemacs/set-leader-keys "fd" 'zoxide-find-file)
 
   )
 
