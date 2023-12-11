@@ -68,35 +68,23 @@ if [ ! -f "$ZNAP_INSTALL_DIR/znap/znap.zsh" ]; then
 fi
 source "$ZNAP_INSTALL_DIR/znap/znap.zsh"
 
-# Enable zsh-autocomplete
-zstyle ':autocomplete:*complete*:*' insert-unambiguous yes
-zstyle ':autocomplete:*history*:*' insert-unambiguous yes
-zstyle ':autocomplete:menu-search:*' insert-unambiguous yes
 if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
     if [ -z "$STY" ]; then
         screen -RR
     fi
-else
-    znap source marlonrichert/zsh-autocomplete
 fi
-## I have no idea why zsh-autocomplete messes up almost all forward/backward-char keys.
-### Ctrl+A, Ctrl+E
-bindkey -M menuselect '^A' .beginning-of-line
-bindkey -M menuselect '^E' .end-of-line
-### Ctrl+B, Ctrl+F
-bindkey -M menuselect '^B' .backward-char
-bindkey -M menuselect '^F' .forward-char
-### Left/right arrow keys
-bindkey -M menuselect '^[OD' .backward-char
-bindkey -M menuselect '^[OC' .forward-char
-### Alt+B, Alt+F
-bindkey -M menuselect '^[b' .backward-word
-bindkey -M menuselect '^[f' .forward-word
-### Ctrl+Left/right arrow keys
-bindkey -M menuselect '^[[1;5D' .backward-word
-bindkey -M menuselect '^[[1;5C' .forward-word
-## Insert unambiguous prefix only
-builtin zstyle ':completion:*' matcher-list '' 'm:{[:lower:]-}={[:upper:]_}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+## Completion settings
+zstyle ':completion:*' add-space true
+zstyle ':completion:*' completer _expand _complete _ignored _match _correct _approximate _prefix
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=** r:|=**' 'l:|=* r:|=*'
+zstyle ':completion:*' match-original both
+zstyle ':completion:*' max-errors 2
+zstyle ':completion:*' menu select=long
+zstyle ':completion:*' original true
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+autoload -Uz compinit
+compinit
 
 # Zoxide
 export _ZO_ECHO=1
