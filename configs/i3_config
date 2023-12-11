@@ -31,9 +31,11 @@ bindsym $mod+Shift+q kill
 #whenever middle mouse button is pushed on titlebar or border, close the window
 bindsym --release --border button2 kill
 
-# Simulate minimization with scratchpad
-bindsym --release --border button4 move scratchpad
-bindsym --release --border button5 scratchpad show
+# Scroll to switch windows
+bindsym --release --border button4 focus left
+bindsym --release --border button5 focus right
+# Right click to hide
+bindsym --release --border button3 move scratchpad
 
 # Window back and forth
 bindsym $mod+Tab [con_mark=_last_window] focus
@@ -78,6 +80,7 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
+bindsym $mod+Shift+w exec which i3_splitv_tab_layout.py && i3_splitv_tab_layout.py || true
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -184,6 +187,11 @@ hide_edge_borders vertical
 focus_follows_mouse no
 
 # Handle transparency
-exec_always picom
+exec picom
+# Mod+tab switching
+exec which i3_window_back_and_forth.py && i3_window_back_and_forth.py || true
 # Wallpaper
 exec_always nitrogen --restore
+
+# Initial window
+exec exo-open --launch TerminalEmulator

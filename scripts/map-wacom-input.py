@@ -4,6 +4,7 @@ import argparse
 import dataclasses
 import logging
 import subprocess
+import time
 import typing
 
 import numpy as np
@@ -22,17 +23,22 @@ logging.basicConfig(level=logging.INFO)
 
 def get_first_device(dev: typing.Optional[str] = None):
     if dev is None:
-        libwacom_list = subprocess.run(
-            [
-                "libwacom-list-local-devices",
-            ],
-            capture_output=True,
-        ).stdout.decode()
-        devices = [
-            line.strip()
-            for line in libwacom_list.split("\n")
-            if line.startswith("  - ") and "/dev/input" in line
-        ]
+        sleep_seconds = 1
+        devices = []
+        while len(devices) == 0:
+            time.sleep(sleep_seconds)
+            sleep_seconds = min(sleep_seconds * 2, 10 * 60)
+            libwacom_list = subprocess.run(
+                [
+                    "libwacom-list-local-devices",
+                ],
+                capture_output=True,
+            ).stdout.decode()
+            devices = [
+                line.strip()
+                for line in libwacom_list.split("\n")
+                if line.startswith("  - ") and "/dev/input" in line
+            ]
         dev = devices[0][2:].split(":")[0]
     _info("Registering %s", dev)
     return InputDevice(dev)
