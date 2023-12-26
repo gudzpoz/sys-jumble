@@ -25,8 +25,10 @@ class TabLayoutMaker:
         self.window_id_cache = {}
 
     @classmethod
-    def _send(cls, msg: str):
-        subprocess.run(["i3-msg", msg], stdout=subprocess.DEVNULL).check_returncode()
+    def _send(cls, *msg: str):
+        p = subprocess.run(["i3-msg"] + list(msg), capture_output=True)
+        p.check_returncode()
+        return p
 
     @classmethod
     def _for_each_child_node(cls, node: dict[str, typing.Any], f: typing.Callable[[dict[str, typing.Any]], None]):
@@ -37,10 +39,8 @@ class TabLayoutMaker:
             nodes.extend(node["nodes"])
 
     def _update_window_cache(self):
-        p = subprocess.run(["i3-msg", "-t", "get_tree"], capture_output=True)
-        p.check_returncode()
         self.window_id_cache = {}
-        tree = json.loads(p.stdout)
+        tree = json.loads(self._send("-t", "get_tree").stdout)
         workspace = -1
         def update(node):
             nonlocal self, workspace
@@ -63,7 +63,7 @@ class TabLayoutMaker:
             nonlocal children
             if isinstance(node["window"], int):
                 children.append(node)
-        self._for_each_child_node(self.window_id_cache[self.focused_workspace], append)
+        self._for_each_child_node(self.window_id_cache[window], append)
         return children
 
     def _get_parent(self, child: typing.Any):

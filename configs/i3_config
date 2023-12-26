@@ -74,7 +74,9 @@ bindsym $mod+slash split h
 bindsym $mod+minus split v
 
 # enter fullscreen mode for the focused container
-bindsym $mod+f fullscreen toggle
+popup_during_fullscreen leave_fullscreen
+bindsym $mod+Shift+f fullscreen toggle
+bindsym $mod+f exec which i3_maximize_window.py && i3_maximize_window.py || true
 
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking

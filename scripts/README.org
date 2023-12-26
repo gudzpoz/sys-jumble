@@ -32,10 +32,7 @@ Probably only useful for devices without a dedicated scrolling button or panel.
 - ~python-xlib~
 - ~libwacom-list-local-devices~
 
-* ~i3_window_back_and_forth.py~
-
-Marks the most recently switched-to windows so that one can switch back to them
-quickly with self-defined ~i3~ shortcuts.
+* i3 Scripts
 
 ** Dependencies
 
@@ -45,3 +42,18 @@ quickly with self-defined ~i3~ shortcuts.
 ** Usage
 
 See [[file:../configs/i3_config][i3_config]] (search for ~con_mark~).
+
+** Script List
+
+*** ~i3_window_back_and_forth.py~
+
+Marks the most recently switched-to windows so that one can switch back to them
+quickly with self-defined ~i3~ shortcuts.
+
+*** ~i3_splitv_tab_layout.py~
+
+Rearranges windows in the current workspace in a horizontally split container with each side tabbed.
+
+*** ~i3_maximize_window.py~
+
+Simulates maximizing a window by moving it to a new workspace.
