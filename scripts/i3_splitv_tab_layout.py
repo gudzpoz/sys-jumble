@@ -7,6 +7,8 @@ import re
 import subprocess
 import typing
 
+from i3_maximize_window import I3Kit
+
 _logger = logging.getLogger("i3_splitv_tab_layout")
 _debug = _logger.debug
 _info = _logger.info
@@ -15,80 +17,32 @@ _window_id_regex = re.compile("0x[\\dA-Fa-f]+")
 _temp_window_mark = "_i3_splitv_tab_layout_temp"
 
 
-class TabLayoutMaker:
-    focused_workspace: int
-
-    window_id_cache: dict[int, dict[str, typing.Any]]
-
+class TabLayoutMaker(I3Kit):
     def __init__(self):
-        self.focused_workspace = -1
-        self.window_id_cache = {}
-
-    @classmethod
-    def _send(cls, *msg: str):
-        p = subprocess.run(["i3-msg"] + list(msg), capture_output=True)
-        p.check_returncode()
-        return p
-
-    @classmethod
-    def _for_each_child_node(cls, node: dict[str, typing.Any], f: typing.Callable[[dict[str, typing.Any]], None]):
-        nodes = [node]
-        while len(nodes) > 0:
-            node = nodes.pop()
-            f(node)
-            nodes.extend(node["nodes"])
-
-    def _update_window_cache(self):
-        self.window_id_cache = {}
-        tree = json.loads(self._send("-t", "get_tree").stdout)
-        workspace = -1
-        def update(node):
-            nonlocal self, workspace
-            self.window_id_cache[node["id"]] = node
-            if node["type"] == "workspace":
-                workspace = node["id"]
-            if node["focused"]:
-                self.focused_workspace = workspace
-        self._for_each_child_node(tree, update)
+        super().__init__()
 
     def _mark_window(self, window: int):
         assert self.focused_workspace != -1
-        self._send(f"unmark {_temp_window_mark}")
-        self._send(f"unmark {_temp_window_mark}_tabbed")
-        self._send(f"[con_id={window}] mark --add {_temp_window_mark}")
-
-    def _get_all_children(self, window: int):
-        children = []
-        def append(node):
-            nonlocal children
-            if isinstance(node["window"], int):
-                children.append(node)
-        self._for_each_child_node(self.window_id_cache[window], append)
-        return children
-
-    def _get_parent(self, child: typing.Any):
-        for window in self.window_id_cache.values():
-            if any(node["id"] == child["id"] for node in window["nodes"]):
-                return window
-        return None
+        self.send(f"unmark {_temp_window_mark}")
+        self.send(f"unmark {_temp_window_mark}_tabbed")
+        self.send(f"[con_id={window}] mark --add {_temp_window_mark}")
 
     def _move_windows_to_new_tabs(self, windows: list[typing.Any], workspace: int):
-        self._send(f"[con_id={workspace}] split h")
-        self._send(f"[id={windows[0]['window']}] move window to mark {_temp_window_mark}")
-        self._send(f"[id={windows[0]['window']}] split v")
-        self._send(f"[id={windows[0]['window']}] layout tabbed")
-        self._update_window_cache()
-        parent = self._get_parent(windows[0])
+        self.send(f"[con_id={workspace}] split h")
+        self.send(f"[id={windows[0]['window']}] move window to mark {_temp_window_mark}")
+        self.send(f"[id={windows[0]['window']}] split v")
+        self.send(f"[id={windows[0]['window']}] layout tabbed")
+        self.update_window_cache()
+        parent = self.get_parent(windows[0]["id"])
         assert parent is not None
-        self._send(f"[con_id={parent['id']}] mark --add {_temp_window_mark}_tabbed")
+        self.send(f"[con_id={parent['id']}] mark --add {_temp_window_mark}_tabbed")
         for window in windows[1:]:
-            self._send(f"[id={window['window']}] move window to mark {_temp_window_mark}_tabbed")
+            self.send(f"[id={window['window']}] move window to mark {_temp_window_mark}_tabbed")
 
     def layout(self):
-        self._update_window_cache()
         workspace = self.focused_workspace
         self._mark_window(workspace)
-        children = self._get_all_children(workspace)
+        children = self.get_all_children(workspace)
         if len(children) < 2:
             return
         mid = len(children) // 2

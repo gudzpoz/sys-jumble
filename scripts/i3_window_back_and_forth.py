@@ -7,6 +7,8 @@ import re
 import subprocess
 import typing
 
+from i3_maximize_window import I3Kit
+
 _logger = logging.getLogger("i3_window_back_and_forth")
 _debug = _logger.debug
 _info = _logger.info
@@ -16,17 +18,15 @@ _last_window_mark = "_last_window"
 _recent_window_mark = "_recent_window"
 
 
-class ContinuousMarker:
+class ContinuousMarker(I3Kit):
     count: int
 
     windows: list[int]
 
-    window_id_cache: dict[int, dict[str, typing.Any]]
-
     def __init__(self, count: int):
+        super().__init__()
         self.count = count
         self.windows = []
-        self.window_id_cache = {}
         _info("will keep track of %d windows", count)
 
     @classmethod
@@ -39,32 +39,17 @@ class ContinuousMarker:
                 return wid
         return None
 
-    @classmethod
-    def _send(cls, msg: str):
-        subprocess.run(["i3-msg", msg], stdout=subprocess.DEVNULL).check_returncode()
-
-    def _update_window_id_cache(self):
-        p = subprocess.run(["i3-msg", "-t", "get_tree"], capture_output=True)
-        p.check_returncode()
-        self.window_id_cache = {}
-        tree = json.loads(p.stdout)
-        nodes = [tree]
-        while len(nodes) > 0:
-            node = nodes.pop()
-            self.window_id_cache[node["window"]] = node
-            nodes.extend(node["nodes"])
-
     def reorder(self):
         _debug("marking %s as recent windows", self.windows)
         for i in range(self.count):
-            self._send(f"unmark {_recent_window_mark}_{i}")
+            self.send(f"unmark {_recent_window_mark}_{i}")
         for i, wid in enumerate(self.windows):
-            self._send(f"[id={wid}] mark --add {_recent_window_mark}_{i}")
+            self.send(f"[id={wid}] mark --add {_recent_window_mark}_{i}")
 
     def mark_last(self, last: int):
         _debug("marking window %d as the last window (%s)", last, self.windows)
-        self._send(f"unmark {_last_window_mark}")
-        self._send(f"[id={last}] mark --add {_last_window_mark}")
+        self.send(f"unmark {_last_window_mark}")
+        self.send(f"[id={last}] mark --add {_last_window_mark}")
 
     def loop(self):
         stream = subprocess.Popen(["xprop", "-root", "-spy", "_NET_ACTIVE_WINDOW"], stdout=subprocess.PIPE)
@@ -73,13 +58,15 @@ class ContinuousMarker:
             if wid is None:
                 continue
 
-            self._update_window_id_cache()
+            self.update_window_cache()
+            window_id_map = dict((window["window"], window["id"]) for window in self.window_id_cache.values()
+                                 if window["window"] is not None)
 
             # Must be tiled window
-            if wid not in self.window_id_cache:
+            if wid not in window_id_map:
                 continue
 
-            self.windows = [wid for wid in self.windows if wid in self.window_id_cache]
+            self.windows = [wid for wid in self.windows if wid in window_id_map]
 
             last = self.windows[0] if len(self.windows) >= 1 else None
             if last is not None and last != wid:
