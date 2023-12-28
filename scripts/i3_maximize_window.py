@@ -95,13 +95,18 @@ class I3Kit:
             i += 1
         return i
 
-    def current_window(self):
-        windows = [window for window in self.window_id_cache.values()
-                   if window["focused"] and isinstance(window["window"], int)]
+    def current_container(self):
+        windows = [window for window in self.window_id_cache.values() if window["focused"]]
         if len(windows) == 1:
             return windows[0]
         else:
             return None
+
+    def current_window(self):
+        window = self.current_container()
+        if window is not None and isinstance(window["window"], int):
+            return window
+        return None
 
     def unmark_prefix(self, window: int, prefix: str):
         for mark in self.window_id_cache[window]["marks"]:
@@ -131,8 +136,8 @@ class Placeholder(I3Kit):
         box.place(anchor="c", relx=0.5, rely=0.5)
         box.grid()
         ttk.Button(box, text="Switch To Window", command=self.focus).grid(column=0, row=0)
-        ttk.Button(box, text="Close Placeholder Without Restoring Window", command=self.root.destroy).grid(column=0, row=0)
-        ttk.Button(box, text="Restore Window", command=self.restore).grid(column=0, row=1)
+        ttk.Button(box, text="Close Placeholder Without Restoring Window", command=self.root.destroy).grid(column=0, row=1)
+        ttk.Button(box, text="Restore Window", command=self.restore).grid(column=0, row=2)
         signal.signal(signal.SIGUSR1, lambda *_: self.set_closing())
         signal.signal(signal.SIGUSR2, lambda *_: self.focus())
         self.root.bind("<FocusIn>", self.onfocus)
@@ -156,7 +161,7 @@ class Placeholder(I3Kit):
             self.restore()
 
     def swap(self):
-        window = self.current_window()
+        window = self.current_container()
         if window is not None:
             self.tk_window = window["id"]
             self.send(f"[con_id={self.tk_window}] mark --add {_placeholder_mark}0_{os.getpid()}")
@@ -197,7 +202,7 @@ class Maximizer(I3Kit):
             self.placeholder(window)
 
     def maximize(self):
-        window = self.current_window()
+        window = self.current_container()
         workspace = self.current_workspace()
         if window is None:
             return

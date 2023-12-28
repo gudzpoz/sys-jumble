@@ -58,3 +58,22 @@ Rearranges windows in the current workspace in a horizontally split container wi
 *** ~i3_maximize_window.py~
 
 Simulates maximizing a window by moving it to a new workspace.
+
+**** Behaviors
+
+For example, if one binds =$mod+f= to ~i3_maximize_window.py~, they can then:
+
+- Press =$mod+f= to maximize the focused window / any focused container.
+
+  The script will create a placeholder window to "remember" to original position of the window / container.
+
+- Navigate freely and do literally anything they like to the layout.
+
+- Press =$mod+f= to restore the focused maximized window / container.
+
+  It is done by swapping the placeholder with the container.
+  (The placeholder is automatically closed after swapping or closing down the corresponding container.)
+
+- Close the placeholder window to keep the maximized layout.
+
+- Press =$mod+f= with the placeholder focused to switch to the corresponding maximized window.
