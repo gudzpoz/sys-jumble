@@ -37,7 +37,8 @@ Probably only useful for devices without a dedicated scrolling button or panel.
 ** Dependencies
 
 - [[https://i3wm.org/][~i3wm~]] (and ~i3-msg~)
-- ~xorg-xprop~
+- ~xorg-xprop~ (~i3_window_back_and_forth.py~)
+- ~tk~ (~i3_maximize_window.py~)
 
 ** Usage
 

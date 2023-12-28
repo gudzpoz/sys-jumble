@@ -3,7 +3,9 @@
 import argparse
 import json
 import logging
+import os
 import re
+import signal
 import subprocess
 import typing
 
@@ -45,6 +47,7 @@ class I3Kit:
             node = nodes.pop()
             f(node)
             nodes.extend(node["nodes"])
+            nodes.extend(node["floating_nodes"])
 
     def update_window_cache(self):
         self.window_id_cache = {}
@@ -110,34 +113,56 @@ class Placeholder(I3Kit):
     window: int
     tk_window: int
     restorable: bool
+    closing: bool
 
     def __init__(self, window: int):
         super().__init__()
         self.window = window
         self.tk_window = -1
         self.restorable = False
+        self.closing = False
         self.root = tkinter.Tk()
         self.root.title(self.window_id_cache[window].get("name", "[maximized]"))
-        ttk.Frame(self.root)
+        frame = ttk.Frame(self.root)
+        frame.pack(fill="both", expand=True)
+        frame.place(anchor="c", relx=0.5, rely=0.5)
+        box = ttk.Frame(frame)
+        box.pack(fill="both")
+        box.place(anchor="c", relx=0.5, rely=0.5)
+        box.grid()
+        ttk.Button(box, text="Switch To Window", command=self.focus).grid(column=0, row=0)
+        ttk.Button(box, text="Close Placeholder Without Restoring Window", command=self.root.destroy).grid(column=0, row=0)
+        ttk.Button(box, text="Restore Window", command=self.restore).grid(column=0, row=1)
+        signal.signal(signal.SIGUSR1, lambda *_: self.set_closing())
+        signal.signal(signal.SIGUSR2, lambda *_: self.focus())
         self.root.bind("<FocusIn>", self.onfocus)
+
+    def set_closing(self):
+        self.closing = True
+
+    def focus(self):
+        self.send(f"[con_id={self.window}] focus")
 
     def mainloop(self):
         self.root.mainloop()
 
     def onfocus(self, *_):
         self.update_window_cache()
-        if self.restorable:
-            self.restore()
-        else:
+        if self.window not in self.window_id_cache:
+            self.root.destroy()
+        elif not self.restorable:
             self.swap()
+        elif self.closing:
+            self.restore()
 
     def swap(self):
         window = self.current_window()
         if window is not None:
             self.tk_window = window["id"]
+            self.send(f"[con_id={self.tk_window}] mark --add {_placeholder_mark}0_{os.getpid()}")
             self.send(f"[con_id={self.tk_window}] swap container with con_id {self.window}")
             self.unmark_prefix(self.window, _placeholder_mark)
-            self.send(f"[con_id={self.window}] mark --add {_placeholder_mark}{self.tk_window}")
+            self.send(f"[con_id={self.window}] mark --add {_placeholder_mark}{self.tk_window}_{os.getpid()}")
             self.restorable = True
 
     def restore(self):
@@ -157,8 +182,19 @@ class Maximizer(I3Kit):
         window = self.window_id_cache[wid]
         empty_workspace = self.find_empty_workspace()
         self.send(f"workspace number {empty_workspace}")
-        p = Placeholder(wid)
-        p.mainloop()
+        Placeholder(wid).mainloop()
+
+    def notify_placeholder(self, window: int, marks: list[str]):
+        try:
+            for mark in [mark[len(_placeholder_mark):] for mark in marks if mark.startswith(_placeholder_mark)]:
+                wid, pid = map(int, mark.split("_"))
+                if wid == 0:
+                    os.kill(pid, signal.SIGUSR2)
+                else:
+                    os.kill(pid, signal.SIGUSR1)
+                    self.send(f"[con_id={wid}] focus")
+        except:
+            self.placeholder(window)
 
     def maximize(self):
         window = self.current_window()
@@ -167,9 +203,8 @@ class Maximizer(I3Kit):
             return
 
         if use_tk:
-            if self.is_maximized():
-                for wid in [mark[len(_placeholder_mark):] for mark in window["marks"] if mark.startswith(_placeholder_mark)]:
-                    self.send(f"[con_id={wid}] focus")
+            if self.is_maximized() or any(mark.startswith(_placeholder_mark) for mark in window["marks"]):
+                self.notify_placeholder(window["id"], window["marks"])
             else:
                 self.placeholder(window["id"])
             return
