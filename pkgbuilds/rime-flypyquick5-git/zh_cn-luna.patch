@@ -1,0 +1,129 @@
+diff --git a/flypy_luna.schema.yaml b/flypy_luna.schema.yaml
+index d228470..366eed5 100644
+--- a/flypy_luna.schema.yaml
++++ b/flypy_luna.schema.yaml
+@@ -3,13 +3,13 @@
+ 
+ schema:
+   schema_id: flypy_luna
+-  name: 小鶴雙拼/朙月字碼表
++  name: 小鹤双拼/朙月字码表
+   version: "0.0.5"
+   author:
+     - double pinyin layout by 鶴
+     - Rime schema by Jeff Chien <jeffchien13@gmail.com>
+   description: |
+-    朙月拼音＋小鶴雙拼方案。
++    朙月拼音＋小鹤双拼＋速成辅助码方案。
+   dependencies:
+     - bopomofo_tw
+     - cangjie5
+@@ -66,14 +66,12 @@ zh_hant_tw:
+ 
+ translator_bopomofo_tw:
+   tag: translator_bopomofo_tw
+-  dictionary: terra_pinyin
++  dictionary: luna_pinyin
+   enable_completion: true
+-  prism: bopomofo_tw
++  prism: double_pinyin_flypy
+   prefix: "`b"
+   suffix: "'"
+-  tips: 〔注音〕
+-  preedit_format:
+-    - "xlit|1qaz2wsxedcrfv5tgbyhnujm8ik,9ol.0p;/- 6347'|ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙㄧㄨㄩㄚㄛㄜㄝㄞㄟㄠㄡㄢㄣㄤㄥㄦˉˊˇˋ˙ |"
++  tips: 〔双拼仓颉〕
+ 
+ translator_cangjie5:
+   __include: cangjie5.schema:/translator
+@@ -85,7 +83,7 @@ translator_cangjie5:
+   encode_commit_history: false
+   prefix: "`c"
+   suffix: "'"
+-  tips: 〔倉頡〕
++  tips: 〔仓颉〕
+   comment_format: []
+ 
+ translator_cangjie5_phonetic:
+@@ -93,7 +91,7 @@ translator_cangjie5_phonetic:
+   tag: translator_cangjie5_phonetic
+   prefix: "`p"
+   suffix: "'"
+-  tips: 〔倉頡讀音〕
++  tips: 〔仓颉读音〕
+   comment_format: []
+ 
+ # this section add double pinyin symbols when query with bopomofo_tw
+@@ -131,38 +129,9 @@ reverse_lookup_flypy:
+ 
+ reverse_lookup_bopomofo:
+   tags: [translator_cangjie5_phonetic]
+-  dictionary: terra_pinyin
+-  prism: bopomofo_tw
++  dictionary: luna_pinyin
++  prism: double_pinyin_flypy
+   overwrite_comment: true # 覆蓋其他提示
+-  comment_format:
+-    - "xform/e?r5$/er5/"
+-    - "xform/iu/iou/"
+-    - "xform/ui/uei/"
+-    - "xform/ong/ung/"
+-    - "xform/yi?/i/"
+-    - "xform/wu?/u/"
+-    - "xform/iu/v/"
+-    - "xform/([jqx])u/$1v/"
+-    - "xform/([iuv])n/$1en/"
+-    - "xform/zh/Z/"
+-    - "xform/ch/C/"
+-    - "xform/sh/S/"
+-    - "xform/ai/A/"
+-    - "xform/ei/I/"
+-    - "xform/ao/O/"
+-    - "xform/ou/U/"
+-    - "xform/ang/K/"
+-    - "xform/eng/G/"
+-    - "xform/an/M/"
+-    - "xform/en/N/"
+-    - "xform/er/R/"
+-    - "xform/eh/E/"
+-    - "xform/([iv])e/$1E/"
+-    - "xform/1//"
+-    - "xlit|bpmfdtnlgkhjqxZCSrzcsiuvaoeEAIOUMNKGR2345|ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙㄧㄨㄩㄚㄛㄜㄝㄞㄟㄠㄡㄢㄣㄤㄥㄦˊˇˋ˙|"
+-    - "xform/ /} {/"
+-    - "xform/^/ {"
+-    - "xform/$/}/"
+ 
+ speller:
+   alphabet: zyxwvutsrqponmlkjihgfedcba
+@@ -320,9 +289,3 @@ recognizer:
+     translator_bopomofo_tw: "`b[-,.;/a-z0-9]*'?$"
+     translator_cangjie5: "`c[a-z]*'?$"
+     translator_cangjie5_phonetic: "`p[a-z]*'?$"
+-
+-editor:
+-  bindings:
+-    Return: confirm #使用 express_editor 時開啟
+-    KP_Enter: confirm #使用 express_editor 時開啟
+-    Shift+Return: commit_script_text # 輸入變換後上屏
+diff --git a/flypy_quick5.schema.yaml b/flypy_quick5.schema.yaml
+index af06c92..badaee3 100644
+--- a/flypy_quick5.schema.yaml
++++ b/flypy_quick5.schema.yaml
+@@ -41,14 +41,14 @@ translator:
+     __include: templates/quick5/comment_format
+   __patch:
+     preedit_format/+:
+-      __include: flypy_luna.schema:/templates/flypy_2_bopomofo/preedit_format
++      __include: flypy_luna.schema:/templates/flypy_2_luna/preedit_format
+ 
+ reverse_lookup_flypy:
+   tags: [translator_bopomofo_tw]
+   overwrite_comment: true
+-  dictionary: flypy_quick5
++  dictionary: cangjie5
+   comment_format:
+-    __include: templates/quick5/comment_format
++    __include: cangjie5.schema:/translator/preedit_format
+ 
+ __patch:
+   - flypy_quick5.custom:/patch?

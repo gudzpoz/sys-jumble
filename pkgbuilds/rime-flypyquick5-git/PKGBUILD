@@ -1,0 +1,49 @@
+# Maintainer: gudzpoz <gudzpoz@live.com>
+
+pkgname=rime-flypyquick5-git
+pkgver=r10.ac8a9e5
+pkgrel=1
+pkgdesc="小鶴雙拼的音碼+倉頡第五版速成的形碼的 Rime 繁體中文輸入方案"
+arch=('x86_64')
+url="https://github.com/JeffChien/rime-flypyquick5"
+license=('MIT')
+depends=('rime-bopomofo' 'rime-cangjie' 'rime-double-pinyin' 'rime-luna-pinyin')
+makedepends=('librime' 'python' 'rime-prelude' 'rime-essay')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=(
+    "${pkgname%-git}::git+https://github.com/JeffChien/rime-flypyquick5.git"
+    "zh_cn-luna.patch"
+)
+sha256sums=('SKIP'
+            'bf974929033dbbc10ccb8dabcffaa02d3d866f54f11d2f087a9980215e4e834a')
+
+pkgver() {
+    cd "$srcdir/${pkgname%-git}"
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
+}
+
+prepare() {
+    cd "$srcdir/${pkgname%-git}"
+    git restore flypy_luna.schema.yaml flypy_quick5.schema.yaml
+    sed -E "s/flypy_luna/flypy_terra/" flypy_luna.schema.yaml > flypy_terra.schema.yaml
+    git apply "$srcdir/zh_cn-luna.patch"
+    for _f in $(pacman -Qql rime-bopomofo rime-cangjie rime-double-pinyin rime-essay rime-luna-pinyin rime-prelude | grep -v "/$"); do
+        ln -sf $_f
+    done
+}
+
+build() {
+    cd "$srcdir/${pkgname%-git}"
+    for _s in $(ls flypy_*.schema.yaml); do
+        rime_deployer --compile $_s
+    done
+}
+
+package() {
+    cd "$srcdir/${pkgname%-git}"
+    find . -type l -delete
+    rm build/luna*
+    install -Dm644 *.yaml -t "$pkgdir"/usr/share/rime-data/
+    install -Dm644 build/* -t "$pkgdir"/usr/share/rime-data/build/
+}

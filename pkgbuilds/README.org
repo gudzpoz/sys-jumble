@@ -9,3 +9,6 @@ Use them from the AUR if you want.
 - ~emacs-chinese-word-segmentation-git~: Build script for [[https://github.com/kanglmf/emacs-chinese-word-segmentation/][emacs-chinese-word-segmentation]] that also pre-configures the library.
 - ~profile-sync-daemon-thunderbird~: Adds Thunderbird support for ~profile-sync-daemon~.
 - ~profile-sync-daemon-zotero~: Adds Zotero support for ~profile-sync-daemon~.
+- ~rime-flypyquick5-git~: Rime config modified from [[https://github.com/JeffChien/rime-flypyquick5][rime-flypyquick5]].
+- ~sarasa-term-sc-nerd-bin~: Font.
+- ~ttf-ms-win11-local~: Copies a folder of fonts.
