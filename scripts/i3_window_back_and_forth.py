@@ -12,6 +12,7 @@ from i3_maximize_window import I3Kit
 _logger = logging.getLogger("i3_window_back_and_forth")
 _debug = _logger.debug
 _info = _logger.info
+_warning = _logger.warning
 
 _window_id_regex = re.compile("0x[\\dA-Fa-f]+")
 _last_window_mark = "_last_window"
@@ -39,17 +40,27 @@ class ContinuousMarker(I3Kit):
                 return wid
         return None
 
+    def _title_of_window(self, wid: int):
+        windows = [window["title"] for window in self.window_id_cache.values() if window["window"] == wid]
+        return "<not found>" if len(windows) == 0 else windows[0]
+
     def reorder(self):
         _debug("marking %s as recent windows", self.windows)
         for i in range(self.count):
             self.send(f"unmark {_recent_window_mark}_{i}")
         for i, wid in enumerate(self.windows):
-            self.send(f"[id={wid}] mark --add {_recent_window_mark}_{i}")
+            try:
+                self.send(f"[id={wid}] mark --add {_recent_window_mark}_{i}")
+            except:
+                _warning(f"window {self._title_of_window(wid)} (id={wid}) closed already")
 
     def mark_last(self, last: int):
         _debug("marking window %d as the last window (%s)", last, self.windows)
         self.send(f"unmark {_last_window_mark}")
-        self.send(f"[id={last}] mark --add {_last_window_mark}")
+        try:
+            self.send(f"[id={last}] mark --add {_last_window_mark}")
+        except:
+            _warning(f"window {self._title_of_window(last)} (id={last}) closed already")
 
     def loop(self):
         stream = subprocess.Popen(["xprop", "-root", "-spy", "_NET_ACTIVE_WINDOW"], stdout=subprocess.PIPE)

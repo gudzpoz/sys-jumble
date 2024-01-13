@@ -18,8 +18,11 @@ _temp_window_mark = "_i3_splitv_tab_layout_temp"
 
 
 class TabLayoutMaker(I3Kit):
-    def __init__(self):
+    splits: int
+
+    def __init__(self, splits: int):
         super().__init__()
+        self.splits = splits
 
     def _mark_window(self, window: int):
         assert self.focused_workspace != -1
@@ -27,31 +30,36 @@ class TabLayoutMaker(I3Kit):
         self.send(f"unmark {_temp_window_mark}_tabbed")
         self.send(f"[con_id={window}] mark --add {_temp_window_mark}")
 
-    def _move_windows_to_new_tabs(self, windows: list[typing.Any], workspace: int):
-        self.send(f"[con_id={workspace}] split h")
-        self.send(f"[id={windows[0]['window']}] move window to mark {_temp_window_mark}")
-        self.send(f"[id={windows[0]['window']}] split v")
-        self.send(f"[id={windows[0]['window']}] layout tabbed")
-        self.update_window_cache()
-        parent = self.get_parent(windows[0]["id"])
-        assert parent is not None
-        self.send(f"[con_id={parent['id']}] mark --add {_temp_window_mark}_tabbed")
-        for window in windows[1:]:
-            self.send(f"[id={window['window']}] move window to mark {_temp_window_mark}_tabbed")
+    def _move_windows_to_new_tabs(self, windows: list[typing.Any], workspace: int) -> str:
+        prefix = f"""
+        unmark {_temp_window_mark}_tabbed;
+        [id={windows[0]['window']}] move window to mark {_temp_window_mark};
+        [id={windows[0]['window']}] split v;
+        [id={windows[0]['window']}] layout tabbed;
+        [id={windows[0]['window']}] mark {_temp_window_mark}_tabbed;
+        """
+        return prefix + ";\n".join(
+            f"[id={window['window']}] move window to mark {_temp_window_mark}_tabbed"
+            for window in windows[1:]
+        )
 
     def layout(self):
         workspace = self.focused_workspace
         self._mark_window(workspace)
         children = self.get_all_children(workspace)
-        if len(children) < 2:
+        if len(children) < self.splits:
             return
-        mid = len(children) // 2
-        A, B = children[:mid], children[mid:]
-        self._move_windows_to_new_tabs(A, workspace)
-        self._move_windows_to_new_tabs(B, workspace)
-
+        self.send(
+            f"[con_id={workspace}] split h;\n"
+            + ";\n".join(
+                self._move_windows_to_new_tabs(children[i::self.splits], workspace)
+                for i in range(self.splits)
+            )
+        )
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-
-    TabLayoutMaker().layout()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--splits", type=int, help="Horizontal pane count", default=2, required=False)
+    args = parser.parse_args()
+    TabLayoutMaker(args.splits).layout()
