@@ -34,6 +34,8 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '((auto-completion :disabled-for org)
      better-defaults
+     bibtex
+     cmake
      d
      debug
      dtrt-indent
@@ -61,6 +63,10 @@ This function should only modify configuration layer settings."
      multiple-cursors
      nginx
      (org :variables
+          org-enable-org-journal-support t
+          org-enable-roam-support t
+          org-enable-roam-ui t
+          org-enable-roam-protocol t
           org-enable-notifications t
           org-start-notification-daemon-on-startup t)
      php
@@ -98,6 +104,8 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(all-the-icons
+                                      (codegeex :location (recipe :fetcher url
+                                                                  :url "https://cdn.jsdelivr.net/gh/hzhangxyz/codegeex.el@main/codegeex.el"))
                                       dockerfile-mode
                                       docker-compose-mode
                                       ellama
@@ -107,6 +115,7 @@ This function should only modify configuration layer settings."
                                       fcitx
                                       jedi
                                       mlscroll
+                                      org-ql
                                       rg
                                       scratch
                                       super-save
@@ -643,6 +652,26 @@ dump."
   (setq org-pomodoro-clock-break t
         org-pomodoro-manual-break t)
 
+  ;; Org-journal
+  (setq org-journal-dir "~/Documents/Nutstore/Org-Mode/Journal")
+
+  ;; Org-roam
+  (setq org-roam-directory "~/Documents/Nutstore/Org-Mode/Roam")
+  (setq org-roam-database-connector 'sqlite-builtin)
+  (setq org-roam-capture-templates
+        '(("d" "default" plain
+           "%?"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
+           :unnarrowed t)))
+  (org-roam-db-autosync-mode)
+
+  ;; Don't prompt
+  (setq org-confirm-babel-evaluate
+        (lambda (&rest _) (not (string-prefix-p (expand-file-name "~/Documents/Nutstore/Org-Mode/") (buffer-file-name)))))
+
   ;; Org-mode
   ;; https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
   (setq org-inbox-file-path    "~/Documents/Nutstore/Org-Mode/GTD/inbox.org")
@@ -652,7 +681,7 @@ dump."
 
   (setq org-gtd-dir "~/Documents/Nutstore/Org-Mode/GTD")
 
-  (setq org-agenda-files (list org-gtd-dir))
+  (setq org-agenda-files (directory-files org-gtd-dir t ".*\\.org"))
 
   (setq org-capture-templates
         `(,`("i" "inbox" entry ,`(file ,org-inbox-file-path)
@@ -910,6 +939,8 @@ dump."
 (defun mine/company-config()
   "Company completion config"
 
+  (spacemacs/set-leader-keys "o\\" #'codegeex-buffer-completion)
+
   (setq company-dabbrev-downcase 0)
   (setq company-idle-delay 1)
 
@@ -1113,7 +1144,7 @@ This function is called at the very end of Spacemacs initialization."
  '(magit-todos-exclude-globs '(".git/" "*.map"))
  '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(package-selected-packages
-   '(typescript-mode company-web web-completion-data counsel-css emmet-mode helm-css-scss pug-mode sass-mode haml-mode scss-mode slim-mode tagedit web-mode docker-compose-mode dockerfile-mode yaml-mode protobuf-mode pip-requirements pipenv load-env-vars pippel poetry py-isort pydoc pyenv-mode pythonic pylookup pytest pyvenv sphinx-doc stickyfunc-enhance xcscope yapfify realgud test-simple loc-changes load-relative company-go flycheck-golangci-lint go-eldoc go-fill-struct go-gen-test go-guru go-impl go-rename go-tag go-mode godoctor wc-mode nginx-mode add-node-modules-path impatient-mode import-js grizzl js-doc js2-refactor multiple-cursors livid-mode nodejs-repl npm-mode prettier-js skewer-mode js2-mode simple-httpd tern web-beautify systemd journalctl-mode cargo counsel-gtags counsel swiper ivy dap-mode lsp-docker lsp-treemacs bui lsp-mode flycheck-rust ggtags helm-gtags racer pos-tip ron-mode rust-mode toml-mode evil-goggles vim-powerline mwim org-superstar nameless toc-org unfill evil-visual-mark-mode expand-region string-edit-at-point golden-ratio org-projectile hl-todo hide-comnt column-enforce-mode eshell-z gitignore-templates shell-pop dotenv-mode link-hint helm-purpose drag-stuff helm-company auto-dictionary holy-mode which-key symon auto-compile ace-link evil-iedit-state string-inflection helm-ls-git writeroom-mode evil-args macrostep ac-ispell editorconfig elisp-def ibuffer-projectile helm-make password-generator fancy-battery treemacs-magit evil-cleverparens info+ gh-md git-modes git-messenger xterm-color rainbow-delimiters fcitx evil-mc evil-anzu overseer org-rich-yank highlight-indentation helm-c-yasnippet define-word gnuplot htmlize smeargle flycheck-package helm-xref auto-highlight-symbol treemacs-projectile evil-tutor hybrid-mode markdown-toc indent-guide evil-lion fuzzy helm-ag helm-swoop org-download evil-snipe term-cursor volatile-highlights dumb-jump helm-mode-manager evil-indent-plus clean-aindent-mode space-doc quickrun evil-matchit git-link treemacs-persp helm-projectile evil-visualstar restart-emacs eval-sexp-fu ws-butler flycheck-elsa esh-help helm-org-rifle spacemacs-whitespace-cleanup helm-git-grep paradox help-fns+ evil-lisp-state vi-tilde-fringe highlight-parentheses helm-descbinds evil-textobj-line lorem-ipsum terminal-here dired-quick-sort multi-line org-present google-translate open-junk-file org-pomodoro multi-vterm flyspell-correct-helm devdocs evil-surround centered-cursor-mode yasnippet-snippets winum evil-evilified-state diminish org-mime emacs-everywhere spaceline-all-the-icons evil-collection undo-tree treemacs-icons-dired symbol-overlay spacemacs-purpose-popwin evil-escape flx-ido evil-numbers ace-jump-helm-line popwin evil-easymotion auto-yasnippet eshell-prompt-extras evil-nerd-commenter treemacs-evil emr evil-exchange eyebrowse org-cliplink multi-term aggressive-indent uuidgen texfrag evil-org org-alert orgit-forge request hungry-delete helm-themes mmm-mode elisp-slime-nav git-timemachine font-lock+ helm-org evil-unimpaired pcre2el highlight-numbers inspector))
+   '(typescript-mode company-web web-completion-data counsel-css emmet-mode helm-css-scss pug-mode sass-mode haml-mode scss-mode slim-mode tagedit web-mode docker-compose-mode dockerfile-mode yaml-mode protobuf-mode pip-requirements pipenv load-env-vars pippel poetry py-isort pydoc pyenv-mode pythonic pylookup pytest pyvenv sphinx-doc stickyfunc-enhance xcscope yapfify realgud test-simple loc-changes load-relative company-go flycheck-golangci-lint go-eldoc go-fill-struct go-gen-test go-guru go-impl go-rename go-tag go-mode godoctor wc-mode nginx-mode add-node-modules-path impatient-mode import-js grizzl js-doc js2-refactor multiple-cursors livid-mode nodejs-repl npm-mode prettier-js skewer-mode js2-mode simple-httpd tern web-beautify systemd journalctl-mode cargo counsel-gtags counsel swiper ivy dap-mode lsp-docker lsp-treemacs bui lsp-mode flycheck-rust ggtags helm-gtags racer pos-tip ron-mode rust-mode toml-mode evil-goggles vim-powerline mwim org-superstar nameless toc-org unfill evil-visual-mark-mode expand-region string-edit-at-point golden-ratio org-projectile hl-todo hide-comnt column-enforce-mode eshell-z gitignore-templates shell-pop dotenv-mode link-hint helm-purpose drag-stuff helm-company auto-dictionary holy-mode which-key symon auto-compile ace-link evil-iedit-state string-inflection helm-ls-git writeroom-mode evil-args macrostep ac-ispell editorconfig elisp-def ibuffer-projectile helm-make password-generator fancy-battery treemacs-magit evil-cleverparens info+ gh-md git-modes git-messenger xterm-color rainbow-delimiters fcitx evil-mc evil-anzu overseer org-rich-yank highlight-indentation helm-c-yasnippet define-word gnuplot htmlize smeargle flycheck-package helm-xref auto-highlight-symbol treemacs-projectile evil-tutor hybrid-mode markdown-toc indent-guide evil-lion fuzzy helm-swoop org-download evil-snipe term-cursor volatile-highlights dumb-jump helm-mode-manager evil-indent-plus clean-aindent-mode space-doc quickrun evil-matchit git-link treemacs-persp helm-projectile evil-visualstar restart-emacs eval-sexp-fu ws-butler flycheck-elsa esh-help helm-org-rifle spacemacs-whitespace-cleanup helm-git-grep paradox help-fns+ evil-lisp-state vi-tilde-fringe highlight-parentheses helm-descbinds evil-textobj-line lorem-ipsum terminal-here dired-quick-sort multi-line org-present google-translate open-junk-file org-pomodoro multi-vterm flyspell-correct-helm devdocs evil-surround centered-cursor-mode yasnippet-snippets winum evil-evilified-state diminish org-mime emacs-everywhere spaceline-all-the-icons evil-collection undo-tree treemacs-icons-dired symbol-overlay spacemacs-purpose-popwin evil-escape flx-ido evil-numbers ace-jump-helm-line popwin evil-easymotion auto-yasnippet eshell-prompt-extras evil-nerd-commenter treemacs-evil emr evil-exchange eyebrowse org-cliplink multi-term aggressive-indent uuidgen texfrag evil-org org-alert orgit-forge request hungry-delete helm-themes mmm-mode elisp-slime-nav git-timemachine font-lock+ helm-org evil-unimpaired pcre2el highlight-numbers inspector))
  '(rst-new-adornment-down t)
  '(rst-preferred-adornments
    '((35 over-and-under 1)
