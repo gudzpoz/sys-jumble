@@ -70,7 +70,7 @@ source "$ZNAP_INSTALL_DIR/znap/znap.zsh"
 
 if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
     if [ -z "$STY" ]; then
-        screen -RR
+        zellij attach || zellij
     fi
 fi
 ## Completion settings

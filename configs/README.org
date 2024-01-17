@@ -58,7 +58,7 @@ See https://github.com/syl20bnr/spacemacs/issues/15896.
 
 - ~fzf~: For fuzzy matching.
 - ~oh-my-zsh~: In ~$HOME/.oh-my-zsh~.
-- ~screen~: Used when connecting with SSH.
+- ~zellij~: Used when connecting with SSH.
 - ~zoxide~.
 - ~zsh-syntax-highlighting~.
 
