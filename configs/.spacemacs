@@ -804,10 +804,13 @@ dump."
     (define-key evil-motion-state-map (kbd "RET") nil)
     (define-key evil-motion-state-map (kbd "TAB") nil))
 
+  ;; Lisp parenthesis
+  (add-hook 'lisp-data-mode-hook #'evil-cleverparens-mode)
+
   ;; Info mode
-  (evil-define-key 'normal 'Info-mode-map
-    "<left>" 'Info-prev
-    "<right>" 'Info-next)
+  (evil-define-key 'normal Info-mode-map
+    (kbd "<left>") 'Info-prev
+    (kbd "<right>") 'Info-next)
 
   ;; No mouse in console, so as to enable using mouse to select-&-copy things.
   (xterm-mouse-mode -1)
@@ -940,6 +943,8 @@ dump."
   "Company completion config"
 
   (spacemacs/set-leader-keys "o\\" #'codegeex-buffer-completion)
+
+  (setq helm-move-to-line-cycle-in-source nil)
 
   (setq company-dabbrev-downcase 0)
   (setq company-idle-delay 1)
