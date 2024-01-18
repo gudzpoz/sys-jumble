@@ -75,6 +75,7 @@ This function should only modify configuration layer settings."
              python-backend 'lsp
              python-lsp-server 'pylsp)
      rust
+     (scheme :variables scheme-implementations '(chez guile racket))
      semantic
      (shell :variables
             shell-default-shell 'ansi-term
@@ -612,6 +613,9 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
+  ;; To capture bugs that are hard to capture
+  (setq debug-on-error t)
+
   (setq configuration-layer-elpa-archives
     '(("melpa-cn"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
       ("gnu-cn"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
@@ -836,6 +840,11 @@ dump."
   (spaceline-toggle-buffer-position-off)
   (spaceline-toggle-purpose-off)
   (spaceline-toggle-hud-off)
+
+  ;; Hint when debug mode / recursive editing is active
+  (unless (seq-contains-p global-mode-string "%[%]")
+    (add-to-list 'global-mode-string "%[%]"))
+
   (setq mlscroll-right-align nil)
   (scroll-bar-mode 1)
 
