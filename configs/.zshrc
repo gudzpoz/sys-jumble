@@ -69,8 +69,11 @@ fi
 source "$ZNAP_INSTALL_DIR/znap/znap.zsh"
 
 if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-    if [ -z "$STY" ]; then
-        zellij attach || zellij
+    if [ -z "$STY" ] && [ -z "$TMUX" ]; then
+        # Automatically attach to existing sessions
+        tmux attach || tmux
+        # Automatically exit
+        exit
     fi
 fi
 ## Completion settings
@@ -142,13 +145,15 @@ setopt extendedglob
 bindkey -e
 
 ## Aliases
-alias cp="cp -i"                          # confirm before overwriting something
+alias cp='cp -i'                          # confirm before overwriting something
 alias df='df -h'                          # human-readable sizes
 alias free='free -m'                      # show sizes in MB
 alias more=less
 
 ### alias for rm / prevent using rm in interacting command line
 alias rm='echo "This is not the command you are looking for."; false'
+alias rmi='/bin/rm -irv'
+alias tp='trash-put --verbose'
 
 # Syntax highlighting
 if [ -f '/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' ]; then

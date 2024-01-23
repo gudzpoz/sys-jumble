@@ -58,7 +58,8 @@ See https://github.com/syl20bnr/spacemacs/issues/15896.
 
 - ~fzf~: For fuzzy matching.
 - ~oh-my-zsh~: In ~$HOME/.oh-my-zsh~.
-- ~zellij~: Used when connecting with SSH.
+- ~tmux~: Used when connecting with SSH.
+- ~trash-cli~: For the ~alias tp=trash-put~ alias.
 - ~zoxide~.
 - ~zsh-syntax-highlighting~.
 
