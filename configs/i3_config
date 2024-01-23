@@ -31,9 +31,9 @@ bindsym $mod+Shift+q kill
 #whenever middle mouse button is pushed on titlebar or border, close the window
 bindsym --release --border button2 kill
 
-# Scroll to switch windows
-bindsym --release --border button4 focus left
-bindsym --release --border button5 focus right
+# Scroll to switch windows: It seems that i3 does that by default for tab containers.
+# bindsym --release --border button4 exec which i3_loop_window.py && i3_loop_window.py -1 || true
+# bindsym --release --border button5 exec which i3_loop_window.py && i3_loop_window.py +1 || true
 # Right click to hide
 bindsym --release --border button3 move scratchpad
 

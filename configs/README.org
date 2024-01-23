@@ -125,3 +125,19 @@ For gtk3, add the following CSS to your ~$HOME/.config/gtk-3.0/gtk.css~ file:
     -GtkWindow-resize-grip-default: false;
   }
 #+end_src
+
+For gtk4, see [[https://gitlab.com/sulincix/xnocsd][Xnocsd]]. In short, add the following to ~$HOME/.config/gtk-4.0/gtk.css~ file:
+
+#+begin_src css
+  headerbar,
+  csd,
+  csd-solid,
+  window,
+  decoration {
+    box-shadow: none;
+    padding: 0px;
+    margin: 0px;
+    border-radius: 0px;
+    border: none;
+  }
+#+end_src
