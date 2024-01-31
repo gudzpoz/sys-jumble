@@ -36,16 +36,6 @@ COMPLETION_WAITING_DOTS='true'
 zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 zstyle ':omz:update' frequency 15
 
-## No auto-title in Emacs shell
-if [ "$INSIDE_EMACS" != '' ]; then
-    DISABLE_AUTO_TITLE='true'
-
-    # Tracks current directory for helm, etc.
-    chpwd() { print -P "\033AnSiTc %d" }
-    print -P "\033AnSiTu %n"
-    print -P "\033AnSiTc %d"
-fi
-
 ## Theme
 ZSH_THEME='robbyrussell'
 
@@ -104,7 +94,26 @@ has_bin() {
         return 1
     fi
 }
-if has_bin emacsclient; then
+open_in_emacs() {
+    filename=$(echo -n "$1" | base64)
+    emacsclient --eval "(find-file (base64-decode-string \"${filename}\"))"
+}
+if [ "$INSIDE_EMACS" != '' ]; then
+    DISABLE_AUTO_TITLE='true'
+
+    # Tracks current directory for helm, etc.
+    chpwd() { print -P "\033AnSiTc %d" }
+    print -P "\033AnSiTu %n"
+    print -P "\033AnSiTc %d"
+
+    # Truecolor~
+    export TERM=xterm-direct
+
+    export EDITOR=vim
+    alias emacs=open_in_emacs
+    alias e=emacs
+    alias g='emacsclient --eval "(magit-status)"'
+elif has_bin emacsclient; then
     if has_bin vim; then
         export EDITOR='emacsclient -nw -a vim'
     elif has_bin nano; then

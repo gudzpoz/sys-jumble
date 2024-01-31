@@ -80,17 +80,20 @@ This function should only modify configuration layer settings."
              python-backend 'lsp
              python-lsp-server 'pylsp)
      rust
-     (scheme :variables scheme-implementations '(chez guile racket))
+     (scheme :variables scheme-implementations '(chez))
      semantic
      (shell :variables
             shell-default-shell 'ansi-term
             shell-default-term-shell "/bin/zsh"
             shell-default-height 30
             shell-default-position 'bottom)
+     spacemacs-visual
+     spacemacs-editing-visual
      spell-checking
      sql
      syntax-checking
      systemd
+     tabs
      treemacs
      typescript
      (unicode-fonts :variables
@@ -112,6 +115,8 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages '(all-the-icons
                                       (codegeex :location (recipe :fetcher url
                                                                   :url "https://cdn.jsdelivr.net/gh/hzhangxyz/codegeex.el@main/codegeex.el"))
+                                      (cp2k-mode :location (recipe :fetcher url
+                                                                   :url "https://cdn.jsdelivr.net/gh/gudzpoz/cp2k@emacs-package-headers/tools/input_editing/emacs/cp2k-mode.el"))
                                       dockerfile-mode
                                       docker-compose-mode
                                       ellama
@@ -794,6 +799,9 @@ dump."
   (define-key evil-normal-state-map (kbd "Q") 'evil-record-macro)
   (define-key evil-normal-state-map (kbd "q") nil)
 
+  ;; Closes window instead of quiting
+  (evil-ex-define-cmd "q[uit]" 'save-buffers-kill-terminal)
+
   ;; Snipe
   (evil-snipe-mode +1)
   (evil-snipe-override-mode +1)
@@ -926,6 +934,20 @@ dump."
 
   ;; Open files with zoxide
   (spacemacs/set-leader-keys "fd" 'zoxide-find-file)
+
+  ;; Centaur-tabs fixes
+  (setq centaur-tabs-set-bar 'under)
+  (defun centaur-tabs--daemon-mode (frame)
+    (unless (and (featurep 'centaur-tabs) (centaur-tabs-mode-on-p))
+      (run-at-time nil nil (lambda () (centaur-tabs-mode)))))
+  (when (daemonp)
+    (add-hook 'after-make-frame-functions #'centaur-tabs--daemon-mode))
+
+  ;; Persp fixes
+  (setq persp-old-state-put-fn persp-window-state-put-function)
+  (setq persp-window-state-put-function (lambda (pwc &optional frame rwin)
+                                          (when (display-graphic-p)
+                                            (funcall persp-old-state-put-fn pwc frame rwin))))
 
   )
 
@@ -1102,6 +1124,9 @@ dump."
   (spacemacs/declare-prefix "acf" "fediverse")
   (spacemacs/set-leader-keys "acfm" 'mastodon)
   (evil-set-initial-state 'mastodon-mode 'emacs)
+
+  ;; Geiser
+  (setq geiser-chez-binary "/usr/bin/chez")
 
   )
 
