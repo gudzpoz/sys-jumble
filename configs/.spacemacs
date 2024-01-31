@@ -32,7 +32,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '((auto-completion :disabled-for org)
+   '((auto-completion :variables auto-completion-idle-delay 0.0
+                      :disabled-for org)
      better-defaults
      bibtex
      cmake
@@ -781,6 +782,9 @@ dump."
   (define-key evil-visual-state-map (kbd "j") 'evil-next-visual-line)
   (define-key evil-visual-state-map (kbd "k") 'evil-previous-visual-line)
 
+  ;; Delete with modifying kill-ring
+  (define-key evil-normal-state-map (kbd "DEL") #'evil-delete-backward-char)
+
   ;; Undo
   (setq evil-undo-system 'undo-tree)
   (setq undo-tree-auto-save-history nil)
@@ -977,8 +981,8 @@ dump."
 (defun mine/emacs-everywhere-config()
   "Emacs Everywhere"
 
-  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "," #'emacs-everywhere-finish)
-  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "." #'emacs-everywhere-abort)
+  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "," #'emacs-everywhere-finish-or-ctrl-c-ctrl-c)
+  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "k" #'emacs-everywhere-abort)
 
   )
 
@@ -1021,6 +1025,39 @@ dump."
 
   ;; Yeah
   (setq pixel-scroll-precision-mode t)
+
+  ;; Strip text properties from history entries
+  (setq savehist-additional-plain-text-variables '(search-ring
+                                                   regexp-search-ring
+                                                   kill-ring))
+  (defun unpropertize-savehist-variables ()
+    (dolist (var (append savehist-additional-plain-text-variables savehist-minibuffer-history-variables))
+      (let ((value (and (boundp var) (symbol-value var))))
+        (when (and value (every (apply-partially #'eq 'string) (mapcar #'type-of value)))
+          (setf (symbol-value var) (mapcar #'substring-no-properties value))))))
+  (add-hook 'savehist-save-hook #'unpropertize-savehist-variables)
+
+  ;; More kill-ring contents
+  (setq kill-ring-max 1000)
+
+  ;; Use Emacs as a front-end to CopyQ
+  (defun copyq--query-clipboard-history (start count)
+    "Return the clipboard history as a vector of string."
+    (with-temp-buffer
+      (when (= 0 (call-process
+                  "copyq" nil (current-buffer) nil "eval"
+                  (format "'[' + [...Array(%d).keys()].map(i => JSON.stringify(str(read(%d + i)))).join(' ') + ']'"
+                          count start)))
+        (append (car (read-from-string (buffer-string))) nil))))
+  (defun copyq--sync-clipboard-with-kill-ring (&optional max-entries)
+    "Sync the copyq clipboard with the kill-ring."
+    (interactive "P")
+    (let* ((kill-ring-max-length (or max-entries 50))
+           (copyq-entries (copyq--query-clipboard-history 0 kill-ring-max-length))
+           (new-entry-index (cl-position (car kill-ring) copyq-entries :test #'equal))
+           (new-entries (butlast copyq-entries (- (length copyq-entries) (or new-entry-index (length copyq-entries))))))
+      (setq kill-ring (append new-entries kill-ring))))
+  (add-function :after after-focus-change-function #'copyq--sync-clipboard-with-kill-ring)
 
   )
 
