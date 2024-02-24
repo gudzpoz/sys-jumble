@@ -83,7 +83,7 @@ This function should only modify configuration layer settings."
      (scheme :variables scheme-implementations '(chez))
      semantic
      (shell :variables
-            shell-default-shell 'ansi-term
+            shell-default-shell 'eshell
             shell-default-term-shell "/bin/zsh"
             shell-default-height 30
             shell-default-position 'bottom)
@@ -141,7 +141,8 @@ This function should only modify configuration layer settings."
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(term-cursor ;; https://github.com/syl20bnr/spacemacs/issues/15667
+                                    )
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -805,10 +806,6 @@ dump."
   ;; Snipe
   (evil-snipe-mode +1)
   (evil-snipe-override-mode +1)
-  ;; Use f/F instead
-  (evil-define-key 'motion evil-snipe-override-local-mode-map
-    "f" 'evil-snipe-s
-    "F" 'evil-snipe-S)
   ;; I want s/S bindings back
   (define-key evil-normal-state-map (kbd "s") 'evil-substitute)
   (define-key evil-normal-state-map (kbd "S") 'evil-change-whole-line)
@@ -891,6 +888,7 @@ dump."
   (global-cns-mode)
   (when (featurep 'cns)
     (add-hook 'find-file-hook 'cns-auto-enable))
+  (add-hook 'term-mode-hook (lambda () (cns-mode -1)))
 
   ;; Chinese word segmentation
   (define-key evil-normal-state-map (kbd "w") 'cns-forward-word)
@@ -1128,6 +1126,9 @@ dump."
   ;; Geiser
   (setq geiser-chez-binary "/usr/bin/chez")
 
+  ;; Terminal-here
+  (setq terminal-here-linux-terminal-command 'xfce4-terminal)
+
   )
 
 
@@ -1272,7 +1273,14 @@ This function is called at the very end of Spacemacs initialization."
      (126 simple 0)
      (43 simple 0)
      (34 simple 0)
-     (46 simple 0))))
+     (46 simple 0)))
+ '(safe-local-variable-values
+   '((magit-todos-exclude-globs "*/build/*")
+     (typescript-backend . tide)
+     (typescript-backend . lsp)
+     (javascript-backend . tide)
+     (javascript-backend . tern)
+     (javascript-backend . lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
