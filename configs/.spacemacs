@@ -125,6 +125,7 @@ This function should only modify configuration layer settings."
                                       evil-easymotion
                                       evil-snipe
                                       fcitx
+                                      hnreader
                                       jedi
                                       mastodon
                                       mlscroll
@@ -915,8 +916,17 @@ dump."
 
   )
 
+(defun advice-prefix-repeat (func)
+  (advice-add
+   func
+   :around
+   (lambda (original &optional repeat)
+     (interactive "p")
+     (dotimes (i repeat)
+       (funcall original)))))
+
 (defun mine/ibuffer-config ()
-  "IBuffer config"
+  "IBuffer & buffer selector config"
 
   (add-hook 'ibuffer-mode-hook
             #'(lambda () (ibuffer-filter-by-visiting-file (current-buffer))))
@@ -940,6 +950,53 @@ dump."
       (run-at-time nil nil (lambda () (centaur-tabs-mode)))))
   (when (daemonp)
     (add-hook 'after-make-frame-functions #'centaur-tabs--daemon-mode))
+  ;; Customized grouping
+  (setq emacs-log-buffer-names
+        '("*Native-compile-Log*" "*Messages*" "*Compile-Log*" "*Async-native-compile-log*" "*Warnings*"))
+  (defun emacs-log-buffer-p (name)
+    (or (seq-contains-p emacs-log-buffer-names name)
+        (string-match-p "^\\*[A-Z][[:alnum:]\\-]+\\*$" name)))
+  (defun org-agenda-file-p (file)
+    (and file
+         (seq-find (apply-partially #'file-equal-p file) (org-agenda-files))))
+  (defun org-roam-file-p (file)
+    (and file org-roam-directory
+         (file-in-directory-p file org-roam-directory)))
+  (defun centaur-tabs-buffer-groups-custom-advice ()
+    (or (list
+         (cond
+          ((org-roam-file-p (buffer-file-name)) "OrgRoam")
+          ((org-agenda-file-p (buffer-file-name)) "OrgAgenda")
+          ((derived-mode-p 'org-mode) "OrgMode")
+          ((memq major-mode '(helpful-mode help-mode)) "Help")
+          ((memq major-mode '(Info-mode)) "Info")
+          ((string-prefix-p "*helm" (buffer-name)) "Helm")
+          ((or (derived-mode-p 'emacs-lisp-mode)
+               (derived-mode-p 'debugger-mode))
+           "Elisp")
+          ((memq major-mode '(magit-process-mode
+                              magit-status-mode
+                              magit-diff-mode
+                              magit-log-mode
+                              magit-file-mode
+                              magit-blob-mode
+                              magit-blame-mode
+                              ))
+           "Magit")
+          ((emacs-log-buffer-p (buffer-name)) "Emacs")
+          ((string-prefix-p "*" (buffer-name)) "Misc")))
+        (centaur-tabs-buffer-groups)
+        (list centaur-tabs-common-group-name)))
+  (setq centaur-tabs-buffer-groups-function #'centaur-tabs-buffer-groups-custom-advice)
+  (centaur-tabs-group-buffer-groups)
+  ;; Keybindings
+  (spacemacs/set-leader-keys "bg" #'centaur-tabs-group-by-projectile-project)
+  (spacemacs/set-leader-keys "bG" #'centaur-tabs-group-buffer-groups)
+  (spacemacs/set-leader-keys "bt" #'centaur-tabs-ace-jump)
+  (spacemacs/set-leader-keys "bT" #'centaur-tabs-switch-group)
+  ;; Modify things to accept prefix arguments
+  (advice-prefix-repeat 'spacemacs/tabs-forward)
+  (advice-prefix-repeat 'spacemacs/tabs-backward)
 
   ;; Persp fixes
   (setq persp-old-state-put-fn persp-window-state-put-function)
@@ -1125,6 +1182,9 @@ dump."
 
   ;; Geiser
   (setq geiser-chez-binary "/usr/bin/chez")
+
+  ;; Hacker News
+  (spacemacs/set-leader-keys "awh" #'hnreader-news)
 
   ;; Terminal-here
   (setq terminal-here-linux-terminal-command 'xfce4-terminal)
