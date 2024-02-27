@@ -629,6 +629,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
   ;; To capture bugs that are hard to capture
   (setq debug-on-error t)
+  (setq backtrace-on-redisplay-error t)
 
   (setq configuration-layer-elpa-archives
     '(("melpa-cn"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
@@ -766,6 +767,8 @@ dump."
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 2)
   (setq dtrt-indent-global-mode t)
+  ;; But not in lisp files since some libraries are indented with mixed spaces and tabs...
+  (add-hook 'emacs-lisp-mode-hook (lambda () (setq tab-width 8)))
 
   ;; Display glyphless chars
   (update-glyphless-char-display 'glyphless-char-display-control
@@ -1185,6 +1188,23 @@ dump."
 
   ;; Hacker News
   (spacemacs/set-leader-keys "awh" #'hnreader-news)
+  (defun eww-ext-img-for-hn (dom &optional url)
+    "Renders placeholder GIFs in Hacker News."
+    (when (equal (car shr-base) "https://news.ycombinator.com")
+      (let* ((tag (car dom))
+             (props (cadr dom))
+             (src (alist-get 'src props))
+             (width (string-to-number (or (alist-get 'width props) "0")))
+             (height (alist-get 'height props)))
+        (when (and (eq tag 'img)
+                   (equal src "s.gif")
+                   (equal height "1")
+                   (integerp width))
+          (dotimes (i (floor width 20))
+            (shr-insert "//")))))
+    (shr-tag-img dom url))
+  (setq shr-external-rendering-functions
+        '((img . eww-ext-img-for-hn)))
 
   ;; Terminal-here
   (setq terminal-here-linux-terminal-command 'xfce4-terminal)
