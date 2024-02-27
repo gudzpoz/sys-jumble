@@ -3,8 +3,10 @@
 import argparse
 import json
 import logging
+import os
 import re
 import subprocess
+import time
 import typing
 
 from i3_maximize_window import I3Kit
@@ -21,6 +23,8 @@ _recent_window_mark = "_recent_window"
 
 class ContinuousMarker(I3Kit):
     count: int
+
+    stream: int
 
     windows: list[int]
 
@@ -62,40 +66,55 @@ class ContinuousMarker(I3Kit):
         except:
             _warning(f"window {self._title_of_window(last)} (id={last}) closed already")
 
-    def loop(self):
+    def try_loop(self):
         stream = subprocess.Popen(["xprop", "-root", "-spy", "_NET_ACTIVE_WINDOW"], stdout=subprocess.PIPE)
-        for line in iter(stream.stdout.readline, ""):
-            wid = self._extract_id_from_spy_line(line.decode())
-            if wid is None:
-                continue
+        _info("listening to %s", stream)
+        try:
+            for line in iter(stream.stdout.readline, ""):
+                wid = self._extract_id_from_spy_line(line.decode())
+                if wid is None:
+                    continue
 
-            self.update_window_cache()
-            window_id_map = dict((window["window"], window["id"]) for window in self.window_id_cache.values()
-                                 if window["window"] is not None)
+                self.update_window_cache()
+                window_id_map = dict((window["window"], window["id"]) for window in self.window_id_cache.values()
+                                     if window["window"] is not None)
 
-            # Must be tiled window
-            if wid not in window_id_map:
-                continue
+                # Must be tiled window
+                if wid not in window_id_map:
+                    continue
 
-            self.windows = [wid for wid in self.windows if wid in window_id_map]
+                self.windows = [wid for wid in self.windows if wid in window_id_map]
 
-            last = self.windows[0] if len(self.windows) >= 1 else None
-            if last is not None and last != wid:
-                self.mark_last(last)
+                last = self.windows[0] if len(self.windows) >= 1 else None
+                if last is not None and last != wid:
+                    self.mark_last(last)
 
-            is_recent = wid in self.windows
-            if is_recent:
-                self.windows.remove(wid)
-            self.windows.insert(0, wid)
-            if not is_recent:
-                self.windows = self.windows[:self.count]
-                self.reorder()
+                is_recent = wid in self.windows
+                if is_recent:
+                    self.windows.remove(wid)
+                self.windows.insert(0, wid)
+                if not is_recent:
+                    self.windows = self.windows[:self.count]
+                    self.reorder()
+        finally:
+            stream.stdout.close()
 
-        popen.stdout.close()
+    def loop(self):
+        while True:
+            try:
+                self.try_loop()
+            except KeyboardInterrupt:
+                _info("quitting due to user interrupt...")
+                break
+            except Exception as e:
+                _warning("error captured: %s", e)
+            _info("pipe broken, retrying in 5 seconds...")
+            time.sleep(5)
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, filename="/tmp/i3_window_back_and_forth.log")
+    _info(f"pid: {os.getpid()}")
 
     parser = argparse.ArgumentParser(description="Marks recently focused windows to allow for convenient switching-to.")
     parser.add_argument("-c", "--count", help="The max number of recently focused windows to match.", required=False, default=3)
