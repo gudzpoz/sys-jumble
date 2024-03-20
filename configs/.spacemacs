@@ -77,6 +77,7 @@ This function should only modify configuration layer settings."
      php
      protobuf
      (python :variables
+             python-fill-column 120
              python-backend 'lsp
              python-lsp-server 'pylsp)
      rust
@@ -142,7 +143,11 @@ This function should only modify configuration layer settings."
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(term-cursor ;; https://github.com/syl20bnr/spacemacs/issues/15667
+   dotspacemacs-excluded-packages '(;; https://github.com/syl20bnr/spacemacs/issues/15667
+                                    term-cursor
+                                    ;; https://github.com/joaotavora/yasnippet/issues/114
+                                    ; yasnippet
+                                    ; auto-yasnippet
                                     )
 
    ;; Defines the behaviour of Spacemacs when installing packages.
@@ -715,7 +720,7 @@ dump."
                              ,`(,org-watchdog-file-path :level . 1)))
 
   ;; Avoid the situation when the cursor gets trapped after the ellipsis.
-  (add-hook 'org-tab-first-hook 'org-end-of-line)
+  (add-hook 'org-tab-first-hook (lambda () (when (org-fold-folded-p) (org-end-of-line))))
 
   ;; Wrap lines: We don't use org tables that often.
   (setq org-startup-truncated nil)
@@ -880,6 +885,12 @@ dump."
   (fcitx-aggressive-setup)
   (fcitx-prefix-keys-add "M-m")
 
+  (defun fcitx-disable-on-need ()
+    (when (fcitx--evil-should-disable-fcitx-p) (fcitx--deactivate)))
+  (add-hook 'isearch-mode-end-hook #'fcitx-disable-on-need)
+  (add-hook 'minibuffer-inactive-mode-hook #'fcitx-disable-on-need)
+
+
   )
 
 (defun mine/motion-config ()
@@ -925,7 +936,7 @@ dump."
    :around
    (lambda (original &optional repeat)
      (interactive "p")
-     (dotimes (i repeat)
+     (dotimes (_ repeat)
        (funcall original)))))
 
 (defun mine/ibuffer-config ()
@@ -946,13 +957,25 @@ dump."
   ;; Open files with zoxide
   (spacemacs/set-leader-keys "fd" 'zoxide-find-file)
 
+  ;; Persp fixes
+  (setq persp-old-state-put-fn persp-window-state-put-function)
+  (setq persp-window-state-put-function (lambda (pwc &optional frame rwin)
+                                          (when (display-graphic-p)
+                                            (funcall persp-old-state-put-fn pwc frame rwin))))
+
+  )
+
+(defun mine/centaur-tabs-config ()
+  "Centaur tabs config."
+
   ;; Centaur-tabs fixes
   (setq centaur-tabs-set-bar 'under)
-  (defun centaur-tabs--daemon-mode (frame)
+  (defun centaur-tabs--daemon-mode (_)
     (unless (and (featurep 'centaur-tabs) (centaur-tabs-mode-on-p))
       (run-at-time nil nil (lambda () (centaur-tabs-mode)))))
   (when (daemonp)
     (add-hook 'after-make-frame-functions #'centaur-tabs--daemon-mode))
+
   ;; Customized grouping
   (setq emacs-log-buffer-names
         '("*Native-compile-Log*" "*Messages*" "*Compile-Log*" "*Async-native-compile-log*" "*Warnings*"))
@@ -965,47 +988,61 @@ dump."
   (defun org-roam-file-p (file)
     (and file org-roam-directory
          (file-in-directory-p file org-roam-directory)))
-  (defun centaur-tabs-buffer-groups-custom-advice ()
-    (or (list
-         (cond
-          ((org-roam-file-p (buffer-file-name)) "OrgRoam")
-          ((org-agenda-file-p (buffer-file-name)) "OrgAgenda")
-          ((derived-mode-p 'org-mode) "OrgMode")
-          ((memq major-mode '(helpful-mode help-mode)) "Help")
-          ((memq major-mode '(Info-mode)) "Info")
-          ((string-prefix-p "*helm" (buffer-name)) "Helm")
-          ((or (derived-mode-p 'emacs-lisp-mode)
-               (derived-mode-p 'debugger-mode))
-           "Elisp")
-          ((memq major-mode '(magit-process-mode
-                              magit-status-mode
-                              magit-diff-mode
-                              magit-log-mode
-                              magit-file-mode
-                              magit-blob-mode
-                              magit-blame-mode
-                              ))
-           "Magit")
-          ((emacs-log-buffer-p (buffer-name)) "Emacs")
-          ((string-prefix-p "*" (buffer-name)) "Misc")))
-        (centaur-tabs-buffer-groups)
-        (list centaur-tabs-common-group-name)))
-  (setq centaur-tabs-buffer-groups-function #'centaur-tabs-buffer-groups-custom-advice)
-  (centaur-tabs-group-buffer-groups)
+  (defun centaur-tabs-ensure-tabsets (tabsets)
+    (let ((sets (remq nil tabsets)))
+      (or sets (list centaur-tabs-common-group-name))))
+  (defun centaur-tabs-buffer-groups-custom-advice (original)
+    (let ((group (cond
+                  ((org-roam-file-p (buffer-file-name)) "OrgRoam")
+                  ((org-agenda-file-p (buffer-file-name)) "OrgAgenda")
+                  ((derived-mode-p 'org-mode) "OrgMode")
+                  ((memq major-mode '(helpful-mode help-mode)) "Help")
+                  ((memq major-mode '(Info-mode)) "Info")
+                  ((string-prefix-p "*helm" (buffer-name)) "Helm")
+                  ((or (derived-mode-p 'emacs-lisp-mode)
+                       (derived-mode-p 'debugger-mode))
+                   "Elisp")
+                  ((memq major-mode '(magit-process-mode
+                                      magit-status-mode
+                                      magit-diff-mode
+                                      magit-log-mode
+                                      magit-file-mode
+                                      magit-blob-mode
+                                      magit-blame-mode
+                                      ))
+                   "Magit")
+                  ((emacs-log-buffer-p (buffer-name)) "Emacs")
+                  ((string-prefix-p "*" (buffer-name)) "Misc"))))
+      (centaur-tabs-ensure-tabsets
+       (if group
+           (list group)
+         (funcall original)))))
+  (advice-add 'centaur-tabs-buffer-groups :around #'centaur-tabs-buffer-groups-custom-advice)
+  (defun centaur-tabs-capture-error-and-restart (original)
+    (condition-case err
+        (funcall original)
+      (error
+       (message "centaur-tabs errs agains... (%s)" err)
+       (centaur-tabs-mode -1)
+       (run-at-time nil nil #'centaur-tabs-mode +1)
+       "")))
+  (advice-add 'centaur-tabs-line :around #'centaur-tabs-capture-error-and-restart)
+  (centaur-tabs-buffer-update-groups)
+
   ;; Keybindings
   (spacemacs/set-leader-keys "bg" #'centaur-tabs-group-by-projectile-project)
   (spacemacs/set-leader-keys "bG" #'centaur-tabs-group-buffer-groups)
   (spacemacs/set-leader-keys "bt" #'centaur-tabs-ace-jump)
   (spacemacs/set-leader-keys "bT" #'centaur-tabs-switch-group)
+
   ;; Modify things to accept prefix arguments
   (advice-prefix-repeat 'spacemacs/tabs-forward)
   (advice-prefix-repeat 'spacemacs/tabs-backward)
-
-  ;; Persp fixes
-  (setq persp-old-state-put-fn persp-window-state-put-function)
-  (setq persp-window-state-put-function (lambda (pwc &optional frame rwin)
-                                          (when (display-graphic-p)
-                                            (funcall persp-old-state-put-fn pwc frame rwin))))
+  (defun centaur-tabs-close-all-tabs ()
+    (interactive)
+    (dolist (buffer (centaur-tabs-tab-values (centaur-tabs-current-tabset)))
+      (with-current-buffer buffer (spacemacs/kill-this-buffer))))
+  (spacemacs/set-leader-keys "bC" #'centaur-tabs-close-all-tabs)
 
   )
 
@@ -1054,18 +1091,24 @@ dump."
   (require 'helm-command)
 
   ;; Temporarily fixes: https://github.com/org-roam/org-roam/issues/2406
-  (setq org-roam-ref-annotation-function (lambda (s) ""))
+  (setq org-roam-ref-annotation-function (lambda (_) ""))
+
+  (setq lsp-java-server-install-dir "/usr/share/java/jdtls/")
+  (setq lsp-signature-doc-lines 3)
 
   )
 
+(declare-function emacs-everywhere-abort "emacs-everywhere" ())
+(declare-function emacs-everywhere--finish-or-ctrl-c-ctrl-c "emacs-everywhere" ())
 (defun mine/emacs-everywhere-config()
   "Emacs Everywhere"
 
-  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "," #'emacs-everywhere-finish-or-ctrl-c-ctrl-c)
+  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "," #'emacs-everywhere--finish-or-ctrl-c-ctrl-c)
   (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "k" #'emacs-everywhere-abort)
 
   )
 
+(declare-function ledger-report "ledger-report" (report-name edit))
 (defun ledger-monthly-report()
   "Report monthly expenses"
 
@@ -1113,7 +1156,7 @@ dump."
   (defun unpropertize-savehist-variables ()
     (dolist (var (append savehist-additional-plain-text-variables savehist-minibuffer-history-variables))
       (let ((value (and (boundp var) (symbol-value var))))
-        (when (and value (every (apply-partially #'eq 'string) (mapcar #'type-of value)))
+        (when (and value (cl-every (apply-partially #'eq 'string) (mapcar #'type-of value)))
           (setf (symbol-value var) (mapcar #'substring-no-properties value))))))
   (add-hook 'savehist-save-hook #'unpropertize-savehist-variables)
 
@@ -1155,7 +1198,8 @@ dump."
   )
 
 (defun read-mastodon-compat-info()
-  "Read Mastodon instance info from `auth-sources' so as to avoid exposing them in config files."
+  "Read Mastodon instance info from `auth-sources'
+so as to avoid exposing them in config files."
 
   (let* ((auth (car (auth-source-search :port "mastodon" :max 1)))
          (host (plist-get auth :host))
@@ -1200,7 +1244,7 @@ dump."
                    (equal src "s.gif")
                    (equal height "1")
                    (integerp width))
-          (dotimes (i (floor width 20))
+          (dotimes (_ (floor width 20))
             (shr-insert "//")))))
     (shr-tag-img dom url))
   (setq shr-external-rendering-functions
@@ -1224,6 +1268,7 @@ before packages are loaded."
   (mine/motion-config)
 
   (mine/app-config)
+  (mine/centaur-tabs-config)
   (mine/completion-config)
   (mine/emacs-everywhere-config)
   (mine/evil-config)
@@ -1340,6 +1385,7 @@ This function is called at the very end of Spacemacs initialization."
      (tramp-connection-local-default-system-profile
       (path-separator . ":")
       (null-device . "/dev/null"))))
+ '(lsp-pylsp-plugins-flake8-max-line-length 120)
  '(magit-todos-exclude-globs '(".git/" "*.map"))
  '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(package-selected-packages
