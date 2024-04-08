@@ -9,39 +9,34 @@ import typing
 
 from i3_maximize_window import I3Kit
 
-_logger = logging.getLogger("i3_splitv_tab_layout")
-_debug = _logger.debug
-_info = _logger.info
-
-_window_id_regex = re.compile("0x[\\dA-Fa-f]+")
-_temp_window_mark = "_i3_splitv_tab_layout_temp"
-
 
 class TabLayoutMaker(I3Kit):
     splits: int
+    mark: str
 
-    def __init__(self, splits: int):
+    def __init__(self, splits: int, mark: str = "_i3_splitv_tab_layout_temp"):
         super().__init__()
         self.splits = splits
+        self.mark = mark
 
     def _mark_window(self, window: int):
         assert self.focused_workspace != -1
-        self.send(f"unmark {_temp_window_mark}")
-        self.send(f"unmark {_temp_window_mark}_tabbed")
-        self.send(f"[con_id={window}] mark --add {_temp_window_mark}")
+        self.send(f"unmark {self.mark}")
+        self.send(f"unmark {self.mark}_tabbed")
+        self.send(f"[con_id={window}] mark --add {self.mark}")
 
     def _move_windows_to_new_tabs(self, windows: list[typing.Any], workspace: int) -> str:
         prefix = f"""
-        unmark {_temp_window_mark}_tabbed;
-        [id={windows[0]['window']}] move window to mark {_temp_window_mark};
+        unmark {self.mark}_tabbed;
+        [id={windows[0]['window']}] move window to mark {self.mark};
         [id={windows[0]['window']}] split v;
         [id={windows[0]['window']}] layout tabbed;
-        [id={windows[0]['window']}] mark {_temp_window_mark}_tabbed;
+        [id={windows[0]['window']}] mark {self.mark}_tabbed;
         """
         return prefix + ";\n".join(
-            f"[id={window['window']}] move window to mark {_temp_window_mark}_tabbed"
-            for window in windows[1:]
-        )
+            f"[id={window['window']}] move window to mark {self.mark}_tabbed"
+            for window in windows[-1:0:-1]
+        ) + f";\nunmark {self.mark}_tabbed"
 
     def layout(self):
         workspace = self.focused_workspace

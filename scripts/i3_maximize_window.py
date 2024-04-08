@@ -1,10 +1,8 @@
 #!/bin/python3
 
-import argparse
 import json
 import logging
 import os
-import re
 import signal
 import subprocess
 import typing
@@ -130,10 +128,10 @@ class Placeholder(I3Kit):
         self.root.title(self.window_id_cache[window].get("name", "[maximized]"))
         frame = ttk.Frame(self.root)
         frame.pack(fill="both", expand=True)
-        frame.place(anchor="c", relx=0.5, rely=0.5)
+        frame.place(anchor="center", relx=0.5, rely=0.5)
         box = ttk.Frame(frame)
         box.pack(fill="both")
-        box.place(anchor="c", relx=0.5, rely=0.5)
+        box.place(anchor="center", relx=0.5, rely=0.5)
         box.grid()
         ttk.Button(box, text="Switch To Window", command=self.focus).grid(column=0, row=0)
         ttk.Button(box, text="Close Placeholder Without Restoring Window", command=self.root.destroy).grid(column=0, row=1)

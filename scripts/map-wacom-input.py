@@ -195,7 +195,7 @@ parser.add_argument(
     "--block-list",
     type=str,
     help="The appliction keywords to not use scrolling maping (comma separated)",
-    default="gimp,krita,pdf",
+    default="gimp,krita,pdf,xournal",
 )
 parser.add_argument(
     "--allow-list",
