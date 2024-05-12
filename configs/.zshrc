@@ -5,6 +5,7 @@ ZNAP_INSTALL_DIR="${ZNAP_INSTALL_DIR:-$HOME/Workspaces/clones}"
 LOCAL_PROXY_PORT="${LOCAL_PROXY_PORT:-}"
 
 # Environment Variables
+[ -d "$HOME/.luarocks/bin" ] && export PATH="$HOME/.luarocks/bin:$PATH"
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
 
 ## Optional conda
@@ -98,6 +99,13 @@ open_in_emacs() {
     filename=$(echo -n "$1" | base64)
     emacsclient --eval "(find-file (base64-decode-string \"${filename}\"))"
 }
+checked_sudo() {
+    if [ "$1" == 'vim' ]; then
+        open_in_emacs "/sudo::$2"
+    else
+        \sudo "$@"
+    fi
+}
 if [ "$INSIDE_EMACS" != '' ]; then
     DISABLE_AUTO_TITLE='true'
 
@@ -158,6 +166,7 @@ alias cp='cp -i'                          # confirm before overwriting something
 alias df='df -h'                          # human-readable sizes
 alias free='free -m'                      # show sizes in MB
 alias more=less
+alias pacman-Rs='sudo pacman -Rs'
 
 ### alias for rm / prevent using rm in interacting command line
 alias rm='echo "This is not the command you are looking for."; false'
@@ -167,4 +176,9 @@ alias tp='trash-put --verbose'
 # Syntax highlighting
 if [ -f '/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' ]; then
     source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
+
+# NVM
+if [ -f '/usr/share/nvm/init-nvm.sh' ]; then
+    source /usr/share/nvm/init-nvm.sh
 fi
