@@ -80,6 +80,7 @@ This function should only modify configuration layer settings."
              python-fill-column 120
              python-backend 'lsp
              python-lsp-server 'pylsp)
+     restclient
      rust
      (scheme :variables scheme-implementations '(chez))
      semantic
@@ -90,7 +91,7 @@ This function should only modify configuration layer settings."
             shell-default-position 'bottom)
      spacemacs-visual
      spacemacs-editing-visual
-     spell-checking
+     (spell-checking :variables spell-checking-enable-by-default nil)
      sql
      syntax-checking
      systemd
@@ -1060,6 +1061,12 @@ dump."
   "Tramp configuration"
 
   (setq password-cache-expiry nil)
+
+  ;; Disable network-intensive modes
+  (setq lsp-auto-register-remote-clients nil)
+
+  (setq tramp-verbose 10)
+  (setq tramp-ssh-controlmaster-options "")
 
   )
 

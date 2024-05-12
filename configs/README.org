@@ -40,6 +40,7 @@ All kinds of textual configuration files that can potentially get shared among m
 - Set up [[https://github.com/tecosaur/emacs-everywhere][~emacs-everywhere~]] by binding a shortcut to calling ~emacsclient -c --eval '(emacs-everywhere)'~.
 - Set up a shortcut to capture new org-mode to-do items (~emacsclient -c -e '(org-capture)'~).
 - Put your projects under ~~/Workspaces~ (or else change the paths listed in ~mine/git-config~ in the ~.spacemacs~ config).
+- Configure a [[https://orgmode.org/worg/org-contrib/org-protocol.html][~org-protocol~]] handler (possibly via Arch Linux AUR package ~org-protocol-emacsclient~).
 
 ** Usage
 
