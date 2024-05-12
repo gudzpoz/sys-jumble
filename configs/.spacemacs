@@ -967,6 +967,11 @@ dump."
                                           (when (display-graphic-p)
                                             (funcall persp-old-state-put-fn pwc frame rwin))))
 
+  ;; Convenient shortcut for `other-window'
+  (define-key global-map (kbd "M-o") #'other-window)
+  (define-key evil-normal-state-map (kbd "M-o") #'other-window)
+  (evil-define-key 'normal evil-cleverparens-mode-map (kbd "M-o") nil)
+
   )
 
 (defun mine/centaur-tabs-config ()
