@@ -648,6 +648,11 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   ;; Evil collection
   (setq evil-want-keybinding nil)
 
+  ;; Putting the initialization in user-config seems to cause errors:
+  ;;   Selecting deleted buffer
+  (require 'cns nil t)
+  (global-cns-mode)
+
 )
 
 
@@ -900,11 +905,9 @@ dump."
   ;; Chinese word segmentation
   (setq cns-recent-segmentation-limit 20)
   (setq cns-debug nil)
-  (require 'cns nil t)
-  (global-cns-mode)
   (when (featurep 'cns)
-    (add-hook 'find-file-hook 'cns-auto-enable))
-  (add-hook 'term-mode-hook (lambda () (cns-mode -1)))
+    (add-hook 'find-file-hook 'cns-auto-enable)
+    (add-hook 'term-mode-hook (lambda () (cns-mode -1))))
 
   ;; Chinese word segmentation
   (define-key evil-normal-state-map (kbd "w") 'cns-forward-word)
@@ -1095,8 +1098,6 @@ dump."
 
   (setq lsp-pyls-plugins-pycodestyle-enabled nil)
 
-  (require 'helm-command)
-
   ;; Temporarily fixes: https://github.com/org-roam/org-roam/issues/2406
   (setq org-roam-ref-annotation-function (lambda (_) ""))
 
@@ -1270,10 +1271,6 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
-  ;; Not putting the line at the top seems to cause errors:
-  ;;   Selecting deleted buffer
-  (mine/motion-config)
-
   (mine/app-config)
   (mine/centaur-tabs-config)
   (mine/completion-config)
@@ -1287,6 +1284,7 @@ before packages are loaded."
   (mine/ledger-config)
   (mine/llama-config)
   (mine/mode-line-config)
+  (mine/motion-config)
   (mine/org-config)
   (mine/tramp-config)
   (mine/wc-config)
