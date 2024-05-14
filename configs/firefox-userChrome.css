@@ -1,0 +1,91 @@
+/* Hide horizontal tabbar */
+#main-window #TabsToolbar {
+    visibility: collapse;
+}
+
+/* Preserve space for the collapsed sidebar */
+#appcontent {
+    margin-left: 40px !important;
+}
+
+/* Enable absolute position for the sidebar */
+#browser {
+    position: relative;
+}
+
+/* Collapse in default state and add transition */
+#sidebar-box {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    transition: all 0.3s ease;
+    border-right: 1px solid #0c0c0d;
+    z-index: 3;
+}
+
+/* Expand to 260px on hover, floating over the web page */
+#sidebar-box:hover, #sidebar-box #sidebar {
+    min-width: 260px !important;
+    max-width: 260px !important;
+    z-index: 2;
+}
+
+/* Don't display the sidebar splitter */
+#sidebar-box + #sidebar-splitter {
+    display: none !important;
+}
+
+/* Slight padding to not show text when collapsed */
+#sidebar-box #sidebar-header #sidebar-switcher-target #sidebar-icon {
+    margin-right: 2px;
+}
+
+/* Recommended settings for Tree Style Tab:
+
+- Put the side bar on the left side,
+- Set "Style of contents..." to "Left side" (and remember to use middle click to close tabs)
+- Set "Double-click on a tab" to "Collapse/expand tree"
+- User Style Sheet:
+
+/* Show title of unread tabs with red and italic font * /
+:root.sidebar tab-item.unread .label-content {
+    color: red !important;
+    font-style: italic !important;
+}
+
+/* Add private browsing indicator per tab * /
+:root.sidebar tab-item.private-browsing tab-label:before {
+    content: "🕶";
+}
+
+/* Remove indentation and add tab level indicator * /
+tab-item[data-level] {
+    --level-marker-width: 0px;
+}
+tab-item[data-level] tab-item-substance {
+    margin-left: 0 !important;
+    border-left: var(--level-marker-width) solid white;
+}
+tab-item[data-level][data-level="1"] {
+    --level-marker-width: 1px;
+}
+tab-item[data-level][data-level="2"] {
+    --level-marker-width: 2px;
+}
+tab-item[data-level][data-level="3"] {
+    --level-marker-width: 3px;
+}
+
+/* Put container labels to the left side * /
+.contextual-identity-marker {
+    top: auto !important;
+    bottom: auto !important;
+    left: 1px;
+    width: 2px !important;
+    height: calc(var(--favicon-size) * 2) !important;
+}
+ */
