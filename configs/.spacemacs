@@ -697,6 +697,9 @@ dump."
            :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
            :unnarrowed t)))
   (org-roam-db-autosync-mode)
+  ;; Org-roam-protocol
+  (require 'org-protocol)
+  (require 'org-roam-protocol)
 
   ;; Don't prompt
   (setq org-confirm-babel-evaluate
@@ -1071,10 +1074,15 @@ dump."
   (setq password-cache-expiry nil)
 
   ;; Disable network-intensive modes
-  (setq lsp-auto-register-remote-clients nil)
+  ;; (setq lsp-auto-register-remote-clients nil)
+  ;; https://github.com/syl20bnr/spacemacs/issues/11381
+  (defadvice projectile-project-root (around ignore-remote first activate)
+    (unless (file-remote-p default-directory) ad-do-it))
 
-  (setq tramp-verbose 10)
-  (setq tramp-ssh-controlmaster-options "")
+  ;; (setq tramp-verbose 10)
+  ;; Set it to nil, if you use Control* or Proxy* options in your ssh configuration.
+  (setq tramp-use-ssh-controlmaster-options nil)
+  (setq helm-tramp-control-master t)
 
   )
 
