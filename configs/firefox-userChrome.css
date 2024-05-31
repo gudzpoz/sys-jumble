@@ -79,7 +79,7 @@ tab-item[data-level][data-level="2"] {
 tab-item[data-level][data-level="3"] {
     --level-marker-width: 3px;
 }
-tab-item > tab-item-substance {
+#normal-tabs-container tab-item > tab-item-substance {
   display: flex;
   flex-direction: row-reverse;
   padding-left: 10px;
