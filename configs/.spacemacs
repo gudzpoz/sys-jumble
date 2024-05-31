@@ -80,7 +80,8 @@ This function should only modify configuration layer settings."
              python-fill-column 120
              python-backend 'lsp
              python-lsp-server 'pylsp)
-     restclient
+     (restclient :variables
+                 restclient-use-org t)
      rust
      (scheme :variables scheme-implementations '(chez))
      semantic
@@ -134,6 +135,7 @@ This function should only modify configuration layer settings."
                                       mlscroll
                                       org-ql
                                       rg
+                                      rotate
                                       scratch
                                       super-save
                                       wc-mode
@@ -991,6 +993,14 @@ dump."
   (define-key evil-normal-state-map (kbd "M-o") #'other-window)
   (evil-define-key 'normal evil-cleverparens-mode-map (kbd "M-o") nil)
 
+  ;; Rotate
+  (define-key global-map (kbd "s-o")
+              (lambda () (if (< 1 (length (window-list)))
+                             (rotate-layout)
+                           (if (< (frame-width) (* 2 (frame-height)))
+                               (spacemacs/window-split-single-column)
+                             (spacemacs/window-split-double-columns)))))
+
   )
 
 (defun mine/centaur-tabs-config ()
@@ -1247,6 +1257,23 @@ so as to avoid exposing them in config files."
 
   )
 
+(defvar hubfs-process-list nil)
+(defun mount-hubfs()
+  (interactive)
+
+  (let ((url (read-string "Enter GitHub URL: "))
+        (tmp-dir (make-temp-file "hubfs" t)))
+    (add-to-list 'hubfs-process-list
+                 (start-process "hubfs" nil "hubfs" "-auth" "none" url tmp-dir))
+    (find-file tmp-dir)))
+
+(defun unmount-all-hubfs()
+  (interactive)
+
+  (let ((plist hubfs-process-list))
+    (setq hubfs-process-list nil)
+    (mapcar #'stop-process plist)))
+
 (defun mine/app-config()
   "Config for apps in the Emacs OS."
 
@@ -1266,6 +1293,11 @@ so as to avoid exposing them in config files."
 
   ;; Geiser
   (setq geiser-chez-binary "/usr/bin/chez")
+
+  ;; HubFS
+  (spacemacs/declare-prefix "awf" "fuse-fs")
+  (spacemacs/set-leader-keys "awfh" #'mount-hubfs)
+  (spacemacs/set-leader-keys "awfu" #'umount-all-hubfs)
 
   ;; Hacker News
   (spacemacs/set-leader-keys "awh" #'hnreader-news)
