@@ -40,6 +40,7 @@ This function should only modify configuration layer settings."
      d
      debug
      dtrt-indent
+     ;; eaf ; Throws errors under cli
      emacs-lisp
      emoji
      (erc :variables
@@ -991,11 +992,12 @@ dump."
 
   ;; Rotate
   (define-key global-map (kbd "s-o")
-              (lambda () (if (< 1 (length (window-list)))
-                             (rotate-layout)
-                           (if (< (frame-width) (* 2 (frame-height)))
-                               (spacemacs/window-split-single-column)
-                             (spacemacs/window-split-double-columns)))))
+              #'(lambda () (interactive)
+                  (if (< 1 (length (window-list)))
+                      (rotate-layout)
+                    (if (< (frame-width) (* 2 (frame-height)))
+                        (spacemacs/window-split-single-column)
+                      (spacemacs/window-split-double-columns)))))
 
   )
 
@@ -1025,6 +1027,13 @@ dump."
   (defun centaur-tabs-ensure-tabsets (tabsets)
     (let ((sets (remq nil tabsets)))
       (or sets (list centaur-tabs-common-group-name))))
+  (defun centaur-tabs-misc-classifier (name)
+    (cond
+     ((string-prefix-p "*helm" name) "Helm")
+     ((string-prefix-p "*HN" name) "HNReader")
+     ((seq-contains-p '("*scratch*" "*lisp-interaction*") name) "Scratch")
+     ((emacs-log-buffer-p name) "Emacs")
+     (t "Misc")))
   (defun centaur-tabs-buffer-groups-custom-advice (original)
     (let ((group (cond
                   ((org-roam-file-p (buffer-file-name)) "OrgRoam")
@@ -1032,7 +1041,6 @@ dump."
                   ((derived-mode-p 'org-mode) "OrgMode")
                   ((memq major-mode '(helpful-mode help-mode)) "Help")
                   ((memq major-mode '(Info-mode)) "Info")
-                  ((string-prefix-p "*helm" (buffer-name)) "Helm")
                   ((or (derived-mode-p 'emacs-lisp-mode)
                        (derived-mode-p 'debugger-mode))
                    "Elisp")
@@ -1045,13 +1053,17 @@ dump."
                                       magit-blame-mode
                                       ))
                    "Magit")
-                  ((emacs-log-buffer-p (buffer-name)) "Emacs")
-                  ((string-prefix-p "*" (buffer-name)) "Misc"))))
+                  ((string-prefix-p "*" (buffer-name)) (centaur-tabs-misc-classifier (buffer-name))))))
       (centaur-tabs-ensure-tabsets
-       (if group
-           (list group)
-         (funcall original)))))
+       (if group (list group) (funcall original)))))
   (advice-add 'centaur-tabs-buffer-groups :around #'centaur-tabs-buffer-groups-custom-advice)
+  (defun centaur-tabs-projectile-buffer-groups-custom-advice (original)
+    (let ((group (when
+                     (string-prefix-p "*" (buffer-name))
+                   (centaur-tabs-misc-classifier (buffer-name)))))
+      (centaur-tabs-ensure-tabsets
+       (if group (list group) (funcall original)))))
+  (advice-add 'centaur-tabs-projectile-buffer-groups :around #'centaur-tabs-projectile-buffer-groups-custom-advice)
   (defun centaur-tabs-capture-error-and-restart (original)
     (condition-case err
         (funcall original)
@@ -1144,6 +1156,7 @@ dump."
 (defun mine/emacs-everywhere-config()
   "Emacs Everywhere"
 
+  (require 'emacs-everywhere)
   (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "," #'emacs-everywhere--finish-or-ctrl-c-ctrl-c)
   (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "k" #'emacs-everywhere-abort)
 
@@ -1222,6 +1235,19 @@ dump."
            (new-entries (butlast copyq-entries (- (length copyq-entries) (or new-entry-index (length copyq-entries))))))
       (setq kill-ring (append new-entries kill-ring))))
   (add-function :after after-focus-change-function #'copyq--sync-clipboard-with-kill-ring)
+
+  ;; Global visual line mode
+  (global-visual-line-mode 1)
+
+  ;; Disable GC in mini buffer
+  (add-hook 'minibuffer-setup-hook
+            (lambda () (setq inhibit-message t
+                             gc-cons-threshold most-positive-fixnum
+                             gc-cons-percentage 1.0)))
+  (add-hook 'minibuffer-exit-hook
+            (lambda () (setq inhibit-message (> (minibuffer-depth) 1)
+                             gc-cons-threshold (car dotspacemacs-gc-cons)
+                             gc-cons-percentage (cdr dotspacemacs-gc-cons))))
 
   )
 
