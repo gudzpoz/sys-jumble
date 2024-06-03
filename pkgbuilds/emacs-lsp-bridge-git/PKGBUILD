@@ -1,0 +1,39 @@
+# Maintainer: gudzpoz <gudzpoz@live.com>
+
+pkgname="emacs-lsp-bridge-git"
+pkgver=r2401.f48de08
+pkgrel=1
+pkgdesc="Blazingly fast LSP client for Emacs."
+arch=('any')
+url="https://github.com/manateelazycat/lsp-bridge"
+license=('GPL3')
+depends=('emacs' 'python'
+         'python-epc' 'python-orjson' 'python-sexpdata' 'python-six'
+         'python-setuptools' 'python-paramiko' 'python-rapidfuzz'
+         'bash-language-server'
+         'pylsp'
+         'texlab'
+         'typescript'
+         'yaml-language-server'
+        )
+makedepends=('git' 'gcc' 'cmake')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=("${pkgname%-git}::git+https://github.com/manateelazycat/lsp-bridge.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "$srcdir/${pkgname%-git}"
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+    cd "$srcdir/${pkgname%-git}"
+    git submodule update --init --recursive
+}
+
+package() {
+    cd "$srcdir/${pkgname%-git}"
+    install -d "${pkgdir}/usr/share/emacs/site-lisp/lsp-bridge"
+    cp -r ./* "${pkgdir}/usr/share/emacs/site-lisp/lsp-bridge"
+}
