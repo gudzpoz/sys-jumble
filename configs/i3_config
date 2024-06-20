@@ -28,14 +28,14 @@ bindsym $mod+Return exec i3-sensible-terminal
 # kill focused window
 bindsym $mod+Shift+q kill
 
-#whenever middle mouse button is pushed on titlebar or border, close the window
-bindsym --release --border button2 kill
+# whenever right mouse button is pushed on titlebar or border, close the window
+bindsym --release --border button3 kill
 
 # Scroll to switch windows: It seems that i3 does that by default for tab containers.
 # bindsym --release --border button4 exec which i3_loop_window.py && i3_loop_window.py -1 || true
 # bindsym --release --border button5 exec which i3_loop_window.py && i3_loop_window.py +1 || true
-# Right click to hide
-bindsym --release --border button3 move scratchpad
+# Right click to hide (too hard to find hidden windows)
+# bindsym --release --border button3 move scratchpad
 
 # Window back and forth
 bindsym $mod+Tab [con_mark=_last_window] focus

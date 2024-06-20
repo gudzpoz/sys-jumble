@@ -29,7 +29,7 @@ download() {
         CACHE="$HOME/.cache/bing-wallpaper"
     fi
     mkdir -p "$CACHE"
-    if [ $(ls -A "$CACHE" | wc -l) -gt "10" ]; then
+    if [ "$(ls -A "$CACHE" | wc -l)" -gt "10" ]; then
         rm "$CACHE"/*
     fi
     FILE="$CACHE/$2"
