@@ -1154,7 +1154,20 @@ See also `org-save-all-org-buffers'"
   (spacemacs|do-after-display-system-init
    (set-face-attribute 'default nil :family "Sarasa Term SC Nerd")
    (set-fontset-font "fontset-default" 'han (font-spec :family "Sarasa Term SC Nerd"))
-   (set-fontset-font "fontset-default" 'cjk-misc (font-spec :family "Sarasa Term SC Nerd")))
+   (set-fontset-font "fontset-default" 'cjk-misc (font-spec :family "Sarasa Term SC Nerd"))
+
+   ;; Use serif for variable pitch fonts
+   (create-fontset-from-fontset-spec
+    (font-xlfd-name (font-spec :registry "fontset-reader" :family "Liberation Serif")))
+   (set-fontset-font "fontset-reader" 'kana (font-spec :family "Noto Serif CJK JP" :size 10.5))
+   (set-fontset-font "fontset-reader" 'han (font-spec :family "Noto Serif CJK SC" :size 10.5))
+   (set-fontset-font "fontset-reader" 'cjk-misc (font-spec :family "Noto Serif CJK SC" :size 10.5))
+   (set-face-attribute 'variable-pitch nil
+                       :family "Liberation Serif"
+                       :height 120
+                       :fontset "fontset-reader"))
+  ;; Toggle serif fonts
+  (spacemacs/set-leader-keys "tr" #'variable-pitch-mode)
 
   )
 
