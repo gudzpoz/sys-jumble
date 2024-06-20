@@ -67,6 +67,8 @@ This function should only modify configuration layer settings."
      multiple-cursors
      nginx
      (org :variables
+          ;; ; valign mandates no space before cell contents, while org-table-align automatically do so
+          ;; org-enable-valign t
           org-enable-org-journal-support t
           org-enable-roam-support t
           org-enable-roam-ui t
@@ -723,45 +725,98 @@ dump."
   ;; Org-mode
   ;; https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
   (setq org-inbox-file-path    "~/Documents/Nutstore/Org-Mode/GTD/inbox.org")
-  (setq org-later-file-path    "~/Documents/Nutstore/Org-Mode/GTD/later.org")
+  (setq org-projects-file-path "~/Documents/Nutstore/Org-Mode/GTD/projects.org")
+  (setq org-archive-file-path  "~/Documents/Nutstore/Org-Mode/GTD/archive.org")
   (setq org-watchdog-file-path "~/Documents/Nutstore/Org-Mode/GTD/watchdog.org")
-  (setq org-gtd-file-path      "~/Documents/Nutstore/Org-Mode/GTD/season.org")
-
   (setq org-gtd-dir "~/Documents/Nutstore/Org-Mode/GTD")
-
   (setq org-agenda-files (directory-files org-gtd-dir t ".*\\.org"))
 
+  ;; GTD: Capturing
   (setq org-capture-templates
         `(,`("i" "inbox" entry ,`(file ,org-inbox-file-path)
-             "* TODO %i%?")
-          ,`("w" "watchdog" entry ,`(file ,org-watchdog-file-path)
-             "* TODO %i%?\n%U")))
+             "* TODO %i%?
+:PROPERTIES:
+:CREATED: %U
+:END:"
+             :empty-lines 1)))
+  (spacemacs/set-leader-keys "aoi" (lambda () (interactive)
+                                     (call-interactively #'org-store-link)
+                                     (org-capture nil "i")))
 
-  (setq org-todo-keywords '((sequence "TODO(t)" "PENDING(p)" "|" "DONE(d)" "CANCELLED(c)")))
+  ;; GTD: Reviewing
+  ;; Save the corresponding buffers
+  (defun gtd-save-org-buffers ()
+    "Save `org-agenda-files' buffers without user confirmation.
+See also `org-save-all-org-buffers'"
+    (interactive)
+    (message "Saving org-agenda-files buffers...")
+    (save-some-buffers t (lambda ()
+                           (when (member (buffer-file-name) org-agenda-files)
+                             t)))
+    (message "Saving org-agenda-files buffers... done"))
+  (advice-add 'org-refile :after (lambda (&rest _) (gtd-save-org-buffers)))
+  ;; Destinations
+  (setq org-refile-targets `(,`(,org-projects-file-path :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")
+                             ,`(,org-watchdog-file-path :level . 1)
+                             ,`(,org-archive-file-path  :level . 1)))
+  (setq org-refile-use-outline-path 'file)
+  (setq org-outline-path-complete-in-steps nil)
 
-  (setq org-refile-targets `(,`(,org-gtd-file-path :level . 1)
-                             ,`(,org-later-file-path :level . 1)
-                             ,`(,org-watchdog-file-path :level . 1)))
+  ;; GTD: Finding the next task
+  (setq org-todo-keywords '((sequence "TODO(t)" "PENDING(p@/!)" "NEXT(n)" "|" "DONE(d!)" "CANCELLED(c@)")))
+  (defun log-todo-next-creation-date (&rest ignore)
+    "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
+    (when (and (string= (org-get-todo-state) "NEXT")
+               (not (org-entry-get nil "ACTIVATED")))
+      (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d %H:%M]"))))
+  (add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
+  ;; https://www.gnu.org/software/emacs/manual/html_node/org/Closing-items.html
+  (setq org-log-done 'time)
+  (setq org-log-redeadline 'note)
+  (setq org-log-reschedule 'note)
+  (setq org-log-into-drawer t)
 
+  ;; GTD: Agenda
+  (setq org-agenda-show-future-repeats nil)
+  (setq org-agenda-window-setup 'only-window)
+  (add-to-list 'org-agenda-custom-commands
+               '("g" "Get Things Done (GTD)"
+                 ((agenda ""
+                          ((org-deadline-warning-days 0)))
+                  (todo "NEXT"
+                        ((org-agenda-skip-function
+                          '(org-agenda-skip-entry-if 'deadline))
+                         (org-agenda-prefix-format "  %i %-12:c [%e] ")
+                         (org-agenda-overriding-header "\nTasks\n")))
+                  (agenda nil
+                          ((org-agenda-entry-types '(:deadline))
+                           (org-agenda-format-date "")
+                           (org-deadline-warning-days 7)
+                           (org-agenda-skip-function
+                            '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
+                           (org-agenda-overriding-header "\nDeadlines")))
+                  (tags-todo "inbox"
+                             ((org-agenda-prefix-format "  %?-12t% s")
+                              (org-agenda-overriding-header "\nInbox\n")))
+                  (tags "CLOSED>=\"<today>\""
+                        ((org-agenda-overriding-header "\nCompleted today\n"))))))
+  (spacemacs/set-leader-keys "aog" (lambda () (interactive) (org-agenda nil "g")))
+
+  ;; Styling & UX
   ;; Avoid the situation when the cursor gets trapped after the ellipsis.
   (add-hook 'org-tab-first-hook (lambda () (when (org-fold-folded-p) (org-end-of-line))))
-
   ;; Wrap lines: We don't use org tables that often.
   (setq org-startup-truncated nil)
-
   ;; More blank lines
   (setq org-blank-before-new-entry '((heading . t) (plain-list-item . t)))
-
-  ;; Insert a zero-width-space
-  (with-eval-after-load "org"
-    (define-key org-mode-map (kbd "C-|") (lambda () (interactive) (insert-char #x200b))))
-
   ;; Use M-RET M-RET then.
   ;; (with-eval-after-load "org"
   ;;  (define-key org-mode-map (kbd "M-RET") #'org-meta-return))
 
-  ;; https://www.gnu.org/software/emacs/manual/html_node/org/Closing-items.html
-  (setq org-log-done 'time)
+  ;; Others
+  ;; Insert a zero-width-space
+  (with-eval-after-load "org"
+    (define-key org-mode-map (kbd "C-|") (lambda () (interactive) (insert-char #x200b))))
 
   )
 
