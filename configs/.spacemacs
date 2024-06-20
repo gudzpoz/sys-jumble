@@ -91,7 +91,6 @@ This function should only modify configuration layer settings."
             shell-default-position 'bottom)
      spacemacs-visual
      spacemacs-editing-visual
-     (spell-checking :variables spell-checking-enable-by-default nil)
      sql
      syntax-checking
      systemd
@@ -128,6 +127,7 @@ This function should only modify configuration layer settings."
                                       evil-easymotion
                                       evil-snipe
                                       fcitx
+                                      flycheck-languagetool
                                       hnreader
                                       jedi
                                       mastodon
@@ -1203,6 +1203,13 @@ See also `org-save-all-org-buffers'"
   (setq lsp-bridge-tex-lsp-server 'texlab)
   (require 'lsp-bridge)
   (global-lsp-bridge-mode)
+
+  ;; LanguageTool
+  (require 'flycheck-languagetool)
+  (setq flycheck-languagetool-url "http://localhost:8081")
+  (add-hook 'text-mode-hook (lambda ()
+                              (flycheck-languagetool-setup)
+                              (flycheck-mode +1)))
 
   )
 
