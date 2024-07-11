@@ -77,27 +77,29 @@ See https://github.com/syl20bnr/spacemacs/issues/15896.
   ln -s absolute_path_to_this_dir/.zshrc ~/.zshrc
 #+end_src
 
-* i3 + Picom (under Xfce)
+* i3 + KDE Plasma 6
 
 An opinionated i3 configuration.
-(It does not configure any panels since personally I use ~xfce4-panel~.
+(It does not configure any panels since personally I use the bars / panels provided by the corresponding Desktop Environment (Plasma 6 in this case).
 
 ** Prerequisites
 
 - ~i3~: The window manager.
 - ~picom~: Compositor.
 - ~nitrogen~: Wallpaper.
+- ~plamsa~: The DE.
 
 ** Usage
 
 #+begin_src shell
   ln -s absolute_path_to_this_dir/i3_config ~/.config/i3/config
-  ln -s absolute_path_to_this_dir/picom.conf ~/.config/picom.conf
 #+end_src
 
 ** Extra configuration
 
 *** Launch i3 from Xfce
+
+**DEPRECATED**: This configuration is not updated any more because I have switched to KDE Plasma.
 
 #+begin_src shell
   xfconf-query -c xfce4-session -p /sessions/Failsafe/Client0_Command -t string -sa "xfsettingsd"
@@ -105,6 +107,46 @@ An opinionated i3 configuration.
   # The fifth command is xfdesktop which we are not going to use.
   xfconf-query -c xfce4-session -p /sessions/Failsafe/Count -t int -s 4
 #+end_src
+
+*** Launch i3 from KDE Plasma 6
+
+I couldn't get Sway + KDE Plasma 6 (Wayland) to work. So I will go with a i3 + Plasma 6 (X11) setup.
+
+Following the guide from https://wiki.archlinux.org/title/KDE#Use_a_different_window_manager and https://github.com/heckelson/i3-and-kde-plasma,
+one should:
+
+1. Mask the Kwin window manager:
+
+   #+begin_src shell
+     systemctl --user mask plasma-kwin_x11.service
+   #+end_src
+
+2. Create a systemd user unit for i3:
+
+   #+begin_src text
+     # ~/.config/systemd/user/plasma-i3.service
+     [Install]
+     WantedBy=plasma-workspace.target
+
+     [Unit]
+     Description=Plasma i3 Window Manager
+     Before=plasma-workspace.target
+
+     [Service]
+     ExecStart=/usr/bin/i3
+     Slice=session.slice
+     Restart=on-failure
+   #+end_src
+
+3. Enable ~plasma-i3.service~:
+
+   #+begin_src shell
+     systemctl --user enable plasma-i3.service
+   #+end_src
+
+This setup automatically kills the window which KDE uses as their desktop.
+However, as is stated in [[https://github.com/heckelson/i3-and-kde-plasma?tab=readme-ov-file#killing-the-existing-window-that-covers-everything][Killing the existing window that covers everything - i3-and-kde-plasma]],
+you will need to change the configuration if your system language is not English.
 
 ** Remove gtk window border
 
