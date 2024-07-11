@@ -37,6 +37,7 @@ This function should only modify configuration layer settings."
      better-defaults
      bibtex
      cmake
+     csv
      d
      debug
      dtrt-indent
@@ -61,7 +62,9 @@ This function should only modify configuration layer settings."
      java
      (javascript :variables
                  js2-basic-offset 2
-                 js-indent-level 2)
+                 js-indent-level 2
+                 javascript-backend 'lsp)
+     lsp
      (lua :variables lua-backend 'lua-mode)
      markdown
      multiple-cursors
@@ -78,7 +81,9 @@ This function should only modify configuration layer settings."
      php
      protobuf
      (python :variables
-             python-fill-column 120)
+             python-fill-column 120
+             python-backend 'lsp
+             python-lsp-server 'pylsp)
      (restclient :variables
                  restclient-use-org t)
      rust
@@ -124,6 +129,7 @@ This function should only modify configuration layer settings."
                                       (edraw :location (recipe :fetcher github :repo "misohena/el-easydraw"))
                                       ellama
                                       ement
+                                      (ready-player :location (recipe :fetcher github :repo "xenodium/ready-player"))
                                       emacs-everywhere
                                       evil-easymotion
                                       evil-snipe
@@ -141,7 +147,7 @@ This function should only modify configuration layer settings."
                                       wc-mode
                                       xclip
                                       zoxide
-                                     )
+                                      )
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -150,8 +156,8 @@ This function should only modify configuration layer settings."
    dotspacemacs-excluded-packages '(;; https://github.com/syl20bnr/spacemacs/issues/15667
                                     term-cursor
                                     ;; https://github.com/joaotavora/yasnippet/issues/114
-                                    ; yasnippet
-                                    ; auto-yasnippet
+                                        ; yasnippet
+                                        ; auto-yasnippet
                                     )
 
    ;; Defines the behaviour of Spacemacs when installing packages.
@@ -633,7 +639,8 @@ default it calls `spacemacs/load-spacemacs-env' which loads the environment
 variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
   (spacemacs/load-spacemacs-env)
-)
+
+  )
 
 (defun dotspacemacs/user-init ()
   "Initialization for user code:
@@ -643,16 +650,16 @@ It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
   ;; To capture bugs that are hard to capture
-  (setq debug-on-error t)
-  (setq backtrace-on-redisplay-error t)
+  ;; (setq debug-on-error t)
+  ;; (setq backtrace-on-redisplay-error t)
 
   (setq configuration-layer-elpa-archives
-    '(("melpa-cn"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-      ("gnu-cn"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-      ("nongnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-      ;; org-contrib causes problems
-      ;; ("org-cn"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
-      ))
+        '(("melpa-cn"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+          ("gnu-cn"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+          ("nongnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+          ;; org-contrib causes problems
+          ;; ("org-cn"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+          ))
 
   ;; Evil collection
   (setq evil-want-keybinding nil)
@@ -666,7 +673,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   ;; (setq server-use-tcp t)
   ;; (setq server-port 5172)
 
-)
+  )
 
 
 (defun dotspacemacs/user-load ()
@@ -674,7 +681,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 This function is called only while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included in the
 dump."
-)
+  )
 
 
 (defun mine/org-config ()
@@ -740,9 +747,10 @@ dump."
 :CREATED: %U
 :END:"
              :empty-lines 1)))
-  (spacemacs/set-leader-keys "aoi" (lambda () (interactive)
-                                     (call-interactively #'org-store-link)
-                                     (org-capture nil "i")))
+  (defun org-capture-to-inbox()
+    (interactive)
+    (org-capture nil "i"))
+  (spacemacs/set-leader-keys "aoi" #'org-capture-to-inbox)
 
   ;; GTD: Reviewing
   ;; Save the corresponding buffers
@@ -789,19 +797,17 @@ See also `org-save-all-org-buffers'"
                           '(org-agenda-skip-entry-if 'deadline))
                          (org-agenda-prefix-format "  %i %-12:c [%e] ")
                          (org-agenda-overriding-header "\nTasks\n")))
-                  (agenda nil
-                          ((org-agenda-entry-types '(:deadline))
-                           (org-agenda-format-date "")
-                           (org-deadline-warning-days 7)
-                           (org-agenda-skip-function
-                            '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
-                           (org-agenda-overriding-header "\nDeadlines")))
+                  (org-ql-block '(and (todo) (scheduled :to -1))
+                                ((org-ql-block-header "Overdue")))
                   (tags-todo "inbox"
                              ((org-agenda-prefix-format "  %?-12t% s")
                               (org-agenda-overriding-header "\nInbox\n")))
                   (tags "CLOSED>=\"<today>\""
                         ((org-agenda-overriding-header "\nCompleted today\n"))))))
-  (spacemacs/set-leader-keys "aog" (lambda () (interactive) (org-agenda nil "g")))
+  (defun org-gtd-agenda()
+    (interactive)
+    (org-agenda nil "g"))
+  (spacemacs/set-leader-keys "aog" #'org-gtd-agenda)
 
   ;; Styling & UX
   ;; Avoid the situation when the cursor gets trapped after the ellipsis.
@@ -813,6 +819,8 @@ See also `org-save-all-org-buffers'"
   ;; Use M-RET M-RET then.
   ;; (with-eval-after-load "org"
   ;;  (define-key org-mode-map (kbd "M-RET") #'org-meta-return))
+  ;; Automatically sync if modified by other devices
+  (add-hook 'org-mode-hook #'auto-revert-mode)
 
   ;; Others
   ;; Insert a zero-width-space
@@ -929,7 +937,7 @@ See also `org-save-all-org-buffers'"
   (global-set-key (kbd "C-r") 'helm-swoop-back-to-last-point)
   (define-key evil-normal-state-map (kbd "C-r") 'helm-swoop-back-to-last-point)
 
-)
+  )
 
 (defun mine/mode-line-config ()
   "Mode-line & scroll-bar configuration"
@@ -957,11 +965,9 @@ See also `org-save-all-org-buffers'"
 (defun mine/fcitx-config ()
   "Fcitx integration"
 
-  (setq
-    fcitx-active-evil-states '(insert emacs hybrid)
-    fcitx-remote-command "fcitx5-remote"
-    fcitx-use-dbus nil
-    )
+  (setq fcitx-active-evil-states '(insert emacs hybrid)
+        fcitx-remote-command "fcitx5-remote"
+        fcitx-use-dbus nil)
   (fcitx-aggressive-setup)
   (fcitx-prefix-keys-add "M-m")
 
@@ -1176,6 +1182,9 @@ See also `org-save-all-org-buffers'"
 
   (setq password-cache-expiry nil)
 
+  ;; Disable network-intensive modes
+  (setq lsp-auto-register-remote-clients nil)
+  ;; https://github.com/syl20bnr/spacemacs/issues/11381
   (defadvice projectile-project-root (around ignore-remote first activate)
     (unless (file-remote-p default-directory) ad-do-it))
 
@@ -1209,16 +1218,45 @@ See also `org-save-all-org-buffers'"
   (setq company-dabbrev-downcase 0)
   (setq company-idle-delay 1)
 
+  ;; Search for elisp documentation
+  (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "hi" #'elisp-index-search)
+  (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "hd" #'shortdoc-display-group)
+
   ;; Temporarily fixes: https://github.com/org-roam/org-roam/issues/2406
   (setq org-roam-ref-annotation-function (lambda (_) ""))
 
-  ;; lsp-bridge
-  (setq lsp-bridge-python-lsp-server 'pylsp)
-  (setq lsp-bridge-tex-lsp-server 'texlab)
-  (require 'lsp-bridge)
-  (setq lsp-bridge-default-mode-hooks
-        (delete 'markdown-mode-hook (delete 'org-mode-hook lsp-bridge-default-mode-hooks)))
-  (global-lsp-bridge-mode)
+  (setq lsp-auto-guess-root t)
+  (setq lsp-java-server-install-dir "/usr/share/java/jdtls/")
+  (setq lsp-signature-doc-lines 3)
+
+  (defun lsp-booster--advice-json-parse (old-fn &rest args)
+    "Try to parse bytecode instead of json."
+    (or
+     (when (equal (following-char) ?#)
+       (let ((bytecode (read (current-buffer))))
+         (when (byte-code-function-p bytecode)
+           (funcall bytecode))))
+     (apply old-fn args)))
+  (advice-add (if (progn (require 'json)
+                         (fboundp 'json-parse-buffer))
+                  'json-parse-buffer
+                'json-read)
+              :around
+              #'lsp-booster--advice-json-parse)
+
+  (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+    "Prepend emacs-lsp-booster command to lsp CMD."
+    (let ((orig-result (funcall old-fn cmd test?)))
+      (if (and (not test?)                             ;; for check lsp-server-present?
+               (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+               lsp-use-plists
+               (not (functionp 'json-rpc-connection))  ;; native json-rpc
+               (executable-find "emacs-lsp-booster"))
+          (progn
+            (message "Using emacs-lsp-booster for %s!" orig-result)
+            (cons "emacs-lsp-booster" orig-result))
+        orig-result)))
+  (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
 
   ;; LanguageTool
   (require 'flycheck-languagetool)
@@ -1266,6 +1304,8 @@ See also `org-save-all-org-buffers'"
 (defun mine/git-config()
   "Git/Magit config"
 
+  (setq vc-follow-symlinks t)
+
   (setq magit-repository-directories
         '(("~/.emacs.d"  . 0)
           ("~/Workspaces/" . 2)))
@@ -1284,6 +1324,9 @@ See also `org-save-all-org-buffers'"
 
   ;; We use a emacs daemon so probably there won't be any editing conflicts.
   (setq create-lockfiles nil)
+
+  ;; Please do not pop up every time
+  (setq warning-minimum-level :error)
 
   ;; Yeah
   (setq pixel-scroll-precision-mode t)
@@ -1385,6 +1428,10 @@ so as to avoid exposing them in config files."
 (defun mine/app-config()
   "Config for apps in the Emacs OS."
 
+  ;; Ready player
+  (require 'ready-player)
+  (ready-player-add-to-auto-mode-alist)
+
   ;; Ement
   (setq ement-save-sessions t)
   (spacemacs/declare-prefix "acm" "matrix")
@@ -1459,7 +1506,7 @@ before packages are loaded."
   (mine/wc-config)
   (mine/whitespace-config)
 
-)
+  )
 
 
 ;; Do not write anything past this comment. This is where Emacs will
