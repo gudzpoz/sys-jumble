@@ -21,7 +21,30 @@ try:
 except:
     use_tk = False
 
+
 class I3Kit:
+    """
+    I3/Sway kit
+    ===========
+
+    In order to stay compatible with Sway, there are a few things to take note of:
+
+    1. ``swaymsg`` does not support using ``[con_id=<workspace_con_id>]`` to use workspaces as containers.
+
+    2. For Wayland windows, their ``window`` field in the output of ``swaymsg -t get_tree`` is always ``null``.
+       This could potentially be used to differentiate between X/Wayland windows, but in order to tell
+       which containers are windows instead of layouts, probably the ``layout`` field is more suitable
+       (seemingly ``none`` for windows).
+
+       But anyway, this means you will need to use ``[con_id=...] ...`` instead of ``[id=...] ...``.
+
+    3. ``swaymsg`` cannot handle commands like ``focus; [con_id=...] focus``, where
+       ``[con_id=...]`` seems to be the culprit. Using one command at a time might be better.
+
+    4. Passing several (~20) commands to ``swaymsg`` seems to crash Sway sometimes.
+       I do not wish to have to reproduce that.
+    """
+
     focused_workspace: int
     window_id_cache: dict[int, dict[str, typing.Any]]
     workspace_cache: list[dict[str, typing.Any]]
@@ -34,9 +57,14 @@ class I3Kit:
 
     @classmethod
     def send(cls, *msg: str):
-        p = subprocess.run(["i3-msg"] + list(msg), capture_output=True)
-        p.check_returncode()
-        return p
+        if len(msg) == 1 and ";" in msg[0]:
+            for command in msg[0].split(";"):
+                p = cls.send(command.strip())
+            return p
+        else:
+            p = subprocess.run(["i3-msg"] + list(msg), capture_output=True)
+            p.check_returncode()
+            return p
 
     @classmethod
     def for_each_child_node(cls, node: dict[str, typing.Any], f: typing.Callable[[dict[str, typing.Any]], None]):
@@ -51,6 +79,7 @@ class I3Kit:
         self.window_id_cache = {}
         tree = json.loads(self.send("-t", "get_tree").stdout)
         workspace = -1
+
         def update(node):
             nonlocal self, workspace
             self.window_id_cache[node["id"]] = node
@@ -61,11 +90,15 @@ class I3Kit:
         self.for_each_child_node(tree, update)
         self.workspace_cache = json.loads(self.send("-t", "get_workspaces").stdout)
 
+    def is_window(self, window: dict[str, typing.Any]):
+        return window.get("layout") == "none"
+
     def get_all_children(self, window: int):
         children = []
+
         def append(node):
             nonlocal children
-            if isinstance(node["window"], int):
+            if self.is_window(node):
                 children.append(node)
         self.for_each_child_node(self.window_id_cache[window], append)
         return children
@@ -102,7 +135,7 @@ class I3Kit:
 
     def current_window(self):
         window = self.current_container()
-        if window is not None and isinstance(window["window"], int):
+        if window is not None and self.is_window(window):
             return window
         return None
 
@@ -114,13 +147,15 @@ class I3Kit:
 
 class Placeholder(I3Kit):
     window: int
+    workspace: int
     tk_window: int
     restorable: bool
     closing: bool
 
-    def __init__(self, window: int):
+    def __init__(self, window: int, workspace: int):
         super().__init__()
         self.window = window
+        self.workspace = workspace
         self.tk_window = -1
         self.restorable = False
         self.closing = False
@@ -162,6 +197,8 @@ class Placeholder(I3Kit):
         window = self.current_container()
         if window is not None:
             self.tk_window = window["id"]
+            self.send(f"[con_id={self.tk_window}] move container to workspace number {self.workspace}")
+            self.send(f"workspace number {self.workspace}")
             self.send(f"[con_id={self.tk_window}] mark --add {_placeholder_mark}0_{os.getpid()}")
             self.send(f"[con_id={self.tk_window}] swap container with con_id {self.window}")
             self.unmark_prefix(self.window, _placeholder_mark)
@@ -184,8 +221,7 @@ class Maximizer(I3Kit):
     def placeholder(self, wid: int):
         window = self.window_id_cache[wid]
         empty_workspace = self.find_empty_workspace()
-        self.send(f"workspace number {empty_workspace}")
-        Placeholder(wid).mainloop()
+        Placeholder(wid, empty_workspace).mainloop()
 
     def notify_placeholder(self, window: int, marks: list[str]):
         try:

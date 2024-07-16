@@ -1,10 +1,7 @@
 #!/bin/python3
 
 import argparse
-import json
 import logging
-import re
-import subprocess
 import typing
 
 from i3_maximize_window import I3Kit
@@ -21,36 +18,32 @@ class TabLayoutMaker(I3Kit):
 
     def _mark_window(self, window: int):
         assert self.focused_workspace != -1
-        self.send(f"unmark {self.mark}")
         self.send(f"unmark {self.mark}_tabbed")
-        self.send(f"[con_id={window}] mark --add {self.mark}")
-
-    def _move_windows_to_new_tabs(self, windows: list[typing.Any], workspace: int) -> str:
-        prefix = f"""
-        unmark {self.mark}_tabbed;
-        [id={windows[0]['window']}] move window to mark {self.mark};
-        [id={windows[0]['window']}] split v;
-        [id={windows[0]['window']}] layout tabbed;
-        [id={windows[0]['window']}] mark {self.mark}_tabbed;
-        """
-        return prefix + ";\n".join(
-            f"[id={window['window']}] move window to mark {self.mark}_tabbed"
-            for window in windows[-1:0:-1]
-        ) + f";\nunmark {self.mark}_tabbed"
 
     def layout(self):
-        workspace = self.focused_workspace
-        self._mark_window(workspace)
-        children = self.get_all_children(workspace)
+        children = self.get_all_children(self.focused_workspace)
         if len(children) < self.splits:
             return
-        self.send(
-            f"[con_id={workspace}] split h;\n"
-            + ";\n".join(
-                self._move_windows_to_new_tabs(children[i::self.splits], workspace)
-                for i in range(self.splits)
-            )
-        )
+        workspace = self.find_empty_workspace()
+        self._layout([children[i::self.splits] for i in range(self.splits)], workspace)
+        self.send(f"workspace {workspace}")
+
+    def _layout(self, groups: list[list[typing.Any]], workspace: int):
+        containers = [group[0] for group in groups]
+        for container in containers:
+            self.send(f"[con_id={container['id']}] move container to workspace {workspace}")
+        for container in containers:
+            self.send(f"""
+            [con_id={container['id']}] split v;
+            [con_id={container['id']}] layout tabbed
+            """)
+        for group in groups:
+            container = group[0]
+            self.send(f"unmark {self.mark}_tabbed")
+            self.send(f"[con_id={container['id']}] mark {self.mark}_tabbed")
+            for window in group[-1:0:-1]:
+                self.send(f"[con_id={window['id']}] move window to mark {self.mark}_tabbed")
+            self.send(f"unmark {self.mark}_tabbed")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

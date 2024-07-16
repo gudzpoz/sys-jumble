@@ -4,6 +4,7 @@ import argparse
 
 from i3_splitv_tab_layout import TabLayoutMaker
 
+
 class NestedLayoutMaker(TabLayoutMaker):
     nested_limit: int
 
@@ -25,13 +26,10 @@ class NestedLayoutMaker(TabLayoutMaker):
         ]
         chunks = [chunks[0]] + chunks[-1:0:-1]
         print([w["name"] for w in children])
-        self.send(
-            f"[con_id={workspace}] split h;\n[con_id={workspace}] focus;\n"
-            + ";\n".join(
-                self._move_windows_to_new_tabs(chunk, workspace) for chunk in chunks
-            )
-            + f";\n[con_id={workspace}] layout tabbed"
-        )
+        workspace = self.find_empty_workspace()
+        self.send(f"workspace {workspace}")
+        self.send("layout tabbed")
+        self._layout(chunks, workspace)
 
 
 if __name__ == '__main__':

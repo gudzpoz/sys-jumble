@@ -45,8 +45,8 @@ class ContinuousMarker(I3Kit):
         return None
 
     def _title_of_window(self, wid: int):
-        windows = [window["title"] for window in self.window_id_cache.values() if window["window"] == wid]
-        return "<not found>" if len(windows) == 0 else windows[0]
+        window = self.window_id_cache.get(wid)
+        return "<not found>" if window is None or not self.is_window(window) else window["title"]
 
     def reorder(self):
         _debug("marking %s as recent windows", self.windows)
@@ -54,7 +54,7 @@ class ContinuousMarker(I3Kit):
             self.send(f"unmark {_recent_window_mark}_{i}")
         for i, wid in enumerate(self.windows):
             try:
-                self.send(f"[id={wid}] mark --add {_recent_window_mark}_{i}")
+                self.send(f"[con_id={wid}] mark --add {_recent_window_mark}_{i}")
             except:
                 _warning(f"window {self._title_of_window(wid)} (id={wid}) closed already")
 
@@ -62,11 +62,12 @@ class ContinuousMarker(I3Kit):
         _debug("marking window %d as the last window (%s)", last, self.windows)
         self.send(f"unmark {_last_window_mark}")
         try:
-            self.send(f"[id={last}] mark --add {_last_window_mark}")
+            self.send(f"[con_id={last}] mark --add {_last_window_mark}")
         except:
             _warning(f"window {self._title_of_window(last)} (id={last}) closed already")
 
     def try_loop(self):
+        # TODO: Find an alternative in Wayland environments
         stream = subprocess.Popen(["xprop", "-root", "-spy", "_NET_ACTIVE_WINDOW"], stdout=subprocess.PIPE)
         _info("listening to %s", stream)
         try:
@@ -76,14 +77,12 @@ class ContinuousMarker(I3Kit):
                     continue
 
                 self.update_window_cache()
-                window_id_map = dict((window["window"], window["id"]) for window in self.window_id_cache.values()
-                                     if window["window"] is not None)
 
                 # Must be tiled window
-                if wid not in window_id_map:
+                if wid not in self.window_id_cache or not self.is_window(self.window_id_cache[wid]):
                     continue
 
-                self.windows = [wid for wid in self.windows if wid in window_id_map]
+                self.windows = [wid for wid in self.windows if wid in self.window_id_cache and self.is_window(self.window_id_cache[wid])]
 
                 last = self.windows[0] if len(self.windows) >= 1 else None
                 if last is not None and last != wid:
