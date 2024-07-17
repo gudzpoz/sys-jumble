@@ -213,14 +213,14 @@ hide_edge_borders vertical
 focus_follows_mouse no
 
 # Mod+tab switching
-#exec which i3_window_back_and_forth.py && i3_window_back_and_forth.py || true
+exec which i3_window_back_and_forth.py && i3_window_back_and_forth.py || true
 
 ### Settings specific to i3
 # Handle transparency
 #exec picom
 # Wallpaper
 #exec_always nitrogen --restore
-# Initial window
+# Initial window (without which i3 + Xfce setup seems to hang)
 #exec exo-open --launch TerminalEmulator
 
 ### Settings for integration with plasma

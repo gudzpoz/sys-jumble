@@ -16,7 +16,6 @@ _debug = _logger.debug
 _info = _logger.info
 _warning = _logger.warning
 
-_window_id_regex = re.compile("0x[\\dA-Fa-f]+")
 _last_window_mark = "_last_window"
 _recent_window_mark = "_recent_window"
 
@@ -36,12 +35,11 @@ class ContinuousMarker(I3Kit):
 
     @classmethod
     def _extract_id_from_spy_line(cls, line: str):
-        if "_NET_ACTIVE_WINDOW" in line:
-            result = _window_id_regex.search(line)
-            if result is not None:
-                wid = int(result.group(0), 16)
-                _debug("window switching detected (%s)", wid)
-                return wid
+        event = json.loads(line)
+        if event.get("change") == "focus":
+            wid = int(event["container"]["id"])
+            _debug("window switching detected (%s)", wid)
+            return wid
         return None
 
     def _title_of_window(self, wid: int):
@@ -67,8 +65,10 @@ class ContinuousMarker(I3Kit):
             _warning(f"window {self._title_of_window(last)} (id={last}) closed already")
 
     def try_loop(self):
-        # TODO: Find an alternative in Wayland environments
-        stream = subprocess.Popen(["xprop", "-root", "-spy", "_NET_ACTIVE_WINDOW"], stdout=subprocess.PIPE)
+        stream = subprocess.Popen(
+            [self.msg_program, "-m", "-t", "subscribe", "[\"window\"]"],
+            stdout=subprocess.PIPE,
+        )
         _info("listening to %s", stream)
         try:
             for line in iter(stream.stdout.readline, ""):
@@ -116,6 +116,6 @@ if __name__ == "__main__":
     _info(f"pid: {os.getpid()}")
 
     parser = argparse.ArgumentParser(description="Marks recently focused windows to allow for convenient switching-to.")
-    parser.add_argument("-c", "--count", help="The max number of recently focused windows to match.", required=False, default=3)
+    parser.add_argument("-c", "--count", help="The max number of recently focused windows to match.", required=False, default=3, type=int)
     args = parser.parse_args()
     ContinuousMarker(args.count).loop()

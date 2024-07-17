@@ -47,6 +47,28 @@ All kinds of textual configuration files that can potentially get shared among m
   - Remember to =update-desktop-database ~/.local/share/applications/= and
     =xdg-mime default org-protocol.desktop x-scheme-handler/org-protocol= afterwards.
 
+** Zotero Integration
+
+To integrate Zotero with ~helm-bibtex~, use the Better BibTeX plugin and add the following snippet to its ~postscript~:
+
+#+begin_src js
+  if (Translator.BetterBibTeX) {
+    const files = Object.values(tex.has.file.value);
+    const keys = files.map((f) => {
+      if (f.contentType === 'application/pdf'){
+        return f.itemKey || f.key || '';
+      }
+      return '';
+    }).filter((s) => s !== '');
+    if (keys.length !== 0) {
+      tex.add({
+        name: 'file',
+        value: `zotero://select/library/items/${keys[0]}`,
+      });
+    }
+  }
+#+end_src
+
 ** Usage
 
 #+begin_src shell
@@ -84,12 +106,19 @@ An opinionated i3 configuration.
 
 ** Prerequisites
 
-- ~i3~: The window manager.
-- ~picom~: Compositor.
-- ~nitrogen~: Wallpaper.
-- ~plamsa~: The DE.
+- ~i3~ / ~sway~: The window manager.
+
+- i3 specific:
+  - ~picom~: Compositor.
+  - ~nitrogen~: Wallpaper.
+  - ~plamsa~ / ~xfce~: The DE.
+
+- Sway specific:
+  - ~lxqt~: The DE.
 
 ** Usage
+
+Edit the config according to your setup (most of them are located at the end of the file).
 
 #+begin_src shell
   ln -s absolute_path_to_this_dir/i3_config ~/.config/i3/config

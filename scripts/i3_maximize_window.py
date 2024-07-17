@@ -49,20 +49,23 @@ class I3Kit:
     window_id_cache: dict[int, dict[str, typing.Any]]
     workspace_cache: list[dict[str, typing.Any]]
 
+    msg_program: str
+
     def __init__(self):
         self.focused_workspace = -1
         self.window_id_cache = {}
         self.workspace_cache = []
+        self.msg_program = "i3-msg" if os.getenv("SWAYSOCK") is None else "swaymsg"
         self.update_window_cache()
 
-    @classmethod
-    def send(cls, *msg: str):
+    def send(self, *msg: str):
         if len(msg) == 1 and ";" in msg[0]:
+            # Split the commands up to hopefully avoid Sway crashes
             for command in msg[0].split(";"):
-                p = cls.send(command.strip())
+                p = self.send(command.strip())
             return p
         else:
-            p = subprocess.run(["i3-msg"] + list(msg), capture_output=True)
+            p = subprocess.run([self.msg_program] + list(msg), capture_output=True)
             p.check_returncode()
             return p
 
