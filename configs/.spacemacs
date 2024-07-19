@@ -92,8 +92,8 @@ This function should only modify configuration layer settings."
      (shell :variables
             shell-default-shell 'eshell
             shell-default-term-shell "/bin/zsh"
-            shell-default-height 30
-            shell-default-position 'bottom)
+            shell-default-position 'full
+            shell-protect-eshell-prompt nil)
      spacemacs-visual
      spacemacs-editing-visual
      sql
@@ -930,7 +930,15 @@ See also `org-save-all-org-buffers'"
 
   ;; No mouse in console, so as to enable using mouse to select-&-copy things.
   (xterm-mouse-mode -1)
+
   (xclip-mode 1)
+  (setq wayland-detected nil)
+  (add-to-list 'after-make-frame-functions
+               (lambda (_frame)
+                 (when (and (getenv "WAYLAND_DISPLAY") (not wayland-detected))
+                   (setq wayland-detected t)
+                   (setq xclip-method 'wl-copy)
+                   (setq xclip-program "wl-copy"))))
 
   ;; Replace Ctrl+S with helm-swoop
   (global-set-key (kbd "C-s") 'helm-swoop)
@@ -1363,6 +1371,7 @@ See also `org-save-all-org-buffers'"
            (new-entries (butlast copyq-entries (- (length copyq-entries) (or new-entry-index (length copyq-entries))))))
       (setq kill-ring (append new-entries kill-ring))))
   (add-function :after after-focus-change-function #'copyq--sync-clipboard-with-kill-ring)
+  (setq interprogram-paste-function (lambda () (copyq--sync-clipboard-with-kill-ring 1) nil))
 
   ;; Global visual line mode
   (global-visual-line-mode 1)
