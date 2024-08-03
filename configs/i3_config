@@ -6,6 +6,7 @@
 #
 # Meta key. Use Mod1 for Alt.
 set $mod Mod4
+set $modminor Mod1
 # Vim-like direction keys
 set $left h
 set $down j
@@ -38,7 +39,7 @@ bindsym $mod+Return exec $term
 bindsym $mod+Shift+q kill
 
 # start an app launcher
-bindsym alt+space exec $menu
+bindsym $modminor+space exec $menu
 
 # whenever right mouse button is pushed on titlebar or border, close the window
 bindsym --release --border button3 kill
@@ -228,7 +229,10 @@ exec which i3_window_back_and_forth.py && i3_window_back_and_forth.py || true
 #for_window [title="Desktop @ QRect.*"] kill; floating enable; border none
 
 ### Settings for integration with LXQt (Wayland) + Sway
-exec lxqt-session && sway exit
+
+for_window [class="lxqt-notificationd"] floating enable
+
+exec lxqt-session 2>&1 >> /tmp/lxqt-session-log && sway exit
 input * {
     xkb_layout "us"
     xkb_variant "colemak,,typewriter"
@@ -239,6 +243,8 @@ bar {
     position bottom
     mode hide
     hidden_state hide
-    tray_output none
+    status_command i3status
 }
+output HDMI-A-1 mode 1920x1080@120Hz position 0 0
 include /etc/sway/config.d/*
+exec systemctl --user start sway-session.target

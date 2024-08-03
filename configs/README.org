@@ -99,14 +99,18 @@ See https://github.com/syl20bnr/spacemacs/issues/15896.
   ln -s absolute_path_to_this_dir/.zshrc ~/.zshrc
 #+end_src
 
-* i3 + KDE Plasma 6
+* i3/Sway + LXQt
 
 An opinionated i3 configuration.
-(It does not configure any panels since personally I use the bars / panels provided by the corresponding Desktop Environment (Plasma 6 in this case).
+(Its configuration against bars are simplistic
+since personally I use the bars / panels provided by the corresponding Desktop Environment.)
 
 ** Prerequisites
 
+Please note that you will need to accommodate the config to your own setup.
+
 - ~i3~ / ~sway~: The window manager.
+- ~i3status~: For the status bar.
 
 - i3 specific:
   - ~picom~: Compositor.
@@ -115,20 +119,26 @@ An opinionated i3 configuration.
 
 - Sway specific:
   - ~lxqt~: The DE.
+  - ~sway-contrib~: For ~sway-session.target~.
+
+- Also, please put [[file:~/Workspaces/sys-jumble/scripts/][~../scripts~]] into ~PATH~ so that shortcuts bind correctly to the scripts.
 
 ** Usage
 
 Edit the config according to your setup (most of them are located at the end of the file).
 
 #+begin_src shell
+  # i3
   ln -s absolute_path_to_this_dir/i3_config ~/.config/i3/config
+  # sway
+  ln -s absolute_path_to_this_dir/i3_config ~/.config/sway/config
 #+end_src
 
 ** Extra configuration
 
 *** Launch i3 from Xfce
 
-**DEPRECATED**: This configuration is not updated any more because I have switched to KDE Plasma.
+**DEPRECATED**: This configuration is not updated any more because I have switched to LXQt.
 
 #+begin_src shell
   xfconf-query -c xfce4-session -p /sessions/Failsafe/Client0_Command -t string -sa "xfsettingsd"
@@ -139,7 +149,9 @@ Edit the config according to your setup (most of them are located at the end of 
 
 *** Launch i3 from KDE Plasma 6
 
-I couldn't get Sway + KDE Plasma 6 (Wayland) to work. So I will go with a i3 + Plasma 6 (X11) setup.
+**DEPRECATED**: This configuration is not updated any more because I have switched to LXQt.
+
+I couldn't get Sway + KDE Plasma 6 (Wayland) to work. So I went with a i3 + Plasma 6 (X11) setup.
 
 Following the guide from https://wiki.archlinux.org/title/KDE#Use_a_different_window_manager and https://github.com/heckelson/i3-and-kde-plasma,
 one should:
@@ -176,6 +188,12 @@ one should:
 This setup automatically kills the window which KDE uses as their desktop.
 However, as is stated in [[https://github.com/heckelson/i3-and-kde-plasma?tab=readme-ov-file#killing-the-existing-window-that-covers-everything][Killing the existing window that covers everything - i3-and-kde-plasma]],
 you will need to change the configuration if your system language is not English.
+
+*** Sway + LXQt
+
+1. Ensure you have LXQt 2.0 or above.
+
+2. Grab necesary files from [[https://github.com/stefonarch/LXQt-Wayland-files/][stefonarch/LXQt-Wayland-files]] (or use [[file:../pkgbuilds/lxqt-wayland-config/PKGBUILD]]).
 
 ** Remove gtk window border
 
