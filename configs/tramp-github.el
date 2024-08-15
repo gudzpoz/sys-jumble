@@ -138,7 +138,7 @@ Optional argument ARGS is a list of arguments to pass to the OPERATION."
   (let* ((owner (tramp-file-name-host vec))
          (repo (tramp-file-name-user vec))
          (url (format "https://api.github.com/repos/%s/%s" owner repo))
-         (response (json-parse-string (tramp-github--url-get url vec))))
+         (response (tramp-github--parse-json (tramp-github--url-get url vec) vec)))
     (url-hexify-string (gethash "default_branch" response))))
 
 (defun tramp-github--list-repo-branches (vec)
@@ -146,7 +146,7 @@ Optional argument ARGS is a list of arguments to pass to the OPERATION."
   (let* ((owner (tramp-file-name-host vec))
          (repo (tramp-file-name-user vec))
          (url (format "https://api.github.com/repos/%s/%s/branches" owner repo))
-         (response (json-parse-string (tramp-github--url-get url vec))))
+         (response (tramp-github--parse-json (tramp-github--url-get url vec) vec)))
     (mapcar (lambda (branch) (url-hexify-string (gethash "name" branch))) response)))
 
 (defun tramp-github--list-directory (path vec)
@@ -155,7 +155,7 @@ Optional argument ARGS is a list of arguments to pass to the OPERATION."
   (if (or (equal path "") (equal path "/"))
       (mapcar (apply-partially #'list 'dir) (tramp-github--list-repo-branches vec))
     (let* ((url (tramp-github-create-file-url path vec))
-           (response (json-parse-string (tramp-github--url-get url vec)))
+           (response (tramp-github--parse-json (tramp-github--url-get url vec) vec))
            (type (intern (gethash "type" response))))
       (if (not (eq type 'dir)) type
         (mapcar (lambda (item) (list
@@ -168,7 +168,7 @@ Optional argument ARGS is a list of arguments to pass to the OPERATION."
   (let* ((url (tramp-github-create-file-url path vec))
          (type (tramp-github--list-directory path vec)))
     (if (not (eq 'file type)) type
-      (let* ((info (tramp-github--url-get url vec))
+      (let* ((info (tramp-github--parse-json (tramp-github--url-get url vec) vec))
              (content (gethash "content" info))
              (encoding (gethash "encoding" info)))
         (if (equal encoding "base64")
@@ -230,7 +230,12 @@ Search for `NOTE' in the comments to see the only modification to expand a defau
       (if (not parent) t
         (let ((info (tramp-github--parse-json (tramp-github--url-get url vec) vec)))
           (seq-filter (lambda (item) (equal name (gethash "name" item)))
-                      (gethash "entries" info)))))))
+                      (if (typep info 'hash-table)
+                          (gethash "entries" info)
+                        ;; Although we request application/vnd.github.object+json,
+                        ;; GitHub sometimes still returns an array instead of an object.
+                        ;; No idea why...
+                        info)))))))
 
 (defun tramp-github-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for Tramp files.
@@ -241,10 +246,10 @@ Optional argument ID-FORMAT ignored."
     (with-parsed-tramp-file-name
         (expand-file-name filename) nil
       (with-tramp-file-property v localname (format "file-attributes-%s" id-format)
-                                (when (tramp-github--file-exists-pre-p localname v)
-                                  (let* ((url (tramp-github-create-file-url localname v))
-                                         (info (tramp-github--parse-json (tramp-github--url-get url v) v)))
-                                    (tramp-github--decode-file-status info v)))))))
+        (when (tramp-github--file-exists-pre-p localname v)
+          (let* ((url (tramp-github-create-file-url localname v))
+                 (info (tramp-github--parse-json (tramp-github--url-get url v) v)))
+            (tramp-github--decode-file-status info v)))))))
 
 (defun tramp-github--parse-json (string vec)
   "Convert supplied JSON to Lisp notation.
@@ -328,13 +333,13 @@ These are all file names in directory DIRECTORY which begin with FILE."
    (with-parsed-tramp-file-name
        directory nil
      (with-tramp-file-property
-      v localname "file-name-all-completions"
-      (let ((file-list (tramp-github--list-directory localname v)))
-        (mapcar (lambda (pair)
-                  (let ((type (car pair))
-                        (name (cadr pair)))
-                    (concat name (if (eq type 'dir) "/" ""))))
-                file-list))))))
+         v localname "file-name-all-completions"
+       (let ((file-list (tramp-github--list-directory localname v)))
+         (mapcar (lambda (pair)
+                   (let ((type (car pair))
+                         (name (cadr pair)))
+                     (concat name (if (eq type 'dir) "/" ""))))
+                 file-list))))))
 
 (defun tramp-github-handle-insert-directory
     (filename switches &optional wildcard full-directory-p)

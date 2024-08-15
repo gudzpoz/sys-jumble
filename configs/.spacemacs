@@ -129,6 +129,7 @@ This function should only modify configuration layer settings."
                                       ellama
                                       ement
                                       eshell-vterm
+                                      esup
                                       (ready-player :location (recipe :fetcher github :repo "xenodium/ready-player"))
                                       emacs-everywhere
                                       evil-easymotion
@@ -723,7 +724,8 @@ dump."
           ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
            :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
            :unnarrowed t)))
-  (org-roam-db-autosync-mode)
+  ;; (org-roam-db-autosync-mode) ;; See `mine/preload-time-consuming-libs'
+
   ;; Org-roam-protocol
   (require 'org-protocol)
   (require 'org-roam-protocol)
@@ -1046,7 +1048,7 @@ See also `org-save-all-org-buffers'"
   (spacemacs/set-leader-keys "bS" 'lisp-scratch-buffer)
 
   ;; Open files with zoxide
-  (spacemacs/set-leader-keys "fd" 'zoxide-find-file)
+  (spacemacs/set-leader-keys "fF" 'zoxide-find-file)
 
   ;; Persp fixes
   (setq persp-old-state-put-fn persp-window-state-put-function)
@@ -1317,11 +1319,7 @@ See also `org-save-all-org-buffers'"
           ("~/Workspaces/" . 2)))
 
   ;; Magit-delta config
-  (require 'magit-delta)
-  (setq magit-delta-delta-args (append magit-delta-delta-args
-                                       '(
-                                         "--wrap-max-lines" "unlimited"
-                                         "--max-line-length" "0")))
+  ;; (require 'magit-delta) ;; See `mine/preload-time-consuming-libs'
 
   )
 
@@ -1502,6 +1500,23 @@ so as to avoid exposing them in config files."
 
   )
 
+(defun mine/preload-time-consuming-libs ()
+  "Several libraries takes a long time (seconds, frozen) to load,
+so we load them here."
+  (run-with-idle-timer
+   30 nil (lambda ()
+            ;; See also `mine/org-config'
+            (org-roam-db-autosync-mode)
+            ;; Better magit diffs. See also `mine/git-config'
+            (require 'magit-delta)
+            (setq magit-delta-delta-args (append magit-delta-delta-args
+                                                 '("--wrap-max-lines" "unlimited"
+                                                   "--max-line-length" "0")))
+            ;; https://github.com/tuhdo/semantic-refactor for every elisp buffer
+            (spacemacs/load-srefactor)))
+
+  )
+
 
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
@@ -1528,6 +1543,8 @@ before packages are loaded."
   (mine/tramp-config)
   (mine/wc-config)
   (mine/whitespace-config)
+
+  (mine/preload-time-consuming-libs)
 
   )
 
