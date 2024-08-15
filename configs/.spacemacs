@@ -55,10 +55,10 @@ This function should only modify configuration layer settings."
           git-enable-magit-todos-plugin t
           git-magit-status-fullscreen t)
      go
-     helm
      helpful
      html
      ibuffer
+     ivy
      java
      (javascript :variables
                  js2-basic-offset 2
@@ -92,8 +92,7 @@ This function should only modify configuration layer settings."
      (shell :variables
             shell-default-shell 'eshell
             shell-default-term-shell "/bin/zsh"
-            shell-default-position 'full
-            shell-protect-eshell-prompt nil)
+            shell-default-position 'full)
      spacemacs-visual
      spacemacs-editing-visual
      sql
@@ -129,6 +128,7 @@ This function should only modify configuration layer settings."
                                       (edraw :location (recipe :fetcher github :repo "misohena/el-easydraw"))
                                       ellama
                                       ement
+                                      eshell-vterm
                                       (ready-player :location (recipe :fetcher github :repo "xenodium/ready-player"))
                                       emacs-everywhere
                                       evil-easymotion
@@ -144,6 +144,8 @@ This function should only modify configuration layer settings."
                                       rotate
                                       scratch
                                       super-save
+                                      (tramp-github :location (recipe :fetcher url
+                                                                      :url "https://cdn.jsdelivr.net/gh/gudzpoz/sys-jumble@main/configs/tramp-github.el"))
                                       wc-mode
                                       xclip
                                       zoxide
@@ -940,10 +942,10 @@ See also `org-save-all-org-buffers'"
                    (setq xclip-method 'wl-copy)
                    (setq xclip-program "wl-copy"))))
 
-  ;; Replace Ctrl+S with helm-swoop
-  (global-set-key (kbd "C-s") 'helm-swoop)
-  (global-set-key (kbd "C-r") 'helm-swoop-back-to-last-point)
-  (define-key evil-normal-state-map (kbd "C-r") 'helm-swoop-back-to-last-point)
+  ;; Replace Ctrl+S with swiper
+  (global-set-key (kbd "C-s") #'swiper)
+  (global-set-key (kbd "C-r") #'swiper-backward)
+  (define-key evil-normal-state-map (kbd "C-r") #'swiper-backward)
 
   )
 
@@ -1007,9 +1009,6 @@ See also `org-save-all-org-buffers'"
   (define-key evil-motion-state-map (kbd "b") 'cns-backward-word)
   (define-key evil-visual-state-map (kbd "b") 'cns-backward-word)
   (define-key evil-operator-state-map (kbd "b") 'cns-backward-word)
-
-  (setq helm-ag-base-command "rg --no-heading --line-number --color never")
-  (setq helm-ag-success-exit-status '(0 2))
 
   )
 
@@ -1199,7 +1198,6 @@ See also `org-save-all-org-buffers'"
   ;; (setq tramp-verbose 10)
   ;; Set it to nil, if you use Control* or Proxy* options in your ssh configuration.
   (setq tramp-use-ssh-controlmaster-options nil)
-  (setq helm-tramp-control-master t)
 
   )
 
@@ -1449,6 +1447,22 @@ so as to avoid exposing them in config files."
   (spacemacs/set-leader-keys "acmm" 'ement-notify-switch-to-mentions-buffer)
   (spacemacs/set-leader-keys "acmn" 'ement-notify-switch-to-notifications-buffer)
 
+  ;; Eshell
+  (setq eshell-modules-list
+        '(eshell-alias
+          eshell-basic
+          eshell-cmpl
+          eshell-dirs
+          eshell-extpipe
+          eshell-glob
+          eshell-hist
+          eshell-ls
+          eshell-pred
+          eshell-prompt
+          eshell-script
+          eshell-term
+          eshell-unix))
+
   ;; Mastodon.el
   (read-mastodon-compat-info)
   (spacemacs/declare-prefix "acf" "fediverse")
@@ -1525,118 +1539,118 @@ before packages are loaded."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(auth-source-save-behavior nil)
- '(connection-local-criteria-alist
-   '(((:application eshell)
-      eshell-connection-default-profile)
-     ((:application tramp :protocol "flatpak")
-      tramp-container-connection-local-default-flatpak-profile)
-     ((:application tramp)
-      tramp-connection-local-default-system-profile tramp-connection-local-default-shell-profile)))
- '(connection-local-profile-alist
-   '((eshell-connection-default-profile
-      (eshell-path-env-list))
-     (tramp-container-connection-local-default-flatpak-profile
-      (tramp-remote-path "/app/bin" tramp-default-remote-path "/bin" "/usr/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin" "/opt/bin" "/opt/sbin" "/opt/local/bin"))
-     (tramp-connection-local-darwin-ps-profile
-      (tramp-process-attributes-ps-args "-acxww" "-o" "pid,uid,user,gid,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state=abcde" "-o" "ppid,pgid,sess,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etime,pcpu,pmem,args")
-      (tramp-process-attributes-ps-format
-       (pid . number)
-       (euid . number)
-       (user . string)
-       (egid . number)
-       (comm . 52)
-       (state . 5)
-       (ppid . number)
-       (pgrp . number)
-       (sess . number)
-       (ttname . string)
-       (tpgid . number)
-       (minflt . number)
-       (majflt . number)
-       (time . tramp-ps-time)
-       (pri . number)
-       (nice . number)
-       (vsize . number)
-       (rss . number)
-       (etime . tramp-ps-time)
-       (pcpu . number)
-       (pmem . number)
-       (args)))
-     (tramp-connection-local-busybox-ps-profile
-      (tramp-process-attributes-ps-args "-o" "pid,user,group,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "stat=abcde" "-o" "ppid,pgid,tty,time,nice,etime,args")
-      (tramp-process-attributes-ps-format
-       (pid . number)
-       (user . string)
-       (group . string)
-       (comm . 52)
-       (state . 5)
-       (ppid . number)
-       (pgrp . number)
-       (ttname . string)
-       (time . tramp-ps-time)
-       (nice . number)
-       (etime . tramp-ps-time)
-       (args)))
-     (tramp-connection-local-bsd-ps-profile
-      (tramp-process-attributes-ps-args "-acxww" "-o" "pid,euid,user,egid,egroup,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state,ppid,pgid,sid,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etimes,pcpu,pmem,args")
-      (tramp-process-attributes-ps-format
-       (pid . number)
-       (euid . number)
-       (user . string)
-       (egid . number)
-       (group . string)
-       (comm . 52)
-       (state . string)
-       (ppid . number)
-       (pgrp . number)
-       (sess . number)
-       (ttname . string)
-       (tpgid . number)
-       (minflt . number)
-       (majflt . number)
-       (time . tramp-ps-time)
-       (pri . number)
-       (nice . number)
-       (vsize . number)
-       (rss . number)
-       (etime . number)
-       (pcpu . number)
-       (pmem . number)
-       (args)))
-     (tramp-connection-local-default-shell-profile
-      (shell-file-name . "/bin/sh")
-      (shell-command-switch . "-c"))
-     (tramp-connection-local-default-system-profile
-      (path-separator . ":")
-      (null-device . "/dev/null"))))
- '(magit-todos-exclude-globs '(".git/" "*.map"))
- '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
- '(package-selected-packages
-   '(bbcode-mode mastodon typescript-mode company-web web-completion-data counsel-css emmet-mode helm-css-scss pug-mode sass-mode haml-mode scss-mode slim-mode tagedit web-mode docker-compose-mode dockerfile-mode yaml-mode protobuf-mode pip-requirements pipenv load-env-vars pippel poetry py-isort pydoc pyenv-mode pythonic pylookup pytest pyvenv sphinx-doc stickyfunc-enhance xcscope yapfify realgud test-simple loc-changes load-relative company-go flycheck-golangci-lint go-eldoc go-fill-struct go-gen-test go-guru go-impl go-rename go-tag go-mode godoctor wc-mode nginx-mode add-node-modules-path impatient-mode import-js grizzl js-doc js2-refactor multiple-cursors livid-mode nodejs-repl npm-mode prettier-js skewer-mode js2-mode simple-httpd tern web-beautify systemd journalctl-mode cargo counsel-gtags counsel swiper ivy dap-mode bui flycheck-rust ggtags helm-gtags racer pos-tip ron-mode rust-mode toml-mode evil-goggles vim-powerline mwim org-superstar nameless toc-org unfill evil-visual-mark-mode expand-region string-edit-at-point golden-ratio org-projectile hl-todo hide-comnt column-enforce-mode eshell-z gitignore-templates shell-pop dotenv-mode link-hint helm-purpose drag-stuff helm-company auto-dictionary holy-mode which-key symon auto-compile ace-link evil-iedit-state string-inflection helm-ls-git writeroom-mode evil-args macrostep ac-ispell editorconfig elisp-def ibuffer-projectile helm-make password-generator fancy-battery treemacs-magit evil-cleverparens info+ gh-md git-modes git-messenger xterm-color rainbow-delimiters fcitx evil-mc evil-anzu overseer org-rich-yank highlight-indentation helm-c-yasnippet define-word gnuplot htmlize smeargle flycheck-package helm-xref auto-highlight-symbol treemacs-projectile evil-tutor hybrid-mode markdown-toc indent-guide evil-lion fuzzy helm-swoop org-download evil-snipe term-cursor volatile-highlights dumb-jump helm-mode-manager evil-indent-plus clean-aindent-mode space-doc quickrun evil-matchit git-link treemacs-persp helm-projectile evil-visualstar restart-emacs eval-sexp-fu ws-butler flycheck-elsa esh-help helm-org-rifle spacemacs-whitespace-cleanup helm-git-grep paradox help-fns+ evil-lisp-state vi-tilde-fringe highlight-parentheses helm-descbinds evil-textobj-line lorem-ipsum terminal-here dired-quick-sort multi-line org-present google-translate open-junk-file org-pomodoro multi-vterm flyspell-correct-helm devdocs evil-surround centered-cursor-mode yasnippet-snippets winum evil-evilified-state diminish org-mime emacs-everywhere spaceline-all-the-icons evil-collection undo-tree treemacs-icons-dired symbol-overlay spacemacs-purpose-popwin evil-escape flx-ido evil-numbers ace-jump-helm-line popwin evil-easymotion auto-yasnippet eshell-prompt-extras evil-nerd-commenter treemacs-evil emr evil-exchange eyebrowse org-cliplink multi-term aggressive-indent uuidgen texfrag evil-org org-alert orgit-forge request hungry-delete helm-themes mmm-mode elisp-slime-nav git-timemachine font-lock+ helm-org evil-unimpaired pcre2el highlight-numbers inspector))
- '(rst-new-adornment-down t)
- '(rst-preferred-adornments
-   '((35 over-and-under 1)
-     (61 over-and-under 0)
-     (61 simple 0)
-     (45 simple 0)
-     (126 simple 0)
-     (43 simple 0)
-     (34 simple 0)
-     (46 simple 0)))
- '(safe-local-variable-values
-   '((magit-todos-exclude-globs "*/build/*")
-     (javascript-backend . tide)
-     (javascript-backend . tern))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(markdown-code-face ((t (:family "Sarasa Term SC Nerd" :inherit fixed-pitch)))))
-)
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(auth-source-save-behavior nil)
+   '(connection-local-criteria-alist
+     '(((:application eshell)
+        eshell-connection-default-profile)
+       ((:application tramp :protocol "flatpak")
+        tramp-container-connection-local-default-flatpak-profile)
+       ((:application tramp)
+        tramp-connection-local-default-system-profile tramp-connection-local-default-shell-profile)))
+   '(connection-local-profile-alist
+     '((eshell-connection-default-profile
+        (eshell-path-env-list))
+       (tramp-container-connection-local-default-flatpak-profile
+        (tramp-remote-path "/app/bin" tramp-default-remote-path "/bin" "/usr/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin" "/opt/bin" "/opt/sbin" "/opt/local/bin"))
+       (tramp-connection-local-darwin-ps-profile
+        (tramp-process-attributes-ps-args "-acxww" "-o" "pid,uid,user,gid,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state=abcde" "-o" "ppid,pgid,sess,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etime,pcpu,pmem,args")
+        (tramp-process-attributes-ps-format
+         (pid . number)
+         (euid . number)
+         (user . string)
+         (egid . number)
+         (comm . 52)
+         (state . 5)
+         (ppid . number)
+         (pgrp . number)
+         (sess . number)
+         (ttname . string)
+         (tpgid . number)
+         (minflt . number)
+         (majflt . number)
+         (time . tramp-ps-time)
+         (pri . number)
+         (nice . number)
+         (vsize . number)
+         (rss . number)
+         (etime . tramp-ps-time)
+         (pcpu . number)
+         (pmem . number)
+         (args)))
+       (tramp-connection-local-busybox-ps-profile
+        (tramp-process-attributes-ps-args "-o" "pid,user,group,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "stat=abcde" "-o" "ppid,pgid,tty,time,nice,etime,args")
+        (tramp-process-attributes-ps-format
+         (pid . number)
+         (user . string)
+         (group . string)
+         (comm . 52)
+         (state . 5)
+         (ppid . number)
+         (pgrp . number)
+         (ttname . string)
+         (time . tramp-ps-time)
+         (nice . number)
+         (etime . tramp-ps-time)
+         (args)))
+       (tramp-connection-local-bsd-ps-profile
+        (tramp-process-attributes-ps-args "-acxww" "-o" "pid,euid,user,egid,egroup,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state,ppid,pgid,sid,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etimes,pcpu,pmem,args")
+        (tramp-process-attributes-ps-format
+         (pid . number)
+         (euid . number)
+         (user . string)
+         (egid . number)
+         (group . string)
+         (comm . 52)
+         (state . string)
+         (ppid . number)
+         (pgrp . number)
+         (sess . number)
+         (ttname . string)
+         (tpgid . number)
+         (minflt . number)
+         (majflt . number)
+         (time . tramp-ps-time)
+         (pri . number)
+         (nice . number)
+         (vsize . number)
+         (rss . number)
+         (etime . number)
+         (pcpu . number)
+         (pmem . number)
+         (args)))
+       (tramp-connection-local-default-shell-profile
+        (shell-file-name . "/bin/sh")
+        (shell-command-switch . "-c"))
+       (tramp-connection-local-default-system-profile
+        (path-separator . ":")
+        (null-device . "/dev/null"))))
+   '(magit-todos-exclude-globs '(".git/" "*.map"))
+   '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
+   '(package-selected-packages
+     '(tramp-github bbcode-mode mastodon typescript-mode company-web web-completion-data counsel-css emmet-mode helm-css-scss pug-mode sass-mode haml-mode scss-mode slim-mode tagedit web-mode docker-compose-mode dockerfile-mode yaml-mode protobuf-mode pip-requirements pipenv load-env-vars pippel poetry py-isort pydoc pyenv-mode pythonic pylookup pytest pyvenv sphinx-doc stickyfunc-enhance xcscope yapfify realgud test-simple loc-changes load-relative company-go flycheck-golangci-lint go-eldoc go-fill-struct go-gen-test go-guru go-impl go-rename go-tag go-mode godoctor wc-mode nginx-mode add-node-modules-path impatient-mode import-js grizzl js-doc js2-refactor multiple-cursors livid-mode nodejs-repl npm-mode prettier-js skewer-mode js2-mode simple-httpd tern web-beautify systemd journalctl-mode cargo counsel-gtags counsel swiper ivy dap-mode bui flycheck-rust ggtags helm-gtags racer pos-tip ron-mode rust-mode toml-mode evil-goggles vim-powerline mwim org-superstar nameless toc-org unfill evil-visual-mark-mode expand-region string-edit-at-point golden-ratio org-projectile hl-todo hide-comnt column-enforce-mode eshell-z gitignore-templates shell-pop dotenv-mode link-hint helm-purpose drag-stuff helm-company auto-dictionary holy-mode which-key symon auto-compile ace-link evil-iedit-state string-inflection helm-ls-git writeroom-mode evil-args macrostep ac-ispell editorconfig elisp-def ibuffer-projectile helm-make password-generator fancy-battery treemacs-magit evil-cleverparens info+ gh-md git-modes git-messenger xterm-color rainbow-delimiters fcitx evil-mc evil-anzu overseer org-rich-yank highlight-indentation helm-c-yasnippet define-word gnuplot htmlize smeargle flycheck-package helm-xref auto-highlight-symbol treemacs-projectile evil-tutor hybrid-mode markdown-toc indent-guide evil-lion fuzzy helm-swoop org-download evil-snipe term-cursor volatile-highlights dumb-jump helm-mode-manager evil-indent-plus clean-aindent-mode space-doc quickrun evil-matchit git-link treemacs-persp helm-projectile evil-visualstar restart-emacs eval-sexp-fu ws-butler flycheck-elsa esh-help helm-org-rifle spacemacs-whitespace-cleanup helm-git-grep paradox help-fns+ evil-lisp-state vi-tilde-fringe highlight-parentheses helm-descbinds evil-textobj-line lorem-ipsum terminal-here dired-quick-sort multi-line org-present google-translate open-junk-file org-pomodoro multi-vterm flyspell-correct-helm devdocs evil-surround centered-cursor-mode yasnippet-snippets winum evil-evilified-state diminish org-mime emacs-everywhere spaceline-all-the-icons evil-collection undo-tree treemacs-icons-dired symbol-overlay spacemacs-purpose-popwin evil-escape flx-ido evil-numbers ace-jump-helm-line popwin evil-easymotion auto-yasnippet eshell-prompt-extras evil-nerd-commenter treemacs-evil emr evil-exchange eyebrowse org-cliplink multi-term aggressive-indent uuidgen texfrag evil-org org-alert orgit-forge request hungry-delete helm-themes mmm-mode elisp-slime-nav git-timemachine font-lock+ helm-org evil-unimpaired pcre2el highlight-numbers inspector))
+   '(rst-new-adornment-down t)
+   '(rst-preferred-adornments
+     '((35 over-and-under 1)
+       (61 over-and-under 0)
+       (61 simple 0)
+       (45 simple 0)
+       (126 simple 0)
+       (43 simple 0)
+       (34 simple 0)
+       (46 simple 0)))
+   '(safe-local-variable-values
+     '((magit-todos-exclude-globs "*/build/*")
+       (javascript-backend . tide)
+       (javascript-backend . tern))))
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(markdown-code-face ((t (:family "Sarasa Term SC Nerd" :inherit fixed-pitch)))))
+  )

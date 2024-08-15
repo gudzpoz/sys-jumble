@@ -1,4 +1,4 @@
-;;; tramp-github.el --- Tramp extension to access GitHub repo in Emacs
+;;; tramp-github.el --- Tramp extension to access GitHub repo in Emacs  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2024 The Tramp GitHub Developers
 ;;
@@ -35,6 +35,7 @@
 (require 'tramp-compat)
 (require 'json)
 
+;;;###autoload
 (defconst tramp-github-method "gh"
   "Method to browse GitHub repos.")
 
@@ -56,13 +57,13 @@ If you are access a directory with over a thousand files, consider disabling thi
 
 ;; It must be a `defsubst' in order to push the whole code into
 ;; tramp-loaddefs.el.  Otherwise, there would be recursive autoloading.
-;;;###tramp-autoload
+;;;###autoload
 (defsubst tramp-github-file-name-p (vec-or-filename)
   "Check if it's a FILENAME for GitHub TRAMP."
   (when-let* ((vec (tramp-ensure-dissected-file-name vec-or-filename)))
     (string= (tramp-file-name-method vec) tramp-github-method)))
 
-;;;###tramp-autoload
+;;;###autoload
 (defun tramp-github-file-name-handler (operation &rest args)
   "Invoke GitHub related OPERATION.
 First arg specifies the OPERATION, second arg is a list of arguments to
@@ -197,7 +198,8 @@ Search for `NOTE' in the comments to see the only modification to expand a defau
   (if (not (tramp-connectable-p name))
       (tramp-run-real-handler 'expand-file-name (list name nil))
     ;; Dissect NAME.
-    (with-parsed-tramp-file-name name nil
+    (with-parsed-tramp-file-name
+        name nil
       (unless (tramp-run-real-handler 'file-name-absolute-p (list localname))
         ;; NOTE: The following line is the only modification.
         (setq localname (concat "/" (tramp-github--get-default-branch v) "/" localname)))
@@ -236,12 +238,13 @@ Argument FILENAME the file.
 Optional argument ID-FORMAT ignored."
   (unless id-format (setq id-format 'integer))
   (ignore-errors
-    (with-parsed-tramp-file-name (expand-file-name filename) nil
+    (with-parsed-tramp-file-name
+        (expand-file-name filename) nil
       (with-tramp-file-property v localname (format "file-attributes-%s" id-format)
-        (when (tramp-github--file-exists-pre-p localname v)
-          (let* ((url (tramp-github-create-file-url localname v))
-                 (info (tramp-github--parse-json (tramp-github--url-get url v) v)))
-            (tramp-github--decode-file-status info v)))))))
+                                (when (tramp-github--file-exists-pre-p localname v)
+                                  (let* ((url (tramp-github-create-file-url localname v))
+                                         (info (tramp-github--parse-json (tramp-github--url-get url v) v)))
+                                    (tramp-github--decode-file-status info v)))))))
 
 (defun tramp-github--parse-json (string vec)
   "Convert supplied JSON to Lisp notation.
@@ -298,7 +301,8 @@ FILENAME the filename to check."
 (defun tramp-github-handle-file-local-copy (filename)
   "Like `file-local-copy' for Tramp files.
 FILENAME the filename to be copied locally."
-  (with-parsed-tramp-file-name filename nil
+  (with-parsed-tramp-file-name
+      filename nil
     (unless (and (file-exists-p filename) (not (file-directory-p filename)))
       (tramp-error
        v 'file-error
@@ -321,20 +325,23 @@ Return a list of all completions of file name FILE in directory DIRECTORY.
 These are all file names in directory DIRECTORY which begin with FILE."
   (all-completions
    file
-   (with-parsed-tramp-file-name directory nil
-     (with-tramp-file-property v localname "file-name-all-completions"
-       (let ((file-list (tramp-github--list-directory localname v)))
-         (mapcar (lambda (pair)
-                   (let ((type (car pair))
-                         (name (cadr pair)))
-                     (concat name (if (eq type 'dir) "/" ""))))
-                 file-list))))))
+   (with-parsed-tramp-file-name
+       directory nil
+     (with-tramp-file-property
+      v localname "file-name-all-completions"
+      (let ((file-list (tramp-github--list-directory localname v)))
+        (mapcar (lambda (pair)
+                  (let ((type (car pair))
+                        (name (cadr pair)))
+                    (concat name (if (eq type 'dir) "/" ""))))
+                file-list))))))
 
 (defun tramp-github-handle-insert-directory
     (filename switches &optional wildcard full-directory-p)
   "Like `insert-directory' for Tramp files."
   (setq filename (expand-file-name filename))
-  (with-parsed-tramp-file-name filename nil
+  (with-parsed-tramp-file-name
+      filename nil
     (save-match-data
       (with-current-buffer (current-buffer)
         (insert (mapconcat (lambda (pair)
@@ -414,18 +421,15 @@ These are all file names in directory DIRECTORY which begin with FILE."
 Operations not mentioned here will be handled by the default Emacs primitives.")
 
 ;; ... and add it to the method list.
-;;;###tramp-autoload
-(add-to-list 'tramp-methods
-             `(,tramp-github-method))
-(add-to-list 'tramp-default-user-alist
-             `(,(concat
-                 "\\`"
-                 (regexp-opt '("gh"))
-                 "\\'")
-               nil "main"))
+;;;###autoload
+(eval-after-load 'tramp
+  (lambda ()
+    (add-to-list 'tramp-methods
+                 `(,tramp-github-method))
+    (add-to-list 'tramp-foreign-file-name-handler-alist
+                 (cons #'tramp-github-file-name-p #'tramp-github-file-name-handler))))
+
 (tramp-set-completion-function tramp-github-method '())
-(add-to-list 'tramp-foreign-file-name-handler-alist
-             (cons 'tramp-github-file-name-p 'tramp-github-file-name-handler))
 (add-hook 'tramp-unload-hook (lambda () (unload-feature 'tramp-github 'force)))
 
 (provide 'tramp-github)
