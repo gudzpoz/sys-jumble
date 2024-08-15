@@ -36,6 +36,8 @@ COMPLETION_WAITING_DOTS='true'
 ## Oh-my-zsh updates
 zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 zstyle ':omz:update' frequency 15
+## Oh-my-zsh configs
+zstyle ':omz:plugins:nvm' lazy yes
 
 ## Theme
 ZSH_THEME='robbyrussell'
@@ -46,7 +48,7 @@ ZSH_THEME='robbyrussell'
 # DISABLE_UNTRACKED_FILES_DIRTY='true'
 
 ## Plugins
-plugins=(fzf git)
+plugins=(fzf git nvm)
 
 # Enable oh-my-zsh
 source "$ZSH/oh-my-zsh.sh"
@@ -77,6 +79,7 @@ zstyle ':completion:*' max-errors 2
 zstyle ':completion:*' menu select=long
 zstyle ':completion:*' original true
 zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*' use-ip true
 autoload -Uz compinit
 compinit
 
@@ -129,7 +132,7 @@ elif has_bin emacsclient; then
     else
         export EDITOR='emacsclient -nw'
     fi
-    alias vim="$EDITOR"
+    alias vim="TERM=tmux-direct $EDITOR"
     alias emacs='emacsclient -c'
     alias e='emacs'
     alias g='vim --eval "(magit-status)"'
@@ -176,9 +179,4 @@ alias tp='trash-put --verbose'
 # Syntax highlighting
 if [ -f '/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' ]; then
     source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
-
-# NVM
-if [ -f '/usr/share/nvm/init-nvm.sh' ]; then
-    source /usr/share/nvm/init-nvm.sh
 fi
