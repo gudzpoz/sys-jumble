@@ -133,9 +133,8 @@ This function should only modify configuration layer settings."
                                       (ready-player :location (recipe :fetcher github :repo "xenodium/ready-player"))
                                       emacs-everywhere
                                       evil-easymotion
-                                      evil-snipe
                                       fcitx
-                                      flycheck-languagetool
+                                      flycheck-vale
                                       hnreader
                                       jedi
                                       mastodon
@@ -443,6 +442,11 @@ It should only modify the values of Spacemacs settings."
    ;; displayed in the current window. (default nil)
    dotspacemacs-switch-to-buffer-prefers-purpose nil
 
+   ;; Whether side windows (such as those created by treemacs or neotree)
+   ;; are kept or minimized by `spacemacs/toggle-maximize-window' (SPC w m).
+   ;; (default t)
+   dotspacemacs-maximize-window-keep-side-windows t
+
    ;; If non-nil a progress bar is displayed when spacemacs is loading. This
    ;; may increase the boot time on some systems and emacs builds, set it to
    ;; nil to boost the loading time. (default t)
@@ -564,6 +568,13 @@ It should only modify the values of Spacemacs settings."
    ;; (default '("rg" "ag" "pt" "ack" "grep"))
    dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
 
+   ;; The backend used for undo/redo functionality. Possible values are
+   ;; `undo-fu', `undo-redo' and `undo-tree' see also `evil-undo-system'.
+   ;; Note that saved undo history does not get transferred when changing
+   ;; your undo system. The default is currently `undo-fu' as `undo-tree'
+   ;; is not maintained anymore and `undo-redo' is very basic."
+   dotspacemacs-undo-system 'undo-fu
+
    ;; Format specification for setting the frame title.
    ;; %a - the `abbreviated-file-name', or `buffer-name'
    ;; %t - `projectile-project-name'
@@ -642,7 +653,6 @@ default it calls `spacemacs/load-spacemacs-env' which loads the environment
 variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
   (spacemacs/load-spacemacs-env)
-
   )
 
 (defun dotspacemacs/user-init ()
@@ -893,9 +903,7 @@ See also `org-save-all-org-buffers'"
   (define-key evil-normal-state-map (kbd "DEL") #'evil-delete-backward-char)
 
   ;; Undo
-  (setq evil-undo-system 'undo-tree)
-  (setq undo-tree-auto-save-history nil)
-  (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo)
+  (define-key evil-normal-state-map (kbd "U") 'evil-redo)
 
   ;; Stop macro binding
   (define-key evil-normal-state-map (kbd "Q") 'evil-record-macro)
@@ -904,15 +912,9 @@ See also `org-save-all-org-buffers'"
   ;; Closes window instead of quiting
   (evil-ex-define-cmd "q[uit]" 'save-buffers-kill-terminal)
 
-  ;; Snipe
-  (evil-snipe-mode +1)
-  (evil-snipe-override-mode +1)
-  ;; I want s/S bindings back
-  (define-key evil-normal-state-map (kbd "s") 'evil-substitute)
-  (define-key evil-normal-state-map (kbd "S") 'evil-change-whole-line)
-  (evil-define-key* '(motion normal) evil-snipe-local-mode-map
-    "s" nil
-    "S" nil)
+  ;; Avy
+  (define-key evil-normal-state-map (kbd "f") #'evil-avy-goto-char-in-line)
+  (define-key evil-normal-state-map (kbd "F") #'evil-avy-goto-char-2)
 
   ;; Easy motion
   (define-key evil-normal-state-map (kbd "g j") 'evilem-motion-next-visual-line)
@@ -925,7 +927,10 @@ See also `org-save-all-org-buffers'"
     (define-key evil-motion-state-map (kbd "TAB") nil))
 
   ;; Lisp parenthesis
-  (add-hook 'lisp-data-mode-hook #'evil-cleverparens-mode)
+  (setq evil-cleverparens-complete-parens-in-yanked-region t)
+  (add-hook 'prog-mode-hook #'evil-cleverparens-mode)
+  ;; Bug me not
+  (setq sp-message-width nil)
 
   ;; Info mode
   (evil-define-key 'normal Info-mode-map
@@ -956,7 +961,6 @@ See also `org-save-all-org-buffers'"
 
   ;; Diminish minor modes
   (spacemacs|diminish hybrid-mode " Ⓔ" " E")
-  (spacemacs|diminish evil-snipe-local-mode " ⓢ" " s")
   (spacemacs|diminish super-save-mode " ss" " ss")
 
   ;; Turn off things in mode-line
@@ -1266,12 +1270,9 @@ See also `org-save-all-org-buffers'"
         orig-result)))
   (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
 
-  ;; LanguageTool
-  (require 'flycheck-languagetool)
-  (setq flycheck-languagetool-url "http://localhost:8081")
-  (add-hook 'text-mode-hook (lambda ()
-                              (flycheck-languagetool-setup)
-                              (flycheck-mode +1)))
+  ;; Spell checking
+  (require 'flycheck-vale)
+  (flycheck-vale-setup)
 
   )
 
@@ -1348,46 +1349,6 @@ See also `org-save-all-org-buffers'"
 
   ;; More kill-ring contents
   (setq kill-ring-max 1000)
-
-  ;;; Use Emacs as a front-end to CopyQ
-  ;; Without a CopyQ daemon, CopyQ clients always wait for a couple of seconds
-  ;; before raising an error, thus blocking Emacs.
-  (setq copyq-last-failure (time-convert 0 nil))
-  (defun update-copyq-status ()
-    (when (> 60 (time-convert (time-since copyq-last-failure) 'integer))
-      (setq copyq-last-failure
-            (if (= 0 (call-process "copyq" nil nil nil "read" "0"))
-                (time-convert 0 nil)
-              (current-time)))))
-  (defsubst is-copyq-alive () (= 0 (time-convert copyq-last-failure 'integer)))
-  (run-with-idle-timer 15 t #'update-copyq-status)
-  ;; On Wayland (at least Sway), the default mime type for CopyQ (text/plain)
-  ;; can contain encoded data for emojis. We explicitly use text/plain;charset=utf-8.
-  (defun copyq--query-clipboard-history (start count)
-    "Return the clipboard history as a vector of string."
-    (when (is-copyq-alive)
-      (with-temp-buffer
-        (if (= 0 (call-process
-                  "copyq" nil (current-buffer) nil "eval"
-                  (format "JSON.stringify([
-  ...Array(Math.max(0, Math.min(count() - %d, %d))).keys()
-].map((i) => str(read('text/plain;charset=utf-8', i + %d))))"
-                          start count start)))
-            (append (json-parse-string (buffer-string)) nil)
-          (setq copyq-last-failure (current-time))
-          nil))))
-  (defun copyq--sync-clipboard-with-kill-ring (&optional max-entries)
-    "Sync the copyq clipboard with the kill-ring."
-    (interactive "P")
-    (let* ((kill-ring-max-length (or max-entries 50))
-           (copyq-entries (copyq--query-clipboard-history 0 kill-ring-max-length))
-           (new-entry-index (cl-position (car kill-ring) copyq-entries :test (lambda (s1 s2) (equal (string-trim s1) (string-trim s2)))))
-           (new-entries (butlast copyq-entries (- (length copyq-entries) (or new-entry-index (length copyq-entries))))))
-      (when (> (length new-entries) 0)
-        (setq kill-ring (append new-entries kill-ring))
-        (setq kill-ring-yank-pointer kill-ring))))
-  (add-function :after after-focus-change-function #'copyq--sync-clipboard-with-kill-ring)
-  (setq interprogram-paste-function (lambda () (copyq--sync-clipboard-with-kill-ring 1) nil))
 
   ;; Global visual line mode
   (global-visual-line-mode 1)
