@@ -216,6 +216,9 @@ focus_follows_mouse no
 # Mod+tab switching
 exec which i3_window_back_and_forth.py && i3_window_back_and_forth.py || true
 
+# Screenshot
+bindsym Print exec which sway_shot.sh && sway_shot.sh || true
+
 ### Settings specific to i3
 # Handle transparency
 #exec picom
@@ -231,20 +234,20 @@ exec which i3_window_back_and_forth.py && i3_window_back_and_forth.py || true
 ### Settings for integration with LXQt (Wayland) + Sway
 
 for_window [class="lxqt-notificationd"] floating enable
+for_window [title="lxqt-notificationd"] floating enable
+no_focus [title="lxqt-notificationd"]
+no_focus [title="im-emoji-picker"]
 
 exec lxqt-session 2>&1 >> /tmp/lxqt-session-log && sway exit
-input * {
-    xkb_layout "us"
-    xkb_variant "colemak,,typewriter"
-    xkb_options "caps:escape_shifted_capslock"
-}
 # Temporary replacement to malfunctioning LXQt taskbar.
 bar {
     position bottom
     mode hide
     hidden_state hide
     status_command i3status
+    tray_output none
 }
-output HDMI-A-1 mode 1920x1080@120Hz position 0 0
+# Put device config here to avoid uploading them to git by mistake
+include ~/.config/sway/*.conf
 include /etc/sway/config.d/*
 exec systemctl --user start sway-session.target

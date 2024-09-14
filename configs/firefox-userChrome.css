@@ -103,3 +103,9 @@ tab-item[data-level][data-level="3"] {
   left: 22px;
 }
  */
+
+/* The blue dot */
+#unified-extensions-button[attention] > .toolbarbutton-icon,
+.unified-extensions-item[attention] > .unified-extensions-item-action-button.toolbarbutton-1 > .toolbarbutton-badge-stack {
+    background-image: none !important;
+}

@@ -12,8 +12,7 @@ import numpy.typing as npt
 import Xlib
 import Xlib.display
 
-from evdev import InputDevice, ecodes, events
-from pynput.mouse import Controller as MouseController
+from evdev import InputDevice, UInput, ecodes, events
 
 
 _logger = logging.getLogger()
@@ -93,12 +92,12 @@ class ScrollerConfig:
 class WacomScroller:
     wacom: InputDevice
 
-    mouse: MouseController
+    mouse: UInput
 
     pos: npt.NDArray[np.int_]
     last: npt.NDArray[np.int_]
     start: npt.NDArray[np.int_]
-    offset: npt.NDArray[np.float_]
+    offset: npt.NDArray[float]
     down: bool
     drag: bool
 
@@ -107,7 +106,7 @@ class WacomScroller:
     config: ScrollerConfig
 
     def __init__(
-        self, wacom: InputDevice, mouse: MouseController, config: ScrollerConfig
+        self, wacom: InputDevice, mouse: UInput, config: ScrollerConfig
     ) -> None:
         self.wacom = wacom
         self.mouse = mouse
@@ -168,9 +167,15 @@ class WacomScroller:
                 ) / self.config.scale
                 if np.abs(self.offset).max() > self.config.scroll_threshold:
                     offset = self.offset**3
-                    self.mouse.scroll(-offset[0], offset[1])
+                    self.scroll(offset[0], -offset[1])
                     self.offset = np.zeros(2)
                 self.last = self.pos.copy()
+
+    def scroll(self, x: int, y: int):
+        for _ in range(abs(int(x * 120))):
+            self.mouse.write(ecodes.EV_REL, ecodes.REL_HWHEEL_HI_RES, 1 if x > 0 else -1)
+        for _ in range(abs(int(y * 120))):
+            self.mouse.write(ecodes.EV_REL, ecodes.REL_WHEEL_HI_RES, 1 if y > 0 else -1)
 
 
 parser = argparse.ArgumentParser(
@@ -204,10 +209,19 @@ parser.add_argument(
     default="firefox",
 )
 args = parser.parse_args()
-WacomScroller(get_first_device(), MouseController(), ScrollerConfig(
-    threshold=args.threshold,
-    break_threshold=args.breaking_threshold,
-    scale=args.scale,
-    block_list=[s.strip() for s in args.block_list.split(',')],
-    allow_list=[s.strip() for s in args.allow_list.split(',')],
-)).event_loop()
+WacomScroller(
+    get_first_device(),
+    UInput({ecodes.EV_REL: [
+        ecodes.REL_HWHEEL,
+        ecodes.REL_HWHEEL_HI_RES,
+        ecodes.REL_WHEEL,
+        ecodes.REL_WHEEL_HI_RES,
+    ]}),
+    ScrollerConfig(
+        threshold=args.threshold,
+        break_threshold=args.breaking_threshold,
+        scale=args.scale,
+        block_list=[s.strip() for s in args.block_list.split(',')],
+        allow_list=[s.strip() for s in args.allow_list.split(',')],
+    ),
+).event_loop()
