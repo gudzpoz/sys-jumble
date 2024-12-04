@@ -78,6 +78,7 @@ This function should only modify configuration layer settings."
           org-enable-roam-protocol t
           org-enable-notifications t
           org-start-notification-daemon-on-startup t)
+     parinfer
      php
      protobuf
      (python :variables
@@ -135,12 +136,16 @@ This function should only modify configuration layer settings."
                                       evil-easymotion
                                       fcitx
                                       flycheck-vale
+                                      gcmh
                                       hnreader
                                       jedi
+                                      jupyter
                                       mastodon
                                       mlscroll
                                       org-ql
+                                      pangu-spacing
                                       rg
+                                      rime
                                       rotate
                                       scratch
                                       super-save
@@ -201,14 +206,6 @@ It should only modify the values of Spacemacs settings."
    ;;   ./emacs --dump-file=$HOME/.emacs.d/.cache/dumps/spacemacs-27.1.pdmp
    ;; (default (format "spacemacs-%s.pdmp" emacs-version))
    dotspacemacs-emacs-dumper-dump-file (format "spacemacs-%s.pdmp" emacs-version)
-
-   ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
-   ;; possible. Set it to nil if you have no way to use HTTPS in your
-   ;; environment, otherwise it is strongly recommended to let it set to t.
-   ;; This variable has no effect if Emacs is launched with the parameter
-   ;; `--insecure' which forces the value of this variable to nil.
-   ;; (default t)
-   dotspacemacs-elpa-https t
 
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    ;; (default 5)
@@ -447,6 +444,17 @@ It should only modify the values of Spacemacs settings."
    ;; (default t)
    dotspacemacs-maximize-window-keep-side-windows t
 
+   ;; If nil, no load-hints enabled. If t, enable the `load-hints' which will
+   ;; put the most likely path on the top of `load-path' to reduce walking
+   ;; through the whole `load-path'. It's an experimental feature to speedup
+   ;; Spacemacs on Windows. Refer the FAQ.org "load-hints" session for details.
+   dotspacemacs-enable-load-hints nil
+
+   ;; If t, enable the `package-quickstart' feature to avoid full package
+   ;; loading, otherwise no `package-quickstart' attemption (default nil).
+   ;; Refer the FAQ.org "package-quickstart" section for details.
+   dotspacemacs-enable-package-quickstart t
+
    ;; If non-nil a progress bar is displayed when spacemacs is loading. This
    ;; may increase the boot time on some systems and emacs builds, set it to
    ;; nil to boost the loading time. (default t)
@@ -536,7 +544,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil smartparens-mode will be enabled in programming modes.
    ;; (default t)
-   dotspacemacs-activate-smartparens-mode t
+   dotspacemacs-activate-smartparens-mode nil
 
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
    ;; over any automatically added closing parenthesis, bracket, quote, etc...
@@ -572,7 +580,7 @@ It should only modify the values of Spacemacs settings."
    ;; `undo-fu', `undo-redo' and `undo-tree' see also `evil-undo-system'.
    ;; Note that saved undo history does not get transferred when changing
    ;; your undo system. The default is currently `undo-fu' as `undo-tree'
-   ;; is not maintained anymore and `undo-redo' is very basic."
+   ;; is not maintained anymore and `undo-redo' is very basic.
    dotspacemacs-undo-system 'undo-fu
 
    ;; Format specification for setting the frame title.
@@ -610,6 +618,9 @@ It should only modify the values of Spacemacs settings."
    ;; to aggressively delete empty line and long sequences of whitespace,
    ;; `trailing' to delete only the whitespace at end of lines, `changed' to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
+   ;; The variable `global-spacemacs-whitespace-cleanup-modes' controls
+   ;; which major modes have whitespace cleanup enabled or disabled
+   ;; by default.
    ;; (default nil)
    dotspacemacs-whitespace-cleanup 'all
 
@@ -887,6 +898,8 @@ See also `org-save-all-org-buffers'"
                                    (no-font             . hex-code)
                                    ))
 
+  (global-pangu-spacing-mode 1)
+
   )
 
 (defun mine/evil-config ()
@@ -894,10 +907,6 @@ See also `org-save-all-org-buffers'"
 
   ;; Visual lines
   (setq evil-respect-visual-line-mode t)
-  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-  (define-key evil-visual-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-visual-state-map (kbd "k") 'evil-previous-visual-line)
 
   ;; Delete with modifying kill-ring
   (define-key evil-normal-state-map (kbd "DEL") #'evil-delete-backward-char)
@@ -929,8 +938,9 @@ See also `org-save-all-org-buffers'"
   ;; Lisp parenthesis
   (setq evil-cleverparens-complete-parens-in-yanked-region t)
   (add-hook 'prog-mode-hook #'evil-cleverparens-mode)
-  ;; Bug me not
-  (setq sp-message-width nil)
+  (add-hook 'prog-mode-hook #'highlight-parentheses-mode)
+  (add-hook 'prog-mode-hook #'electric-pair-local-mode)
+  (show-paren-mode 1)
 
   ;; Info mode
   (evil-define-key 'normal Info-mode-map
@@ -1334,7 +1344,11 @@ See also `org-save-all-org-buffers'"
   (setq warning-minimum-level :error)
 
   ;; Yeah
-  (setq pixel-scroll-precision-mode t)
+  (setq mouse-wheel-scroll-amount '(4)
+        mouse-wheel-progressive-speed t
+        pixel-scroll-precision-use-momentum t
+        pixel-scroll-precision-interpolate-page t)
+  (pixel-scroll-precision-mode 1)
 
   ;; Strip text properties from history entries
   (setq savehist-additional-plain-text-variables '(search-ring
@@ -1352,6 +1366,13 @@ See also `org-save-all-org-buffers'"
 
   ;; Global visual line mode
   (global-visual-line-mode 1)
+
+  ;; Personally I don't need BIDI
+  (setq-default bidi-display-reordering nil)
+  (setq bidi-inhibit-bpa t
+        long-line-threshold 1000
+        large-hscroll-threshold 1000
+        syntax-wholeline-max 1000)
 
   ;; Disable GC in mini buffer
   (add-hook 'minibuffer-setup-hook
@@ -1413,6 +1434,11 @@ so as to avoid exposing them in config files."
 
 (defun mine/app-config()
   "Config for apps in the Emacs OS."
+
+  ;; Emacs-Rime
+  (setq rime-share-data-dir "~/.local/share/fcitx5/rime/"
+        default-input-method "rime"
+        rime-show-candidate 'posframe)
 
   ;; Ready player
   (require 'ready-player)
@@ -1505,6 +1531,13 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+  (require 'gcmh)
+  (gcmh-mode 1)
+
+  (add-function :after
+                after-focus-change-function
+                (lambda () (unless (frame-focus-state) (garbage-collect))))
 
   (mine/app-config)
   (mine/centaur-tabs-config)
