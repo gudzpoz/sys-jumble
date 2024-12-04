@@ -1,10 +1,17 @@
+/*
+ * If you find the styles broken, you may navigate to
+ * chrome://browser/content/browser.xhtml and locate the issue.
+ */
+
 /* Hide horizontal tabbar */
 #main-window #TabsToolbar {
     visibility: collapse;
 }
 
 /* Preserve space for the collapsed sidebar */
-#appcontent {
+#appcontent, /* Older Firefox */
+#tabbrowser-tabbox /* Newer Firefox */
+{
     margin-left: 32px !important;
 }
 
