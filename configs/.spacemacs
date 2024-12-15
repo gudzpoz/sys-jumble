@@ -32,81 +32,86 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '((auto-completion :variables auto-completion-idle-delay 0.0
-                      :disabled-for org)
-     better-defaults
+   '(;; Languages
      bibtex
      cmake
      csv
      d
-     debug
-     dtrt-indent
-     ;; eaf ; Throws errors under cli
      emacs-lisp
-     emoji
-     (erc :variables
-          erc-enable-notifications t
-          erc-enable-sasl-auth t
-          erc-server-list '(("irc.libera.chat" :port "6697" :ssl t)))
-     eww
-     finance
-     (git :variables
-          git-enable-magit-delta-plugin t
-          git-enable-magit-todos-plugin t
-          git-magit-status-fullscreen t)
      go
-     helpful
+     graphviz
      html
-     ibuffer
-     ivy
      java
      (javascript :variables
                  js2-basic-offset 2
                  js-indent-level 2
                  javascript-backend 'lsp)
-     lsp
      (lua :variables lua-backend 'lua-mode)
      markdown
-     multiple-cursors
      nginx
-     (org :variables
-          ;; ; valign mandates no space before cell contents, while org-table-align automatically do so
-          ;; org-enable-valign t
-          org-enable-org-journal-support t
-          org-enable-roam-support t
-          org-enable-roam-ui t
-          org-enable-roam-protocol t
-          org-enable-notifications t
-          org-start-notification-daemon-on-startup t)
-     parinfer
      php
      protobuf
      (python :variables
              python-fill-column 120
              python-backend 'lsp
              python-lsp-server 'pylsp)
-     (restclient :variables
-                 restclient-use-org t)
      rust
      (scheme :variables scheme-implementations '(chez))
+     sql
+     systemd
+     typescript
+     yaml
+
+     ;; Programming
+     (auto-completion :variables auto-completion-idle-delay 0.0 :disabled-for org)
+     debug
+     dtrt-indent
+     (git :variables
+          git-enable-magit-delta-plugin t
+          git-enable-magit-todos-plugin t
+          git-magit-status-fullscreen t)
+     lsp
+     parinfer
+     (version-control :variables version-control-diff-side 'left)
+
+     ;; Text editing
+     emoji
+     (org :variables
+          ;; ; valign mandates no space before cell contents, while org-table-align automatically do so
+          ;; org-enable-valign t
+          org-enable-roam-support t
+          org-enable-roam-ui t
+          org-enable-roam-protocol t
+          org-enable-notifications t
+          org-start-notification-daemon-on-startup t)
+     multiple-cursors
+     spacemacs-visual
+     spacemacs-editing-visual
+     unicode-fonts
+
+     ;; Emacs
+     better-defaults
+     helpful
+     ibuffer
+     ivy
+     treemacs
+
+     ;; Apps
+     (erc :variables
+          erc-enable-notifications t
+          erc-enable-sasl-auth t
+          erc-server-list '(("irc.libera.chat" :port "6697" :ssl t)))
+     eww
+     finance
+     (restclient :variables
+                 restclient-use-org t)
      semantic
      (shell :variables
             shell-default-shell 'eshell
             shell-default-term-shell "/bin/zsh"
             shell-default-position 'full)
-     spacemacs-visual
-     spacemacs-editing-visual
-     sql
      syntax-checking
-     systemd
-     tabs
-     treemacs
-     typescript
-     (unicode-fonts :variables
-                    unicode-fonts-enable-ligatures t)
-     version-control
      xclipboard
-     yaml
      )
 
 
@@ -118,30 +123,34 @@ This function should only modify configuration layer settings."
    ;; `dotspacemacs/user-config'. To use a local version of a package, use the
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(all-the-icons
+   dotspacemacs-additional-packages '(;; Languages
                                       bbcode-mode
-                                      (codegeex :location (recipe :fetcher url
-                                                                  :url "https://cdn.jsdelivr.net/gh/hzhangxyz/codegeex.el@main/codegeex.el"))
                                       (cp2k-mode :location (recipe :fetcher url
                                                                    :url "https://cdn.jsdelivr.net/gh/gudzpoz/cp2k@emacs-package-headers/tools/input_editing/emacs/cp2k-mode.el"))
                                       dockerfile-mode
                                       docker-compose-mode
+
+                                      ;; Apps
                                       (edraw :location (recipe :fetcher github :repo "misohena/el-easydraw"))
-                                      ellama
                                       ement
+                                      mastodon
+                                      (ready-player :location (recipe :fetcher github :repo "xenodium/ready-player"))
+
+                                      ;; Utils
+                                      adwaita-dark-theme
+                                      all-the-icons
+                                      (appindicator :location (recipe :fetcher github :repo "jumper047/emacs-appindicator"))
+                                      (codegeex :location (recipe :fetcher url
+                                                                  :url "https://cdn.jsdelivr.net/gh/hzhangxyz/codegeex.el@main/codegeex.el"))
                                       eshell-vterm
                                       esup
-                                      (ready-player :location (recipe :fetcher github :repo "xenodium/ready-player"))
                                       emacs-everywhere
                                       evil-easymotion
                                       fcitx
                                       flycheck-vale
-                                      gcmh
                                       hnreader
                                       jedi
                                       jupyter
-                                      mastodon
-                                      mlscroll
                                       org-ql
                                       pangu-spacing
                                       rg
@@ -151,21 +160,14 @@ This function should only modify configuration layer settings."
                                       super-save
                                       (tramp-github :location (recipe :fetcher url
                                                                       :url "https://cdn.jsdelivr.net/gh/gudzpoz/sys-jumble@main/configs/tramp-github.el"))
-                                      wc-mode
                                       xclip
-                                      zoxide
-                                      )
+                                      zoxide)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(;; https://github.com/syl20bnr/spacemacs/issues/15667
-                                    term-cursor
-                                    ;; https://github.com/joaotavora/yasnippet/issues/114
-                                        ; yasnippet
-                                        ; auto-yasnippet
-                                    )
+   dotspacemacs-excluded-packages '(evil-escape)
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -326,8 +328,7 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-dark
-                         spacemacs-light)
+   dotspacemacs-themes '(modus-vivendi-deuteranopia modus-operandi-deuteranopia)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -336,7 +337,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator nil :separator-scale 1.0)
+   dotspacemacs-mode-line-theme '(doom :separator nil :separator-scale 1.2)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -420,7 +421,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
-   dotspacemacs-which-key-delay 0.4
+   dotspacemacs-which-key-delay 1.0
 
    ;; Which-key frame position. Possible values are `right', `bottom' and
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
@@ -663,8 +664,7 @@ This function defines the environment variables for your Emacs session. By
 default it calls `spacemacs/load-spacemacs-env' which loads the environment
 variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
-  (spacemacs/load-spacemacs-env)
-  )
+  (spacemacs/load-spacemacs-env))
 
 (defun dotspacemacs/user-init ()
   "Initialization for user code:
@@ -687,17 +687,13 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
   ;; Evil collection
   (setq evil-want-keybinding nil)
+  ;; Visual lines
+  (setq evil-respect-visual-line-mode t)
 
   ;; Putting the initialization in user-config seems to cause errors:
   ;;   Selecting deleted buffer
   (require 'cns nil t)
-  (global-cns-mode)
-
-  ;; Server daemon
-  ;; (setq server-use-tcp t)
-  ;; (setq server-port 5172)
-
-  )
+  (global-cns-mode))
 
 
 (defun dotspacemacs/user-load ()
@@ -705,7 +701,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 This function is called only while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included in the
 dump."
-  )
+  (require 'org))
 
 
 (defun mine/org-config ()
@@ -731,11 +727,13 @@ dump."
     (require 'edraw-org)
     (edraw-org-setup-default))
 
+  (setq org-directory "~/Documents/Nutstore/Org-Mode/")
+
   ;; Org-journal
-  (setq org-journal-dir "~/Documents/Nutstore/Org-Mode/Journal")
+  (setq org-journal-dir (file-name-concat org-directory "Journal"))
 
   ;; Org-roam
-  (setq org-roam-directory "~/Documents/Nutstore/Org-Mode/Roam")
+  (setq org-roam-directory (file-name-concat org-directory "Roam"))
   (setq org-roam-database-connector 'sqlite-builtin)
   (setq org-roam-capture-templates
         '(("d" "default" plain
@@ -753,7 +751,7 @@ dump."
 
   ;; Don't prompt
   (setq org-confirm-babel-evaluate
-        (lambda (&rest _) (not (string-prefix-p (expand-file-name "~/Documents/Nutstore/Org-Mode/") (buffer-file-name)))))
+        (lambda (&rest _) (not (string-prefix-p (expand-file-name org-directory) (buffer-file-name)))))
 
   ;; Org-mode
   ;; https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
@@ -850,43 +848,40 @@ See also `org-save-all-org-buffers'"
   ;; Others
   ;; Insert a zero-width-space
   (with-eval-after-load "org"
-    (define-key org-mode-map (kbd "C-|") (lambda () (interactive) (insert-char #x200b))))
-
-  )
+    (define-key org-mode-map (kbd "C-|") (lambda () (interactive) (insert-char #x200b)))))
 
 (defun mine/whitespace-config ()
   "Configure whitespace displaying"
 
-  ;; Global whitespace displaying
-  (setq whitespace-style
-        '(face
-          ;; highlight malformed white-spaces
-          tabs spaces newline
-          ;; display tabs
-          tab-mark
-          ;; trailing blanks
-          trailing
-          ;; tab-width or more spaces at beginning of line
-          indentation
-          ;; mixed white-spaces
-          space-before-tab
-          space-after-tab
-          ;; empty lines at beginning and/or end of buffer
-          empty
-          ;; missing newline at the end of the file
-          missing-newline-at-eof
-          ))
-  ;; Only neighboring spaces are displayed
-  (setq whitespace-space-regexp "\\( \\{2,\\}\\)")
-  (require 'whitespace)
-  (global-whitespace-mode t)
+  (use-package whitespace :config
+    ;; Global whitespace displaying
+    (setq whitespace-style
+          '(face
+            ;; highlight malformed white-spaces
+            tabs spaces newline
+            ;; display tabs
+            tab-mark
+            ;; trailing blanks
+            trailing
+            ;; tab-width or more spaces at beginning of line
+            indentation
+            ;; mixed white-spaces
+            space-before-tab
+            space-after-tab
+            ;; empty lines at beginning and/or end of buffer
+            empty
+            ;; missing newline at the end of the file
+            missing-newline-at-eof
+            ))
+    ;; Only neighboring spaces are displayed
+    (setq whitespace-space-regexp "\\( \\{2,\\}\\)")
+    (global-whitespace-mode t))
 
-  ;; Spaces over tabs
-  (setq-default indent-tabs-mode nil)
-  (setq-default tab-width 2)
-  (setq dtrt-indent-global-mode t)
-  ;; But not in lisp files since some libraries are indented with mixed spaces and tabs...
-  (add-hook 'emacs-lisp-mode-hook (lambda () (setq tab-width 8)))
+  ;; dtrt-indent
+  (use-package dtrt-indent :config (dtrt-indent-global-mode))
+
+  ;; pangu
+  (use-package pangu-spacing :config (global-pangu-spacing-mode 1))
 
   ;; Display glyphless chars
   (update-glyphless-char-display 'glyphless-char-display-control
@@ -896,23 +891,14 @@ See also `org-save-all-org-buffers'"
                                    (bidi-control        . acronym) ; not available in emacs 28
                                    (variation-selectors . acronym)
                                    (no-font             . hex-code)
-                                   ))
-
-  (global-pangu-spacing-mode 1)
-
-  )
+                                   )))
 
 (defun mine/evil-config ()
   "My evil mode configurations"
 
-  ;; Visual lines
-  (setq evil-respect-visual-line-mode t)
-
-  ;; Delete with modifying kill-ring
-  (define-key evil-normal-state-map (kbd "DEL") #'evil-delete-backward-char)
-
   ;; Undo
   (define-key evil-normal-state-map (kbd "U") 'evil-redo)
+  (setq evil-want-fine-undo t)
 
   ;; Stop macro binding
   (define-key evil-normal-state-map (kbd "Q") 'evil-record-macro)
@@ -929,18 +915,16 @@ See also `org-save-all-org-buffers'"
   (define-key evil-normal-state-map (kbd "g j") 'evilem-motion-next-visual-line)
   (define-key evil-normal-state-map (kbd "g k") 'evilem-motion-previous-visual-line)
 
-  ;; Compatibility: https://emacs.stackexchange.com/questions/46371/how-can-i-get-ret-to-follow-org-mode-links-when-using-evil-mode
-  (with-eval-after-load 'evil-maps
-    (define-key evil-motion-state-map (kbd "SPC") nil)
-    (define-key evil-motion-state-map (kbd "RET") nil)
-    (define-key evil-motion-state-map (kbd "TAB") nil))
-
   ;; Lisp parenthesis
   (setq evil-cleverparens-complete-parens-in-yanked-region t)
   (add-hook 'prog-mode-hook #'evil-cleverparens-mode)
   (add-hook 'prog-mode-hook #'highlight-parentheses-mode)
   (add-hook 'prog-mode-hook #'electric-pair-local-mode)
   (show-paren-mode 1)
+  ;; Parinfer
+  (remove-hook 'emacs-lisp-mode-hook #'parinfer-rust-mode)
+  (setq parinfer-rust-check-before-enable nil) ; We always manually enable it.
+  (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "=p" #'parinfer-rust-mode)
 
   ;; Info mode
   (evil-define-key 'normal Info-mode-map
@@ -962,31 +946,7 @@ See also `org-save-all-org-buffers'"
   ;; Replace Ctrl+S with swiper
   (global-set-key (kbd "C-s") #'swiper)
   (global-set-key (kbd "C-r") #'swiper-backward)
-  (define-key evil-normal-state-map (kbd "C-r") #'swiper-backward)
-
-  )
-
-(defun mine/mode-line-config ()
-  "Mode-line & scroll-bar configuration"
-
-  ;; Diminish minor modes
-  (spacemacs|diminish hybrid-mode " Ⓔ" " E")
-  (spacemacs|diminish super-save-mode " ss" " ss")
-
-  ;; Turn off things in mode-line
-  (spaceline-toggle-buffer-size-off)
-  (spaceline-toggle-buffer-position-off)
-  (spaceline-toggle-purpose-off)
-  (spaceline-toggle-hud-off)
-
-  ;; Hint when debug mode / recursive editing is active
-  (unless (seq-contains-p global-mode-string "%[%]")
-    (add-to-list 'global-mode-string "%[%]"))
-
-  (setq mlscroll-right-align nil)
-  (scroll-bar-mode 1)
-
-  )
+  (define-key evil-normal-state-map (kbd "C-r") #'swiper-backward))
 
 (defun mine/fcitx-config ()
   "Fcitx integration"
@@ -1000,10 +960,7 @@ See also `org-save-all-org-buffers'"
   (defun fcitx-disable-on-need ()
     (when (fcitx--evil-should-disable-fcitx-p) (fcitx--deactivate)))
   (add-hook 'isearch-mode-end-hook #'fcitx-disable-on-need)
-  (add-hook 'minibuffer-inactive-mode-hook #'fcitx-disable-on-need)
-
-
-  )
+  (add-hook 'minibuffer-inactive-mode-hook #'fcitx-disable-on-need))
 
 (defun mine/motion-config ()
   "Cursor navigating settings"
@@ -1024,18 +981,12 @@ See also `org-save-all-org-buffers'"
   (define-key evil-normal-state-map (kbd "b") 'cns-backward-word)
   (define-key evil-motion-state-map (kbd "b") 'cns-backward-word)
   (define-key evil-visual-state-map (kbd "b") 'cns-backward-word)
-  (define-key evil-operator-state-map (kbd "b") 'cns-backward-word)
-
-  )
+  (define-key evil-operator-state-map (kbd "b") 'cns-backward-word))
 
 (defun lisp-scratch-buffer ()
   "Scratch buffer in lisp mode"
-
   (interactive)
-
-  (scratch 'lisp-interaction-mode)
-
-  )
+  (scratch 'lisp-interaction-mode))
 
 (defun advice-prefix-repeat (func)
   (advice-add
@@ -1064,12 +1015,6 @@ See also `org-save-all-org-buffers'"
   ;; Open files with zoxide
   (spacemacs/set-leader-keys "fF" 'zoxide-find-file)
 
-  ;; Persp fixes
-  (setq persp-old-state-put-fn persp-window-state-put-function)
-  (setq persp-window-state-put-function (lambda (pwc &optional frame rwin)
-                                          (when (display-graphic-p)
-                                            (funcall persp-old-state-put-fn pwc frame rwin))))
-
   ;; Convenient shortcut for `other-window'
   (define-key global-map (kbd "M-o") #'other-window)
   (define-key evil-normal-state-map (kbd "M-o") #'other-window)
@@ -1082,100 +1027,7 @@ See also `org-save-all-org-buffers'"
                       (rotate-layout)
                     (if (< (frame-width) (* 2 (frame-height)))
                         (spacemacs/window-split-single-column)
-                      (spacemacs/window-split-double-columns)))))
-
-  )
-
-(defun mine/centaur-tabs-config ()
-  "Centaur tabs config."
-
-  ;; Centaur-tabs fixes
-  (setq centaur-tabs-set-bar 'under)
-  (defun centaur-tabs--daemon-mode (_)
-    (unless (and (featurep 'centaur-tabs) (centaur-tabs-mode-on-p))
-      (run-at-time nil nil (lambda () (centaur-tabs-mode)))))
-  (when (daemonp)
-    (add-hook 'after-make-frame-functions #'centaur-tabs--daemon-mode))
-
-  ;; Customized grouping
-  (setq emacs-log-buffer-names
-        '("*Native-compile-Log*" "*Messages*" "*Compile-Log*" "*Async-native-compile-log*" "*Warnings*"))
-  (defun emacs-log-buffer-p (name)
-    (or (seq-contains-p emacs-log-buffer-names name)
-        (string-match-p "^\\*[A-Z][[:alnum:]\\-]+\\*$" name)))
-  (defun org-agenda-file-p (file)
-    (and file
-         (seq-find (apply-partially #'file-equal-p file) (org-agenda-files))))
-  (defun org-roam-file-p (file)
-    (and file org-roam-directory
-         (file-in-directory-p file org-roam-directory)))
-  (defun centaur-tabs-ensure-tabsets (tabsets)
-    (let ((sets (remq nil tabsets)))
-      (or sets (list centaur-tabs-common-group-name))))
-  (defun centaur-tabs-misc-classifier (name)
-    (cond
-     ((string-prefix-p "*helm" name) "Helm")
-     ((or (string-prefix-p "*HN" name) (string-prefix-p "*eww" name)) "Reader")
-     ((seq-contains-p '("*scratch*" "*lisp-interaction*") name) "Scratch")
-     ((emacs-log-buffer-p name) "Emacs")
-     (t "Misc")))
-  (defun centaur-tabs-buffer-groups-custom-advice (original)
-    (let ((group (cond
-                  ((org-roam-file-p (buffer-file-name)) "OrgRoam")
-                  ((org-agenda-file-p (buffer-file-name)) "OrgAgenda")
-                  ((derived-mode-p 'org-mode) "OrgMode")
-                  ((memq major-mode '(helpful-mode help-mode)) "Help")
-                  ((memq major-mode '(Info-mode)) "Info")
-                  ((or (derived-mode-p 'emacs-lisp-mode)
-                       (derived-mode-p 'debugger-mode))
-                   "Elisp")
-                  ((memq major-mode '(magit-process-mode
-                                      magit-status-mode
-                                      magit-diff-mode
-                                      magit-log-mode
-                                      magit-file-mode
-                                      magit-blob-mode
-                                      magit-blame-mode
-                                      ))
-                   "Magit")
-                  ((string-prefix-p "*" (buffer-name)) (centaur-tabs-misc-classifier (buffer-name))))))
-      (centaur-tabs-ensure-tabsets
-       (if group (list group) (funcall original)))))
-  (advice-add 'centaur-tabs-buffer-groups :around #'centaur-tabs-buffer-groups-custom-advice)
-  (defun centaur-tabs-projectile-buffer-groups-custom-advice (original)
-    (let ((group (when
-                     (string-prefix-p "*" (buffer-name))
-                   (centaur-tabs-misc-classifier (buffer-name)))))
-      (centaur-tabs-ensure-tabsets
-       (if group (list group) (funcall original)))))
-  (advice-add 'centaur-tabs-projectile-buffer-groups :around #'centaur-tabs-projectile-buffer-groups-custom-advice)
-  (defun centaur-tabs-capture-error-and-restart (original)
-    (condition-case err
-        (funcall original)
-      (error
-       (message "centaur-tabs errs agains... (%s)" err)
-       (centaur-tabs-mode -1)
-       (run-at-time nil nil #'centaur-tabs-mode +1)
-       "")))
-  (advice-add 'centaur-tabs-line :around #'centaur-tabs-capture-error-and-restart)
-  (centaur-tabs-buffer-update-groups)
-
-  ;; Keybindings
-  (spacemacs/set-leader-keys "bg" #'centaur-tabs-group-by-projectile-project)
-  (spacemacs/set-leader-keys "bG" #'centaur-tabs-group-buffer-groups)
-  (spacemacs/set-leader-keys "bt" #'centaur-tabs-ace-jump)
-  (spacemacs/set-leader-keys "bT" #'centaur-tabs-switch-group)
-
-  ;; Modify things to accept prefix arguments
-  (advice-prefix-repeat 'spacemacs/tabs-forward)
-  (advice-prefix-repeat 'spacemacs/tabs-backward)
-  (defun centaur-tabs-close-all-tabs ()
-    (interactive)
-    (dolist (buffer (centaur-tabs-tab-values (centaur-tabs-current-tabset)))
-      (with-current-buffer buffer (spacemacs/kill-this-buffer))))
-  (spacemacs/set-leader-keys "bC" #'centaur-tabs-close-all-tabs)
-
-  )
+                      (spacemacs/window-split-double-columns))))))
 
 (defun mine/font-config ()
   "Chinese font config"
@@ -1196,9 +1048,7 @@ See also `org-save-all-org-buffers'"
                        :height 120
                        :fontset "fontset-reader"))
   ;; Toggle serif fonts
-  (spacemacs/set-leader-keys "tr" #'variable-pitch-mode)
-
-  )
+  (spacemacs/set-leader-keys "tr" #'variable-pitch-mode))
 
 (defun mine/tramp-config ()
   "Tramp configuration"
@@ -1213,21 +1063,7 @@ See also `org-save-all-org-buffers'"
 
   ;; (setq tramp-verbose 10)
   ;; Set it to nil, if you use Control* or Proxy* options in your ssh configuration.
-  (setq tramp-use-ssh-controlmaster-options nil)
-
-  )
-
-(defun mine/wc-config ()
-  "Word count config"
-
-  (setq wc-modeline-format "[%tw/%tc]")
-  (setq wc-idle-wait 1)
-  ;; Count Chinese words
-  (setq wc-count-words-function
-        (function (lambda (rstart rend)
-                    (how-many "[[:nonascii:]]\\|\\w+" rstart rend))))
-
-  )
+  (setq tramp-use-ssh-controlmaster-options nil))
 
 (defun mine/completion-config()
   "Completion config"
@@ -1237,8 +1073,8 @@ See also `org-save-all-org-buffers'"
   (setq helm-move-to-line-cycle-in-source nil)
   (setq helm-ff-allow-non-existing-file-at-point t)
 
-  (setq company-dabbrev-downcase 0)
-  (setq company-idle-delay 1)
+  (setq company-dabbrev-downcase nil)
+  (setq company-idle-delay 0)
 
   ;; Search for elisp documentation
   (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "hi" #'elisp-index-search)
@@ -1282,9 +1118,7 @@ See also `org-save-all-org-buffers'"
 
   ;; Spell checking
   (require 'flycheck-vale)
-  (flycheck-vale-setup)
-
-  )
+  (flycheck-vale-setup))
 
 (declare-function emacs-everywhere-abort "emacs-everywhere" ())
 (declare-function emacs-everywhere--finish-or-ctrl-c-ctrl-c "emacs-everywhere" ())
@@ -1293,9 +1127,7 @@ See also `org-save-all-org-buffers'"
 
   (require 'emacs-everywhere)
   (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "," #'emacs-everywhere--finish-or-ctrl-c-ctrl-c)
-  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "k" #'emacs-everywhere-abort)
-
-  )
+  (spacemacs/set-leader-keys-for-minor-mode 'emacs-everywhere-mode "k" #'emacs-everywhere-abort))
 
 (declare-function ledger-report "ledger-report" (report-name edit))
 (defun ledger-monthly-report()
@@ -1303,36 +1135,19 @@ See also `org-save-all-org-buffers'"
 
   (interactive)
   (ledger-report "reg-M" ())
-  (run-with-idle-timer 0.1 () (lambda () (goto-char (point-max))))
-
-  )
-
-(defun mine/ledger-config()
-  "Ledger-mode config"
-
-  (setq ledger-reports '(("bal" "%(binary) -f %(ledger-file) bal")
-                         ("reg" "%(binary) -f %(ledger-file) reg")
-                         ("reg-M" "%(binary) -f %(ledger-file) reg -M")
-                         ("tag" "%(binary) -f %(ledger-file) bal tag %(tagname)")
-                         ("account" "%(binary) -f %(ledger-file) reg %(account)")))
-  (spacemacs/declare-prefix-for-mode 'ledger-mode "M" "monthly-report")
-  (spacemacs/set-leader-keys-for-major-mode 'ledger-mode "M" 'ledger-monthly-report)
-
-  )
+  (run-with-idle-timer 0.1 () (lambda () (goto-char (point-max)))))
 
 (defun mine/git-config()
   "Git/Magit config"
 
   (setq vc-follow-symlinks t)
 
-  (setq magit-repository-directories
-        '(("~/.emacs.d"  . 0)
-          ("~/Workspaces/" . 2)))
-
   ;; Magit-delta config
   ;; (require 'magit-delta) ;; See `mine/preload-time-consuming-libs'
 
-  )
+  (setq magit-repository-directories
+        '(("~/.emacs.d"  . 0)
+          ("~/Workspaces/" . 2))))
 
 (defun mine/extra-emacs-config()
   "Extra emacs config"
@@ -1349,6 +1164,12 @@ See also `org-save-all-org-buffers'"
         pixel-scroll-precision-use-momentum t
         pixel-scroll-precision-interpolate-page t)
   (pixel-scroll-precision-mode 1)
+  (scroll-bar-mode)
+
+  ;; Magit fringe
+  (use-package fringe :config
+    (fringe-mode (cdr (assoc "half-width" fringe-styles))))
+
 
   ;; Strip text properties from history entries
   (setq savehist-additional-plain-text-variables '(search-ring
@@ -1374,83 +1195,29 @@ See also `org-save-all-org-buffers'"
         large-hscroll-threshold 1000
         syntax-wholeline-max 1000)
 
-  ;; Disable GC in mini buffer
-  (add-hook 'minibuffer-setup-hook
-            (lambda () (setq inhibit-message t
-                             gc-cons-threshold most-positive-fixnum
-                             gc-cons-percentage 1.0)))
-  (add-hook 'minibuffer-exit-hook
-            (lambda () (setq inhibit-message (> (minibuffer-depth) 1)
-                             gc-cons-threshold (car dotspacemacs-gc-cons)
-                             gc-cons-percentage (cdr dotspacemacs-gc-cons))))
-
   )
-
-(defun mine/llama-config()
-  "Llama bindings"
-
-  (declare-function make-llm-ollama "llm-ollama")
-  (require 'llm-ollama)
-  (setq ellama-provider (make-llm-ollama :chat-model "llama3" :embedding-model "llama3"))
-  ;; Ellama key bindings
-  (spacemacs/declare-prefix "oo" "ollama-bindings")
-  (spacemacs/set-leader-keys "ooa" #'ellama-ask)
-  (spacemacs/set-leader-keys "oob" #'ellama-ask-about)
-  (spacemacs/set-leader-keys "ood" #'ellama-define-word)
-  (spacemacs/set-leader-keys "ooo" #'ellama-complete)
-  (spacemacs/set-leader-keys "oos" #'ellama-summarize)
-
-  )
-
-(defun read-mastodon-compat-info()
-  "Read Mastodon instance info from `auth-sources'
-so as to avoid exposing them in config files."
-
-  (let* ((auth (car (auth-source-search :port "mastodon" :max 1)))
-         (host (plist-get auth :host))
-         (user (plist-get auth :user)))
-    (when auth
-      (setq mastodon-instance-url (concat "https://" host)
-            mastodon-active-user user)))
-
-  )
-
-(defvar hubfs-process-list nil)
-(defun mount-hubfs()
-  (interactive)
-
-  (let ((url (read-string "Enter GitHub URL: "))
-        (tmp-dir (make-temp-file "hubfs" t)))
-    (add-to-list 'hubfs-process-list
-                 (start-process "hubfs" nil "hubfs" "-auth" "none" url tmp-dir))
-    (find-file tmp-dir)))
-
-(defun unmount-all-hubfs()
-  (interactive)
-
-  (let ((plist hubfs-process-list))
-    (setq hubfs-process-list nil)
-    (mapcar #'stop-process plist)))
 
 (defun mine/app-config()
   "Config for apps in the Emacs OS."
 
   ;; Emacs-Rime
-  (setq rime-share-data-dir "~/.local/share/fcitx5/rime/"
-        default-input-method "rime"
-        rime-show-candidate 'posframe)
+  (use-package rime :defer :init
+    (setq rime-share-data-dir "/usr/share/rime-data"
+          default-input-method "rime"
+          rime-show-candidate 'posframe
+          rime-popup-style 'vertical))
 
   ;; Ready player
-  (require 'ready-player)
-  (ready-player-add-to-auto-mode-alist)
+  (use-package ready-player :config (ready-player-add-to-auto-mode-alist))
 
-  ;; Ement
-  (setq ement-save-sessions t)
-  (spacemacs/declare-prefix "acm" "matrix")
-  (spacemacs/set-leader-keys "acmc" 'ement-connect)
-  (spacemacs/set-leader-keys "acml" 'ement-list-rooms)
-  (spacemacs/set-leader-keys "acmm" 'ement-notify-switch-to-mentions-buffer)
-  (spacemacs/set-leader-keys "acmn" 'ement-notify-switch-to-notifications-buffer)
+  (use-package ledger :defer :config
+    (setq ledger-reports '(("bal" "%(binary) -f %(ledger-file) bal")
+                           ("reg" "%(binary) -f %(ledger-file) reg")
+                           ("reg-M" "%(binary) -f %(ledger-file) reg -M")
+                           ("tag" "%(binary) -f %(ledger-file) bal tag %(tagname)")
+                           ("account" "%(binary) -f %(ledger-file) reg %(account)")))
+    (spacemacs/declare-prefix-for-mode 'ledger-mode "M" "monthly-report")
+    (spacemacs/set-leader-keys-for-major-mode 'ledger-mode "M" 'ledger-monthly-report))
 
   ;; Eshell
   (setq eshell-modules-list
@@ -1468,48 +1235,31 @@ so as to avoid exposing them in config files."
           eshell-term
           eshell-unix))
 
-  ;; Mastodon.el
-  (read-mastodon-compat-info)
-  (spacemacs/declare-prefix "acf" "fediverse")
-  (spacemacs/set-leader-keys "acfm" 'mastodon)
-  (evil-set-initial-state 'mastodon-mode 'emacs)
-
   ;; Geiser
-  (setq geiser-chez-binary "/usr/bin/chez")
-
-  ;; HubFS
-  (spacemacs/declare-prefix "awf" "fuse-fs")
-  (spacemacs/set-leader-keys "awfh" #'mount-hubfs)
-  (spacemacs/set-leader-keys "awfu" #'umount-all-hubfs)
+  (use-package geiser :defer :config (setq geiser-chez-binary "/usr/bin/chez"))
 
   ;; Hacker News
   (spacemacs/set-leader-keys "awh" #'hnreader-news)
-  (defun eww-ext-img-for-hn (dom &optional url)
-    "Renders placeholder GIFs in Hacker News."
-    (when (equal (car shr-base) "https://news.ycombinator.com")
-      (let* ((tag (car dom))
-             (props (cadr dom))
-             (src (alist-get 'src props))
-             (width (string-to-number (or (alist-get 'width props) "0")))
-             (height (alist-get 'height props)))
-        (when (and (eq tag 'img)
-                   (equal src "s.gif")
-                   (equal height "1")
-                   (integerp width))
-          (dotimes (_ (floor width 20))
-            (shr-insert "//")))))
-    (shr-tag-img dom url))
-  (setq shr-external-rendering-functions
-        '((img . eww-ext-img-for-hn)))
+
+  ;; ERC
+  (defun erc-libera-chat()
+    (interactive)
+    (defvar erc-sasl-auth-source-function)
+    (let ((erc-sasl-auth-source-function #'erc-sasl-auth-source-password-as-host))
+      (erc-tls :server "irc.ea.libera.chat" :port 6697
+               :nick "kanakana" :user "kanakana"
+               :password "Libera.Chat")))
+  (spacemacs/set-leader-keys "acil" #'erc-libera-chat)
+  (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
   ;; Terminal-here
-  (setq terminal-here-linux-terminal-command 'xfce4-terminal)
-
-  )
+  (use-package terminal-here :config
+    (setq terminal-here-linux-terminal-command 'xfce4-terminal)))
 
 (defun mine/preload-time-consuming-libs ()
   "Several libraries takes a long time (seconds, frozen) to load,
 so we load them here."
+
   (run-with-idle-timer
    30 nil (lambda ()
             ;; See also `mine/org-config'
@@ -1524,7 +1274,6 @@ so we load them here."
 
   )
 
-
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
@@ -1532,15 +1281,7 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
-  (require 'gcmh)
-  (gcmh-mode 1)
-
-  (add-function :after
-                after-focus-change-function
-                (lambda () (unless (frame-focus-state) (garbage-collect))))
-
   (mine/app-config)
-  (mine/centaur-tabs-config)
   (mine/completion-config)
   (mine/emacs-everywhere-config)
   (mine/evil-config)
@@ -1549,18 +1290,12 @@ before packages are loaded."
   (mine/font-config)
   (mine/git-config)
   (mine/ibuffer-config)
-  (mine/ledger-config)
-  (mine/llama-config)
-  (mine/mode-line-config)
   (mine/motion-config)
   (mine/org-config)
   (mine/tramp-config)
-  (mine/wc-config)
   (mine/whitespace-config)
 
-  (mine/preload-time-consuming-libs)
-
-  )
+  (mine/preload-time-consuming-libs))
 
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -1675,7 +1410,11 @@ This function is called at the very end of Spacemacs initialization."
        (34 simple 0)
        (46 simple 0)))
    '(safe-local-variable-values
-     '((magit-todos-exclude-globs "*/build/*")
+     '((etags-regen-ignores "test/manual/etags/")
+       (etags-regen-regexp-alist
+        (("c" "objc")
+         "/[ \11]*DEFVAR_[A-Z_ \11(]+\"\\([^\"]+\\)\"/\\1/" "/[ \11]*DEFVAR_[A-Z_ \11(]+\"[^\"]+\",[ \11]\\([A-Za-z0-9_]+\\)/\\1/"))
+       (magit-todos-exclude-globs "*/build/*")
        (javascript-backend . tide)
        (javascript-backend . tern))))
   (custom-set-faces
