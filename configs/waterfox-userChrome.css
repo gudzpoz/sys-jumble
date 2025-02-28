@@ -1,0 +1,71 @@
+/*
+ * If you find the styles broken, you may navigate to
+ * chrome://browser/content/browser.xhtml and locate the issue.
+ */
+
+/* Preserve space for the collapsed sidebar */
+/* #appcontent, /* Older Firefox */
+#tabbrowser-tabbox /* Newer Firefox */
+{
+    margin-left: 32px !important;
+}
+
+/* Enable absolute position for the sidebar */
+#browser {
+    position: relative;
+}
+
+/* Collapse in default state and add transition */
+#tabs-sidebar-box {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    min-width: 32px !important;
+    max-width: 32px !important;
+    transition: all 0.2s ease;
+    border-right: 1px solid #0c0c0d;
+    z-index: 2;
+}
+
+/* Expand to 260px on hover, floating over the web page */
+/* TODO: It does not work when dragging tabs around */
+#tabs-sidebar-box:hover, #tabs-sidebar-box #tabs-sidebar {
+    min-width: 260px !important;
+    max-width: 260px !important;
+    z-index: 3;
+}
+
+/* Don't display the sidebar splitter */
+#tabs-sidebar-box + #tabs-sidebar-splitter {
+    display: none !important;
+}
+
+/* Disable previews until Waterfox makes them less buggy */
+#tab-preview-panel {
+    display: none !important;
+}
+
+/*
+  You are recommended to tweak the settings of Tree Style Tabs as well.
+
+    In Waterfox, you can open TST settings by:
+    1. clicking the gear icon on top of the tabs sidebar, which pops up a menu,
+    2. holding the "Shift" key and clicking the "More Settings..." entry.
+
+  Recommended settings:
+
+- "User Style Sheet": https://github.com/gudzpoz/sys-jumble/blob/main/configs/tree-style-tabs_collapsed.css
+  - This style sheet mainly makes the icons more compact by removing left margins.
+- Put the side bar on the left side,
+- Set "Style of contents..." to "Left side"
+
+Now, with sidebar collapsed to icons, to close a tab with a mouse, you will need to
+(1) hover to expand the sidebar,
+(2) find the "X" button,
+(3) move your cursor over "X" carefully so that the sidebar doesn't collapse again,
+which can be a pain. So personally I would recommend either:
+- use middle-click to close tabs,
+- or set "Double-click on a tab" to "Close tab".
+*/

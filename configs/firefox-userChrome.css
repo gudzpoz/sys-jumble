@@ -35,6 +35,7 @@
 }
 
 /* Expand to 260px on hover, floating over the web page */
+/* TODO: It does not work when dragging tabs around */
 #sidebar-box:hover, #sidebar-box #sidebar {
     min-width: 260px !important;
     max-width: 260px !important;
@@ -51,68 +52,18 @@
     margin-right: 2px;
 }
 
-/* Recommended settings for Tree Style Tab:
+/*
+  You are recommended to tweak the settings of Tree Style Tabs as well.
+  Recommended settings:
 
 - Put the side bar on the left side,
 - Set "Style of contents..." to "Left side" (and remember to use middle click to close tabs)
-- Set "Double-click on a tab" to "Collapse/expand tree"
-- User Style Sheet:
-
-/* Show title of unread tabs with red and italic font * /
-:root.sidebar tab-item.unread .label-content {
-    color: red !important;
-    font-style: italic !important;
-}
-
-/* Add private browsing indicator per tab * /
-:root.sidebar tab-item.private-browsing tab-label:before {
-    content: "🕶";
-}
-
-/* Remove indentation and add tab level indicator * /
-tab-item[data-level] {
-    --level-marker-width: 0px;
-}
-tab-item[data-level] tab-item-substance {
-    margin-left: 0 !important;
-    border-left: var(--level-marker-width) solid white;
-}
-tab-item[data-level][data-level="1"] {
-    --level-marker-width: 1px;
-}
-tab-item[data-level][data-level="2"] {
-    --level-marker-width: 2px;
-}
-tab-item[data-level][data-level="3"] {
-    --level-marker-width: 3px;
-}
-#normal-tabs-container tab-item > tab-item-substance {
-  display: flex;
-  flex-direction: row-reverse;
-  padding-left: 10px;
-}
-
-/* Put container labels to the left side * /
-.contextual-identity-marker {
-    top: auto !important;
-    bottom: auto !important;
-    left: 1px;
-    width: 2px !important;
-    height: calc(var(--favicon-size) * 2) !important;
-}
-
-/* Make newtab button visible when collapsed * /
-.newtab-button {
-  padding-right: calc(100% - 32px);
-}
-.after-tabs .newtab-button-box .newtab-action-selector-anchor {
-  right: auto;
-  left: 22px;
-}
- */
-
-/* The blue dot */
-#unified-extensions-button[attention] > .toolbarbutton-icon,
-.unified-extensions-item[attention] > .unified-extensions-item-action-button.toolbarbutton-1 > .toolbarbutton-badge-stack {
-    background-image: none !important;
-}
+- Set "Double-click on a tab" to "Close tab"
+  - With sidebar collapsed to icons, you will need to
+    (1) hover to expand the sidebar,
+    (2) find the "X" button,
+    (3) move your cursor over "X" carefully so that the sidebar doesn't collapse again.
+    So personally I would much prefer double clicking.
+- User Style Sheet: ./tree-style-tabs_collapsed.css
+  - This style sheet mainly makes the icons more compact by removing left margins.
+*/

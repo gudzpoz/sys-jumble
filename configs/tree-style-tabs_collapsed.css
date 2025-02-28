@@ -1,0 +1,61 @@
+/*
+ * To be used with either firefox-userChrome.css or waterfox-userChrome.css
+ * in https://github.com/gudzpoz/sys-jumble/blob/main/configs/ .
+ *
+ * In Waterfox, you can open TST settings by:
+ * 1. clicking the gear icon on top of the tabs sidebar, which pops up a menu,
+ * 2. holding the "Shift" key and clicking the "More Settings..." entry.
+*/
+
+/* Styles for collapsed tab sidebar */
+
+/* Remove indentation and add tab level indicator */
+tab-item[data-level] {
+    --level-marker-width: 0px;
+}
+tab-item[data-level] tab-item-substance {
+    margin-left: 0 !important;
+    border-left: var(--level-marker-width) solid white;
+}
+tab-item[data-level][data-level="1"] {
+    --level-marker-width: 1px;
+}
+tab-item[data-level][data-level="2"] {
+    --level-marker-width: 2px;
+}
+tab-item[data-level][data-level="3"] {
+    --level-marker-width: 3px;
+}
+#normal-tabs-container tab-item > tab-item-substance {
+    display: flex;
+    flex-direction: row-reverse;
+    padding-left: 10px;
+}
+/* Put container labels to the left side */
+.contextual-identity-marker {
+    top: auto !important;
+    bottom: auto !important;
+    left: 1px;
+    width: 2px !important;
+    height: calc(var(--favicon-size) * 2) !important;
+}
+/* Make the "+" (new tab) button visible when collapsed */
+.newtab-button {
+    padding-right: calc(100% - 32px);
+}
+.after-tabs .newtab-button-box .newtab-action-selector-anchor {
+    right: auto;
+    left: 22px;
+}
+
+/* The following are personal preferences and has nothing to do with collapsed sidebar */
+
+/* Show title of unread tabs with italic font */
+:root.sidebar tab-item.unread .label-content {
+    font-style: italic !important;
+}
+
+/* Add private browsing indicator per tab */
+:root.sidebar tab-item.private-browsing tab-label:before {
+    content: "🕶";
+}
