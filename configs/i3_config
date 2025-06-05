@@ -238,14 +238,17 @@ for_window [title="lxqt-notificationd"] floating enable
 no_focus [title="lxqt-notificationd"]
 no_focus [title="im-emoji-picker"]
 
+### Title bar icons
+
+include sway-font-awesome/icons-wl
+include sway-font-awesome/icons-x11
+
 exec lxqt-session 2>&1 >> /tmp/lxqt-session-log && sway exit
 # Temporary replacement to malfunctioning LXQt taskbar.
 bar {
     position bottom
-    mode hide
-    hidden_state hide
-    status_command i3status
-    tray_output none
+    swaybar_command none
+    workspace_buttons yes
 }
 # Put device config here to avoid uploading them to git by mistake
 include ~/.config/sway/*.conf

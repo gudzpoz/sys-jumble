@@ -16,7 +16,7 @@ class TabLayoutMaker(I3Kit):
         self.splits = splits
         self.mark = mark
 
-    def _mark_window(self, window: int):
+    def _mark_window(self):
         assert self.focused_workspace != -1
         self.send(f"unmark {self.mark}_tabbed")
 
@@ -30,8 +30,16 @@ class TabLayoutMaker(I3Kit):
 
     def _layout(self, groups: list[list[typing.Any]], workspace: int):
         containers = [group[0] for group in groups]
-        for container in containers:
-            self.send(f"[con_id={container['id']}] move container to workspace {workspace}")
+        first = containers[0]['id']
+        self.send(f"""
+        unmark {self.mark}_tabbed;
+        [con_id={first}] move container to workspace {workspace};
+        [con_id={first}] mark {self.mark}_tabbed
+        """)
+        for container in containers[1:]:
+            self.send(f"[con_id={container['id']}] move window to mark {self.mark}_tabbed")
+        self.send(f"unmark {self.mark}_tabbed")
+
         for container in containers:
             self.send(f"""
             [con_id={container['id']}] split v;
@@ -44,6 +52,7 @@ class TabLayoutMaker(I3Kit):
             for window in group[-1:0:-1]:
                 self.send(f"[con_id={window['id']}] move window to mark {self.mark}_tabbed")
             self.send(f"unmark {self.mark}_tabbed")
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

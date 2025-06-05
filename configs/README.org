@@ -261,6 +261,12 @@ For gtk4, see [[https://gitlab.com/sulincix/xnocsd][Xnocsd]]. In short, add the 
 
 * Firefox ~userChrome.css~
 
-See [[https://www.userchrome.org/][https://www.userchrome.org/]] for steps to use ~userChrome.css~ in Firefox.
-Sym-link [[file:firefox-userChrome.css][firefox-userChrome.css]] to =<profile-directory>/chrome/userChrome.css= to use the customization.
-Remember to configure Tree Style Tab according to the comments in [[file:firefox-userChrome.css][firefox-userChrome.css]].
+See [[https://www.userchrome.org/][https://www.userchrome.org/]] for steps to use ~userChrome.css~ in Firefox. To use the customization:
+
+- for Firefox, sym-link [[file:firefox-userChrome.css][firefox-userChrome.css]] to
+  =<profile-directory>/chrome/userChrome.css=,
+- for Waterfox, sym-link [[file:waterfox-userChrome.css][waterfox-userChrome.css]] to
+  =<profile-directory>/chrome/userChrome.css=.
+
+Remember to configure Tree Style Tab according to the comments in that
+=*-userChrome.css=.

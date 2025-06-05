@@ -15,7 +15,7 @@ class NestedLayoutMaker(TabLayoutMaker):
     def layout(self):
         workspace = self.focused_workspace
         self.update_window_cache()
-        self._mark_window(self.focused_workspace)
+        self._mark_window()
         children = self.get_all_children(workspace)
         if len(children) <= self.nested_limit:
             return

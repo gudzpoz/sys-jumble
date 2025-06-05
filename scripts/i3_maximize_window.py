@@ -209,7 +209,6 @@ class Placeholder(I3Kit):
             self.restorable = True
 
     def restore(self):
-        window = self.window_id_cache[self.window]
         self.restorable = False
         self.send(f"[con_id={self.tk_window}] swap container with con_id {self.window}")
         self.send(f"[con_id={self.window}] focus")
@@ -222,7 +221,6 @@ class Maximizer(I3Kit):
         super().__init__()
 
     def placeholder(self, wid: int):
-        window = self.window_id_cache[wid]
         empty_workspace = self.find_empty_workspace()
         Placeholder(wid, empty_workspace).mainloop()
 
@@ -242,6 +240,7 @@ class Maximizer(I3Kit):
         window = self.current_container()
         workspace = self.current_workspace()
         if window is None:
+            # empty workspace
             return
 
         if use_tk:
