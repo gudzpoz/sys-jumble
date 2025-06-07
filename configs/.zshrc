@@ -158,6 +158,11 @@ setopt HIST_REDUCE_BLANKS
 setopt HIST_SAVE_NO_DUPS
 unsetopt INC_APPEND_HISTORY
 
+## Atuin
+if has_bin atuin; then
+    eval "$(atuin init zsh)"
+fi
+
 ## Enable extended globbing
 setopt extendedglob
 

@@ -41,8 +41,10 @@ This function should only modify configuration layer settings."
                                        go
                                        graphviz
                                        html
-     ;;;; Great. Now I have .project/.classpath/.settings files everywhere in my monolithic Java project.
-                                       ;; java
+                                       ;; Great. Now I have
+                                       ;; .project/.classpath/.settings files
+                                       ;; everywhere in my monolithic Java
+                                       ;; project. java
                                        (javascript :variables
                                                    js2-basic-offset 2
                                                    js-indent-level 2
@@ -699,6 +701,9 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
+  (load "~/Workspaces/sys-jumble/configs/emacs/ansi-workaround.el")
+  (ansi-workaround-mode 1)
+
   ;; To capture bugs that are hard to capture
   ;; (setq debug-on-error t)
   ;; (setq backtrace-on-redisplay-error t)
@@ -1004,16 +1009,17 @@ See also `org-save-all-org-buffers'"
 (defun mine/fcitx-config ()
   "Fcitx integration"
 
-  (setq fcitx-active-evil-states '(insert emacs hybrid)
-        fcitx-remote-command "fcitx5-remote"
-        fcitx-use-dbus nil)
-  (fcitx-aggressive-setup)
-  (fcitx-prefix-keys-add "M-m")
-
-  (defun fcitx-disable-on-need ()
-    (when (fcitx--evil-should-disable-fcitx-p) (fcitx--deactivate)))
-  (add-hook 'isearch-mode-end-hook #'fcitx-disable-on-need)
-  (add-hook 'minibuffer-inactive-mode-hook #'fcitx-disable-on-need))
+  (use-package sis :config
+    (add-hook 'evil-hybrid-state-exit-hook #'sis-set-english)
+    (add-to-list 'sis-context-hooks 'evil-hybrid-state-entry-hook)
+    (sis-ism-lazyman-config "1" "2" 'fcitx5)
+    (sis-global-respect-mode t)
+    (sis-global-context-mode t)
+    (sis-global-inline-mode t)
+    (define-advice sis-global-respect-mode (:around (f &rest args))
+      (when (not sis-global-respect-mode)
+        (remove-hook 'evil-hybrid-state-exit-hook #'sis-set-english))
+      (apply f args))))
 
 (defun mine/motion-config ()
   "Cursor navigating settings"
